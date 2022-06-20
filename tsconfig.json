@@ -92,7 +92,7 @@
           "src/services/*"
         ],
         "@routes/*": [
-          "src/routes/*"
+          "src/controller/*"
         ]
       },
     "useUnknownInCatchVariables": false
