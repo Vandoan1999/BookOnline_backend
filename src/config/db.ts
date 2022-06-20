@@ -9,7 +9,7 @@ export const AppDataSource = new DataSource({
   database: "postgres",
   synchronize: true,
   logging: true,
-  entities: [entiry.Users],
+  entities: [...Object.values(entiry).map((item) => item)],
   subscribers: [],
   migrations: [],
 });

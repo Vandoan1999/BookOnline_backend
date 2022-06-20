@@ -1,10 +1,11 @@
 import { Gender } from "@enums/gender.enum";
 import { Role } from "@enums/role.enum";
-import { Entity, Column, PrimaryColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { CommentEntity } from "./comment.entity";
 
-@Entity()
-export class Users {
-  @PrimaryColumn()
+@Entity("users")
+export class UserEntity {
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column()
@@ -12,6 +13,9 @@ export class Users {
 
   @Column({ unique: true })
   name: string;
+
+  @Column({ unique: true })
+  email: string;
 
   @Column()
   password: string;
@@ -34,18 +38,18 @@ export class Users {
   @Column({ nullable: true })
   bank: string;
 
-  @Column({ unique: true })
-  email: string;
-
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: "bool" })
   is_pass_change: boolean;
 
-  @Column({ nullable: true })
-  is_block: boolean;
+  @Column({ nullable: true, type: "bool" })
+  is_active: boolean;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: "date" })
   created_at: Date;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: "date" })
   updated_at: Date;
+
+  @OneToMany(() => CommentEntity, (cmt) => cmt.user)
+  comments: CommentEntity[];
 }
