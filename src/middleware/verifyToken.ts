@@ -17,7 +17,7 @@ export function verifyToken(req: Request, res: Response, next: NextFunction) {
     req["user"] = plainToClass(UserInfo, decoded);
   } catch (error) {
     logger.err("UNHANDLED ERROR: Verify token error ", error);
-    throw ApiError(StatusCodes.UNAUTHORIZED, "token expired!");
+    throw ApiError(StatusCodes.UNAUTHORIZED, "token expired!",);
   }
-  next();
+  return next();
 }

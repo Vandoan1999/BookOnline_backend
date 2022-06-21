@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "9d6a490a-f36f-4e38-9904-a99689f9a980",
+		"_postman_id": "a1678641-e5a2-4bbc-90a5-25677b01c371",
 		"name": "Đồ án",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "20957393"
+		"_exporter_id": "21309548"
 	},
 	"item": [
 		{
@@ -133,6 +133,33 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "admin login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"Brennon46\",\r\n    \"password\":\"12345678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/auth/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -140,34 +167,7 @@
 			"name": "book api",
 			"item": [
 				{
-					"name": "get list",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{host}}/books",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"books"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "create news",
+					"name": "create",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -177,12 +177,30 @@
 								],
 								"type": "text/javascript"
 							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Test status of response\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.type).to.eql(\"success\");\r",
+									"});\r",
+									"\r",
+									"let req = JSON.parse(pm.request.body.raw)\r",
+									"pm.collectionVariables.set(\"id_book\", req.id);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
-						"auth": {
-							"type": "noauth"
-						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -205,6 +223,183 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "update",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Test status of response\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.type).to.eql(\"success\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{$randomProductName}}\",\r\n    \"discounted\": {{$randomInt}},\r\n    \"price_import\": {{$randomPrice}},\r\n    \"price_export\": {{$randomPrice}},\r\n    \"sold\": {{$randomInt}},\r\n    \"views\": {{$randomInt}},\r\n    \"published_date\": \"{{$isoTimestamp}}\",\r\n    \"quantity\": {{$randomInt}},\r\n    \"publisher\": \"{{$randomFullName}}\",\r\n    \"author\": \"{{$randomFullName}}\",\r\n    \"description\": \"{{$randomLoremSentences}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/books/{{id_book}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"books",
+								"{{id_book}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "detail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Test status of response\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.type).to.eql(\"success\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Test data of detail\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data).not.empty\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/books/{{id_book}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"books",
+								"{{id_book}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Test status of response\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.type).to.eql(\"success\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Test leng of data in response\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data.length).greaterThan(0);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/books?page=1&limit=2",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"books"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{accessTokenTest}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		}
@@ -228,6 +423,10 @@
 		},
 		{
 			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "id_book",
 			"value": ""
 		}
 	]
