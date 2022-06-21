@@ -1,6 +1,6 @@
-import { Gender } from "@enums/gender.enum";
-import { Role } from "@enums/role.enum";
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { Gender as Sex } from "@enums/gender.enum";
+import { UserRole as UserRole } from "@enums/role.enum";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { CommentEntity } from "./comment.entity";
 
 @Entity("users")
@@ -8,23 +8,28 @@ export class UserEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column()
-  username: string;
-
   @Column({ unique: true })
-  name: string;
+  username: string;
 
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
-  @Column()
-  role: Role;
+  @Column({
+    type: "enum",
+    enum: UserRole,
+    default: UserRole.USER,
+  })
+  role: UserRole;
 
-  @Column()
-  gender: Gender;
+  @Column({
+    type: "enum",
+    enum: Sex,
+    default: Sex.MALE,
+  })
+  sex: Sex;
 
   @Column({ nullable: true, type: "bytea" })
   image: Buffer;
@@ -41,13 +46,13 @@ export class UserEntity {
   @Column({ nullable: true, type: "bool" })
   is_pass_change: boolean;
 
-  @Column({ nullable: true, type: "bool" })
+  @Column({ nullable: true, type: "bool", default: true })
   is_active: boolean;
 
-  @Column({ nullable: true, type: "date" })
+  @CreateDateColumn({ type: "timestamptz" })
   created_at: Date;
 
-  @Column({ nullable: true, type: "date" })
+  @UpdateDateColumn({ type: "timestamptz" })
   updated_at: Date;
 
   @OneToMany(() => CommentEntity, (cmt) => cmt.user)

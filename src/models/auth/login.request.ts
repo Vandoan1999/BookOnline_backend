@@ -1,8 +1,8 @@
-import { Allow } from "class-validator";
+import { Allow, IsNotEmpty } from "class-validator";
 export class LoginRequest {
-  @Allow()
+  @IsNotEmpty()
   username: string;
 
-  @Allow()
+  @IsNotEmpty()
   password: string;
 }

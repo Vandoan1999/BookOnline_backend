@@ -76,6 +76,9 @@
         "@config/*": [
           "src/config/*"
         ],
+        "@middleware/*": [
+          "src/middleware/*"
+        ],
         "@entity/*": [
           "src/entity/*"
         ],

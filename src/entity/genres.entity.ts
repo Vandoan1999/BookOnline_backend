@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
 @Entity("genres")
 export class GenresEntity {
@@ -12,9 +12,9 @@ export class GenresEntity {
   @Column({ nullable: true, type: "bytea" })
   image: Buffer;
 
-  @Column({ nullable: true, type: "date" })
-  created_at: string;
+  @CreateDateColumn({ type: "timestamptz" })
+  created_at: Date;
 
-  @Column({ nullable: true, type: "date" })
+  @UpdateDateColumn({ type: "timestamptz" })
   updated_at: Date;
 }

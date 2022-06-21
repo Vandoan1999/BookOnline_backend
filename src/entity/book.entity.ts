@@ -1,13 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToOne,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-} from "typeorm";
+import { Entity, Column, OneToOne, JoinColumn, JoinTable, ManyToMany, OneToMany, CreateDateColumn, UpdateDateColumn, PrimaryColumn } from "typeorm";
 import { CommentEntity } from "./comment.entity";
 import { GenresEntity } from "./genres.entity";
 import { OrderDetail as OrderDetailEntity } from "./order-detail.entity";
@@ -15,7 +6,7 @@ import { SuppliersEnity } from "./suppliers.entity";
 
 @Entity("books")
 export class BooksEntity {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryColumn()
   id: string;
 
   @Column({ unique: true })
@@ -51,10 +42,10 @@ export class BooksEntity {
   @Column({ nullable: true, type: "text" })
   description: string;
 
-  @Column({ nullable: true, type: "date" })
+  @CreateDateColumn({ type: "timestamptz" })
   created_at: Date;
 
-  @Column({ nullable: true, type: "date" })
+  @UpdateDateColumn({ type: "timestamptz" })
   updated_at: Date;
 
   @OneToOne(() => SuppliersEnity)

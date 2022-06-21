@@ -1,18 +1,37 @@
 import { LoginRequest } from "@models/auth/login.request";
+import { RegisterRequest } from "@models/auth/register.request";
 import { AuthService } from "@services/auth.service";
 import { Router } from "express";
+import { ResponseBuilder } from "src/ultis/response-builder";
 import { transformAndValidate } from "src/ultis/transformAndValidate";
 import { Container } from "typedi";
 const router = Router();
 
-router.post("/login", async (req, res) => {
-  const request = await transformAndValidate<LoginRequest>(
-    LoginRequest,
-    req.body
-  );
-  const authService = Container.get(AuthService);
-  const data = await authService.login(request);
-  res.json({ data });
+const url = {
+  login: "/login",
+  register: "/register",
+};
+
+router.post(url.login, async (req, res) => {
+  try {
+    const request = await transformAndValidate<LoginRequest>(LoginRequest, req.body);
+    const authService = Container.get(AuthService);
+    const token = await authService.login(request);
+    res.json(new ResponseBuilder<object>({ accessToken: token, refeshToken: "" }).withSuccess().build());
+  } catch (error) {
+    res.json(new ResponseBuilder<any>(error).withError().build());
+  }
+});
+
+router.post(url.register, async (req, res) => {
+  try {
+    const request = await transformAndValidate<RegisterRequest>(RegisterRequest, req.body);
+    const authService = Container.get(AuthService);
+    await authService.register(request);
+    res.json(new ResponseBuilder().withSuccess().withMessage("create account success").build());
+  } catch (error) {
+    res.json(new ResponseBuilder<any>(error).withError().build());
+  }
 });
 // Export default
 export default router;

@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { BooksEntity } from "./book.entity";
 import { UserEntity } from "./user.entity";
 
@@ -16,10 +16,10 @@ export class CommentEntity {
   @Column({ nullable: true, type: "int", default: 0 })
   like_count: number;
 
-  @Column({ nullable: true, type: "date" })
+  @CreateDateColumn({ type: "timestamptz" })
   created_at: Date;
 
-  @Column({ nullable: true, type: "date" })
+  @UpdateDateColumn({ type: "timestamptz" })
   updated_at: Date;
 
   @ManyToOne(() => UserEntity, (user) => user.comments)

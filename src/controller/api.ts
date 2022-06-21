@@ -1,12 +1,11 @@
 import { Router } from "express";
-import userRouter from "./user.controller";
 import authRouter from "./auth.controller";
-
+import bookRouter from "./book.controller";
 // Export the base-router
 const baseRouter = Router();
 
 // Setup routers
-baseRouter.use("/users", userRouter);
+baseRouter.use("/books", bookRouter);
 baseRouter.use("/auth", authRouter);
 
 // Export default.
