@@ -9,6 +9,7 @@ import "express-async-errors";
 import apiRouter from "./controller/api";
 import logger from "jet-logger";
 import { CustomError } from "@shared/errors";
+import { ResponseBuilder } from "./ultis/response-builder";
 
 // Constants
 const app = express();
@@ -45,9 +46,7 @@ app.use(
     logger.err(err, true);
     const status =
       err instanceof CustomError ? err.HttpStatus : StatusCodes.BAD_REQUEST;
-    return res.status(status).json({
-      error: err.message,
-    });
+    return res.status(status).json(new ResponseBuilder().withError().withMessage(err.message).build());
   }
 );
 

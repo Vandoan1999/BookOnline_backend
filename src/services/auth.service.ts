@@ -10,7 +10,7 @@ import jwt from "jsonwebtoken";
 require("dotenv").config();
 @Service()
 export class AuthService {
-  constructor() {}
+  constructor() { }
   async login(request: LoginRequest) {
     const user = await AuthRepository.getUserByName(request.username);
     if (!user || !compareSync(request.password, user.password)) {
