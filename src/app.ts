@@ -8,15 +8,12 @@ import "express-async-errors";
 
 import apiRouter from "./controller/api";
 import logger from "jet-logger";
-import { CustomError } from "@shared/errors";
 import { ResponseBuilder } from "./ultis/response-builder";
+import serverless from 'serverless-http'
+import { CustomError } from "@shared/errors";
 
 // Constants
 const app = express();
-
-/***********************************************************************************
- *                                  Middlewares
- **********************************************************************************/
 
 // Common middlewares
 app.use(express.json());
@@ -33,12 +30,17 @@ if (process.env.NODE_ENV === "production") {
   app.use(helmet());
 }
 
-/***********************************************************************************
- *                         API routes and error handling
- **********************************************************************************/
+
+app.get('/api', function (req, res) {
+  res.send('Hello World!')
+})
+
+app.get('/demo', function (req, res) {
+  res.send('Hello World! 2')
+})
 
 // Add api router
-app.use("/api", apiRouter);
+// app.use("/api", apiRouter);
 
 // Error handling
 app.use(
@@ -50,5 +52,24 @@ app.use(
   }
 );
 
+
+//#### Database
+
+// AppDataSource.initialize()
+//   .then(() => {
+//     console.info("initialize databse success");
+
+//   })
+//   .catch((error: any) => console.log(error));
+
 // Export here and start in a diff file (for testing).
+const server = serverless(app);
+
+export const handler = async (
+  event: any,
+  context: any,
+): Promise<any> => {
+  return await server(event, context);
+};
+
 export default app;
