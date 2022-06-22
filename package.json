@@ -80,6 +80,8 @@
     "morgan": "^1.10.0",
     "pg": "^8.7.3",
     "reflect-metadata": "^0.1.13",
+    "serverless": "^3.19.0",
+    "serverless-http": "^3.0.1",
     "typedi": "^0.10.0",
     "typeorm": "^0.3.6"
   },

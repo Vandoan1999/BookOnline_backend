@@ -36,4 +36,9 @@ export class BookService {
       throw ApiError(StatusCodes.NOT_FOUND, `product width id ${id} not found`);
     return book
   }
+
+  async delete(id: string) {
+    const result = await BookRepository.delete({id})
+    return result
+  }
 }

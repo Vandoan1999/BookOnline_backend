@@ -4,7 +4,7 @@ import { Allow, IsEnum, IsOptional } from "class-validator";
 import { OrderByEnum } from "./orderBy.enum";
 export class ListBookRequest extends Pagination {
   @Allow()
-  name: string;
+  search: string;
 
   @Allow()
   author: string;

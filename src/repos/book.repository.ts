@@ -11,14 +11,16 @@ export const BookRepository = AppDataSource.getRepository(BookEntity).extend({
     const skip = (page - 1) * take
 
     const query = this.createQueryBuilder("book");
-    if (request.name) {
-      query.where("book.name LIKE :name", { name: request.name });
+    
+    if (request.search) {
+      query.where("book.name LIKE :name", { name: `%${request.search}%` });
     }
     if (request.author) {
-      query.where("book.author LIKE :author", { author: request.author });
+      query.where("book.author LIKE :author", { author: `%${request.author}%` });
     }
+
     if (request.orderBy === OrderByEnum.price) {
-      query.orderBy("book.name", request.order);
+      query.orderBy("book.price_export", request.order);
     } else if (request.orderBy === OrderByEnum.sold) {
       query.orderBy("book.sold", request.order);
     } else if (request.orderBy === OrderByEnum.views) {

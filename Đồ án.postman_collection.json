@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "a1678641-e5a2-4bbc-90a5-25677b01c371",
+		"_postman_id": "39118a1c-e28a-4236-a9e8-e5d0d35877a6",
 		"name": "Đồ án",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "21309548"
+		"_exporter_id": "20957393"
 	},
 	"item": [
 		{
@@ -141,7 +141,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\":\"Brennon46\",\r\n    \"password\":\"12345678\"\r\n}",
+							"raw": "{\r\n    \"username\":\"admin\",\r\n    \"password\":\"12345678\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -225,6 +225,47 @@
 					"response": []
 				},
 				{
+					"name": "detail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Test status of response\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.type).to.eql(\"success\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Test data of detail\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data).not.empty\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/books/{{id_book}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"books",
+								"{{id_book}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "update",
 					"event": [
 						{
@@ -280,7 +321,7 @@
 					"response": []
 				},
 				{
-					"name": "detail",
+					"name": "delete",
 					"event": [
 						{
 							"listen": "test",
@@ -295,17 +336,19 @@
 									"    pm.expect(jsonData.type).to.eql(\"success\");\r",
 									"});\r",
 									"\r",
-									"pm.test(\"Test data of detail\", function () {\r",
+									"pm.test(\"Test status of response\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.data).not.empty\r",
-									"});"
+									"    pm.expect(jsonData.data.affected).to.eql(1);\r",
+									"});\r",
+									"\r",
+									""
 								],
 								"type": "text/javascript"
 							}
 						}
 					],
 					"request": {
-						"method": "GET",
+						"method": "DELETE",
 						"header": [],
 						"url": {
 							"raw": "{{host}}/books/{{id_book}}",
@@ -350,7 +393,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/books?page=1&limit=2",
+							"raw": "{{host}}/books?search=Handmade&orderBy=sold&order=DESC",
 							"host": [
 								"{{host}}"
 							],
@@ -359,12 +402,16 @@
 							],
 							"query": [
 								{
-									"key": "page",
-									"value": "1"
+									"key": "search",
+									"value": "Handmade"
 								},
 								{
-									"key": "limit",
-									"value": "2"
+									"key": "orderBy",
+									"value": "sold"
+								},
+								{
+									"key": "order",
+									"value": "DESC"
 								}
 							]
 						}

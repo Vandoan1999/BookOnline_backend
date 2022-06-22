@@ -20,6 +20,8 @@ const url = {
   update: "/:id",
 };
 
+
+//get list book
 router.get(url.get, verifyToken, async (req, res) => {
   try {
     const request = await transformAndValidate<ListBookRequest>(
@@ -39,6 +41,7 @@ router.get(url.get, verifyToken, async (req, res) => {
   }
 });
 
+//add new book
 router.post(url.add, verifyToken, async (req, res) => {
   try {
     const request = await transformAndValidate<CreateBookRequest>(
@@ -60,6 +63,7 @@ router.post(url.add, verifyToken, async (req, res) => {
   }
 });
 
+//update book
 router.put(url.update, verifyToken, async (req, res) => {
   try {
     const request = await transformAndValidate<UpdateBookRequest>(
@@ -84,6 +88,7 @@ router.put(url.update, verifyToken, async (req, res) => {
   }
 });
 
+//get detail book
 router.get(url.detail, verifyToken, async (req, res) => {
   try {
     if (!req.params.id) {
@@ -96,6 +101,27 @@ router.get(url.detail, verifyToken, async (req, res) => {
 
     return res.json(
       new ResponseBuilder<BooksEntity>(book)
+        .withSuccess()
+        .build()
+    );
+  } catch (error) {
+    return res.json(new ResponseBuilder<any>(error).withError().build());
+  }
+});
+
+//delete book
+router.delete(url.delete, verifyToken, async (req, res) => {
+  try {
+    if (!req.params.id) {
+      throw ApiError(StatusCodes.BAD_REQUEST, "id param empty");
+    }
+
+    const bookService = Container.get(BookService);
+
+    const result = await bookService.delete(req.params.id)
+
+    return res.json(
+      new ResponseBuilder<any>(result)
         .withSuccess()
         .build()
     );
