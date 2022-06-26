@@ -40,7 +40,7 @@
       "@services/*": [
         "src/services/*"
       ],
-      "@routes/*": [
+      "@controller/*": [
         "src/controller/*"
       ]
     },

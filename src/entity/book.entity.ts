@@ -1,7 +1,9 @@
 import { Entity, Column, OneToOne, JoinColumn, JoinTable, ManyToMany, OneToMany, CreateDateColumn, UpdateDateColumn, PrimaryColumn } from "typeorm";
 import { CommentEntity } from "./comment.entity";
 import { GenresEntity } from "./genres.entity";
+import { ImageEntity } from "./image.entity";
 import { OrderDetail as OrderDetailEntity } from "./order-detail.entity";
+import { RatingEntity } from "./rating.entity";
 import { SuppliersEnity } from "./suppliers.entity";
 
 @Entity("books")
@@ -17,6 +19,9 @@ export class BooksEntity {
 
   @Column({ nullable: true, type: "double precision", default: 0 })
   price_import: number;
+
+  @Column({ nullable: true })
+  avatar: string;
 
   @Column({ nullable: true, type: "double precision", default: 0 })
   price_export: number;
@@ -62,4 +67,12 @@ export class BooksEntity {
 
   @OneToMany(() => OrderDetailEntity, (order) => order.book)
   order_detail: OrderDetailEntity[];
+
+  @OneToMany(() => RatingEntity, (rating) => rating.book_id)
+  ratings: []
+
+  @OneToMany(() => ImageEntity, (rating) => rating.book_id)
+  images: []
+
+  public rating_number: number
 }

@@ -13,25 +13,18 @@ const url = {
 };
 
 router.post(url.login, async (req, res) => {
-  try {
-    const request = await transformAndValidate<LoginRequest>(LoginRequest, req.body);
-    const authService = Container.get(AuthService);
-    const token = await authService.login(request);
-    res.json(new ResponseBuilder<object>({ accessToken: token, refeshToken: "" }).withSuccess().build());
-  } catch (error) {
-    res.json(new ResponseBuilder<any>(error).withError().build());
-  }
+  const request = await transformAndValidate<LoginRequest>(LoginRequest, req.body);
+  const authService = Container.get(AuthService);
+  const token = await authService.login(request);
+  res.json(new ResponseBuilder<object>({ accessToken: token, refeshToken: "" }).withSuccess().build());
+
 });
 
 router.post(url.register, async (req, res) => {
-  try {
-    const request = await transformAndValidate<RegisterRequest>(RegisterRequest, req.body);
-    const authService = Container.get(AuthService);
-    await authService.register(request);
-    res.json(new ResponseBuilder().withSuccess().withMessage("create account success").build());
-  } catch (error) {
-    res.json(new ResponseBuilder<any>(error).withError().build());
-  }
+  const request = await transformAndValidate<RegisterRequest>(RegisterRequest, req.body);
+  const authService = Container.get(AuthService);
+  await authService.register(request);
+  res.json(new ResponseBuilder().withSuccess().withMessage("create account success").build());
 });
 // Export default
 export default router;

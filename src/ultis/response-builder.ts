@@ -21,8 +21,9 @@ export class ResponseBuilder<T> {
     return this;
   }
 
-  withError() {
+  withError(err: any = null) {
     this.payload.type = ResponseTypeEnum.ERROR;
+    this.payload.error = err
     return this;
   }
 
