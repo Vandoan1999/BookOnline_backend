@@ -2,23 +2,26 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  OneToOne,
   JoinColumn,
+  ManyToOne,
 } from "typeorm";
 import { BooksEntity } from "./book.entity";
 
 @Entity("book_images")
-export class ImagesEntity {
+export class ImageEntity {
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id?: string;
 
-  @Column({ nullable: true, type: "bytea" })
-  data: Buffer;
+  @Column()
+  url: string;
 
   @Column({ nullable: true })
   order: number;
 
-  @OneToOne((type) => BooksEntity)
-  @JoinColumn()
-  public book!: BooksEntity;
+  @ManyToOne((type) => BooksEntity, (book) => book.images, {
+    onDelete: "CASCADE",
+    nullable: true
+  })
+  @JoinColumn({ name: "book_id" })
+  public book_id?: BooksEntity;
 }

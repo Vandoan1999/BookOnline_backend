@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 export class UpdateBookRequest {
 
   @IsOptional()
@@ -44,4 +44,11 @@ export class UpdateBookRequest {
   @IsOptional()
   @IsString()
   description: string;
+
+  @IsOptional()
+  @IsArray()
+  images?: {
+    id: string,
+    url: string
+  }[];
 }

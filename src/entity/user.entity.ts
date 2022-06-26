@@ -2,6 +2,7 @@ import { Gender as Sex } from "@enums/gender.enum";
 import { UserRole as UserRole } from "@enums/role.enum";
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { CommentEntity } from "./comment.entity";
+import { RatingEntity } from "./rating.entity";
 
 @Entity("users")
 export class UserEntity {
@@ -31,8 +32,8 @@ export class UserEntity {
   })
   sex: Sex;
 
-  @Column({ nullable: true, type: "bytea" })
-  image: Buffer;
+  @Column({ nullable: true })
+  image: string;
 
   @Column({ nullable: true })
   address: string;
@@ -57,4 +58,7 @@ export class UserEntity {
 
   @OneToMany(() => CommentEntity, (cmt) => cmt.user)
   comments: CommentEntity[];
+
+  @OneToMany(() => RatingEntity, (rating) => rating.user_id)
+  ratings: []
 }

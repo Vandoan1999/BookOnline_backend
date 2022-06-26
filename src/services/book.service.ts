@@ -7,21 +7,64 @@ import { plainToClass } from "class-transformer";
 import { StatusCodes } from "http-status-codes";
 import { ApiError } from "src/ultis/apiError";
 import { Service } from "typedi";
-
+import { ImageRepository } from '@repos/image.repository'
+import { CreateImageRequest } from "@models/images/create-image.request";
+import { ImageEntity } from "@entity/image.entity";
 @Service()
 export class BookService {
-  constructor() { }
-  create(request: CreateBookRequest) {
+  constructor(
+  ) { }
+  async create(request: CreateBookRequest) {
     const book = Object.assign(BookRepository.create(), request);
+    const bookSaved = await BookRepository.save(book);
+    const images = request.images
+
+    const imageTobeinsert: ImageEntity[] = images.map(item => {
+      return {
+        url: item,
+        order: Math.floor(Math.random() * images.length),
+        book_id: bookSaved,
+      }
+    })
+    ImageRepository.insert(imageTobeinsert)
     return BookRepository.save(book);
   }
 
-  getList(request: ListBookRequest) {
-    return BookRepository.getList(request)
+  async getList(request: ListBookRequest) {
+    const result = await BookRepository.getList(request)
+    result.entities.forEach((item, index) => {
+      item["rating_number"] = result.raw[index]["rating_number"] || 0
+    })
+    const total = await BookRepository.count()
+
+    return {
+      data: result.entities,
+      total
+    }
   }
 
   update(request: UpdateBookRequest, id: string) {
-    const book = plainToClass(UpdateBookRequest, request)
+    let images: {
+      id: string; url: string;
+    }[] = []
+    if (request.images && request.images.length > 0) {
+      images = request.images
+      delete request.images
+    }
+    const book = plainToClass(BookEntity, request)
+
+    if (images.length > 0) {
+      images.forEach(async item => {
+        await ImageRepository.update({
+          id: item.id
+        },
+          {
+            url: item.url + '/'
+          }
+        )
+      })
+    }
+
     return BookRepository.update(
       {
         id
@@ -31,14 +74,21 @@ export class BookService {
   }
 
   async detail(id: string) {
-    const book = await BookRepository.findOneBy({ id })
-    if (!book)
+    const result = await BookRepository.findById(id)
+    if (!result.entities[0])
       throw ApiError(StatusCodes.NOT_FOUND, `product width id ${id} not found`);
-    return book
+    result.entities.forEach((item, index) => {
+      item["rating_number"] = result.raw[index]["rating_number"] || 0
+    })
+
+    return result.entities[0];
+
   }
 
   async delete(id: string) {
-    const result = await BookRepository.delete({id})
+    const result = await BookRepository.delete({ id })
     return result
   }
+
+
 }

@@ -10,6 +10,9 @@ import { BooksEntity } from "@entity/book.entity";
 import { UpdateBookRequest } from "@models/book/update-book.request";
 import { ApiError } from "src/ultis/apiError";
 import { StatusCodes } from "http-status-codes";
+import { ListUserRequest } from "@models/user/list-user.request";
+import { UserService } from "@services/user.service";
+import { UserEntity } from "@entity/user.entity";
 const router = Router();
 
 const url = {
@@ -21,41 +24,21 @@ const url = {
 };
 
 
-//get list book
 router.get(url.get, verifyToken, async (req, res) => {
-  const request = await transformAndValidate<ListBookRequest>(
-    ListBookRequest,
+  const request = await transformAndValidate<ListUserRequest>(
+    ListUserRequest,
     req.query
   );
-  const bookService = Container.get(BookService);
-  const { data, total } = await bookService.getList(request)
+  const userService = Container.get(UserService);
+  const [books, total] = await userService.getList(request)
   return res.json(
-    new ResponseBuilder<BooksEntity[]>(data)
+    new ResponseBuilder<UserEntity[]>(books)
       .withMeta({ total })
       .withSuccess()
       .build()
   );
 });
 
-//add new book
-router.post(url.add, verifyToken, async (req, res) => {
-  const request = await transformAndValidate<CreateBookRequest>(
-    CreateBookRequest,
-    req.body
-  );
-  const bookService = Container.get(BookService);
-
-  await bookService.create(request);
-
-  return res.json(
-    new ResponseBuilder()
-      .withSuccess()
-      .withMessage("create product success.")
-      .build()
-  );
-});
-
-//update book
 router.put(url.update, verifyToken, async (req, res) => {
   const request = await transformAndValidate<UpdateBookRequest>(
     UpdateBookRequest,
@@ -76,7 +59,6 @@ router.put(url.update, verifyToken, async (req, res) => {
   );
 });
 
-//get detail book
 router.get(url.detail, verifyToken, async (req, res) => {
   if (!req.params.id) {
     throw ApiError(StatusCodes.BAD_REQUEST, "id param empty");
@@ -93,7 +75,6 @@ router.get(url.detail, verifyToken, async (req, res) => {
   );
 });
 
-//delete book
 router.delete(url.delete, verifyToken, async (req, res) => {
   if (!req.params.id) {
     throw ApiError(StatusCodes.BAD_REQUEST, "id param empty");

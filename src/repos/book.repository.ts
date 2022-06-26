@@ -10,8 +10,9 @@ export const BookRepository = AppDataSource.getRepository(BookEntity).extend({
     const page = request.page || 1
     const skip = (page - 1) * take
 
-    const query = this.createQueryBuilder("book");
-    
+    const query = this.createQueryBuilder("book")
+    query.leftJoinAndSelect("book.images", "image")
+    query.addSelect(`(select avg(r.rating_number)from rating r  where r."bookIdId" = book.id)`, "rating_number")
     if (request.search) {
       query.where("book.name LIKE :name", { name: `%${request.search}%` });
     }
@@ -30,7 +31,15 @@ export const BookRepository = AppDataSource.getRepository(BookEntity).extend({
     return query
       .take(take)
       .skip(skip)
-      .getManyAndCount()
+      .getRawAndEntities()
 
   },
+
+  findById(id: string) {
+    return this.createQueryBuilder("book")
+      .leftJoinAndSelect("book.images", "images")
+      .addSelect(`(select avg(r.rating_number)from rating r  where r."bookIdId" = book.id)`, "rating_number")
+      .where("book.id = :id", { id })
+      .getRawAndEntities()
+  }
 });
