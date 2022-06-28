@@ -1,5 +1,5 @@
 import { Gender as Sex } from "@enums/gender.enum";
-import { UserRole as UserRole } from "@enums/role.enum";
+import { Role as Role } from "@enums/role.enum";
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { CommentEntity } from "./comment.entity";
 import { RatingEntity } from "./rating.entity";
@@ -20,10 +20,10 @@ export class UserEntity {
 
   @Column({
     type: "enum",
-    enum: UserRole,
-    default: UserRole.USER,
+    enum: Role,
+    default: Role.USER,
   })
-  role: UserRole;
+  role: Role;
 
   @Column({
     type: "enum",
@@ -56,9 +56,13 @@ export class UserEntity {
   @UpdateDateColumn({ type: "timestamptz" })
   updated_at: Date;
 
-  @OneToMany(() => CommentEntity, (cmt) => cmt.user)
+  @OneToMany(() => CommentEntity, (cmt) => cmt.user, {
+    onDelete: "CASCADE",
+  })
   comments: CommentEntity[];
 
-  @OneToMany(() => RatingEntity, (rating) => rating.user_id)
-  ratings: []
+  @OneToMany(() => RatingEntity, (rating) => rating.user_id, {
+    onDelete: "CASCADE",
+  })
+  ratings: [];
 }

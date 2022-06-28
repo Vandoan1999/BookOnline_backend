@@ -1,4 +1,4 @@
-import { UserRole } from "@enums/role.enum";
+import { Role } from "@enums/role.enum";
 import { LoginRequest } from "@models/auth/login.request";
 import { RegisterRequest } from "@models/auth/register.request";
 import { AuthRepository } from "@repos/auth.repository";
@@ -10,7 +10,7 @@ import jwt from "jsonwebtoken";
 require("dotenv").config();
 @Service()
 export class AuthService {
-  constructor() { }
+  constructor() {}
   async login(request: LoginRequest) {
     const user = await AuthRepository.getUserByName(request.username);
     if (!user || !compareSync(request.password, user.password)) {
@@ -19,6 +19,7 @@ export class AuthService {
 
     const token = jwt.sign(
       {
+        id: user.id,
         namename: user.username,
         role: user.role,
         email: user.email,
@@ -31,7 +32,7 @@ export class AuthService {
 
   register(request: RegisterRequest) {
     const user = Object.assign(AuthRepository.create(), request);
-    if (user.role === UserRole.ADMIN) {
+    if (user.role === Role.ADMIN) {
       throw ApiError(StatusCodes.FORBIDDEN, "You cannot create user admin !");
     }
     user.password = hashSync(user.password, 10);

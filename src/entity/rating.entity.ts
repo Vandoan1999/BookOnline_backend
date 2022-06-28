@@ -1,23 +1,22 @@
 import { Entity, Column, JoinColumn, PrimaryColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from "typeorm";
-import { BooksEntity } from "./book.entity";
+import { BookEntity } from "./book.entity";
 import { UserEntity } from "./user.entity";
 
 @Entity("rating")
 export class RatingEntity {
-
   @ManyToOne(() => UserEntity, (user) => user.ratings, {
     onDelete: "CASCADE",
-    nullable: false
+    nullable: false,
   })
   @Column({ type: "uuid", name: "user_id", primary: true })
   public user_id!: UserEntity;
 
-  @ManyToOne(() => BooksEntity, book => book.ratings, {
+  @ManyToOne(() => BookEntity, (book) => book.ratings, {
     onDelete: "CASCADE",
-    nullable: false
+    nullable: false,
   })
   @Column({ type: "uuid", name: "book_id", primary: true })
-  public book_id!: BooksEntity;
+  public book_id!: BookEntity;
 
   @Column({ nullable: true, type: "text" })
   content: string;
@@ -30,6 +29,4 @@ export class RatingEntity {
 
   @UpdateDateColumn({ type: "timestamptz" })
   updated_at: Date;
-
-
 }

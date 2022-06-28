@@ -1,5 +1,7 @@
 import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 export class UpdateBookRequest {
+  @IsNotEmpty()
+  id: string;
 
   @IsOptional()
   @IsString()
@@ -48,7 +50,7 @@ export class UpdateBookRequest {
   @IsOptional()
   @IsArray()
   images?: {
-    id: string,
-    url: string
+    id: string;
+    url: string;
   }[];
 }

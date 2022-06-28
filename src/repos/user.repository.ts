@@ -6,9 +6,9 @@ import { ListUserRequest } from "@models/user/list-user.request";
 
 export const UserRepository = AppDataSource.getRepository(UserEntity).extend({
   getList(request: ListUserRequest) {
-    const take = request.limit || config.page.default_limit
-    const page = request.page || 1
-    const skip = (page - 1) * take
+    const take = request.limit || config.page.default_limit;
+    const page = request.page || 1;
+    const skip = (page - 1) * take;
 
     const query = this.createQueryBuilder("user");
 
@@ -22,10 +22,6 @@ export const UserRepository = AppDataSource.getRepository(UserEntity).extend({
       query.orderBy("user.username", request.order);
     }
 
-    return query
-      .take(take)
-      .skip(skip)
-      .getManyAndCount()
-
+    return query.take(take).skip(skip).getManyAndCount();
   },
 });
