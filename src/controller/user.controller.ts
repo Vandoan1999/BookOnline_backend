@@ -5,14 +5,13 @@ import { ResponseBuilder } from "src/ultis/response-builder";
 import { transformAndValidate } from "src/ultis/transformAndValidate";
 import Container from "typedi";
 import { verifyToken } from "@middleware/verifyToken";
-import { ListBookRequest } from "@models/book/list-book.request";
 import { BooksEntity } from "@entity/book.entity";
-import { UpdateBookRequest } from "@models/book/update-book.request";
 import { ApiError } from "src/ultis/apiError";
 import { StatusCodes } from "http-status-codes";
 import { ListUserRequest } from "@models/user/list-user.request";
 import { UserService } from "@services/user.service";
 import { UserEntity } from "@entity/user.entity";
+import { UpdateUserRequest } from "@models/user/update-user.request";
 const router = Router();
 
 const url = {
@@ -40,49 +39,41 @@ router.get(url.get, verifyToken, async (req, res) => {
 });
 
 router.put(url.update, verifyToken, async (req, res) => {
-  const request = await transformAndValidate<UpdateBookRequest>(
-    UpdateBookRequest,
+  const request = await transformAndValidate<UpdateUserRequest>(
+    UpdateUserRequest,
     req.body
   );
-  if (!req.params.id) {
-    throw ApiError(StatusCodes.BAD_REQUEST, "id param empty");
-  }
-  const bookService = Container.get(BookService);
 
-  await bookService.update(request, req.params.id);
+  const userService = Container.get(UserService);
+
+  await userService.update(request, req.params.id);
 
   return res.json(
     new ResponseBuilder()
       .withSuccess()
-      .withMessage("update product success.")
+      .withMessage("update user success")
       .build()
   );
 });
 
 router.get(url.detail, verifyToken, async (req, res) => {
-  if (!req.params.id) {
-    throw ApiError(StatusCodes.BAD_REQUEST, "id param empty");
-  }
 
-  const bookService = Container.get(BookService);
+  const userService = Container.get(UserService);
 
-  const book = await bookService.detail(req.params.id)
+  const user = await userService.detail(req.params.id)
 
   return res.json(
-    new ResponseBuilder<BooksEntity>(book)
+    new ResponseBuilder<UserEntity>(user)
       .withSuccess()
       .build()
   );
 });
 
 router.delete(url.delete, verifyToken, async (req, res) => {
-  if (!req.params.id) {
-    throw ApiError(StatusCodes.BAD_REQUEST, "id param empty");
-  }
 
-  const bookService = Container.get(BookService);
+  const userService = Container.get(UserService);
 
-  const result = await bookService.delete(req.params.id)
+  const result = await userService.delete(req.params.id)
 
   return res.json(
     new ResponseBuilder<any>(result)
