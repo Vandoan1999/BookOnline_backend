@@ -49,7 +49,7 @@ export const get = () => {
 
 export const start = () => {
   const app = get();
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT;
   try {
     app.listen(port, () => {
       logger.info(`Server running on http://localhost:${port}`);

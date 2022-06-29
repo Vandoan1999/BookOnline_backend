@@ -1,33 +1,35 @@
 import { request } from "./helpers";
 import { faker } from "@faker-js/faker";
 import { AppDataSource } from "../src/config/db";
+import { get } from "../src/index";
 describe("start", () => {
   let accessToken = "";
   let list_user: any[] = [];
 
   beforeAll(async () => {
-    process.env.NODE_ENV = "test";
     return await AppDataSource.initialize();
   });
 
-  // for (let i = 0; i < 25; i++) {
-  //   test("register users", async () => {
-  //     const fake_data = {
-  //       username: faker.name.findName(),
-  //       email: faker.internet.email(),
-  //       password: "12345678",
-  //       role: "user",
-  //       sex: Math.random() > 0.5 ? 1 : 0,
-  //       image: faker.image.avatar(),
-  //       address: faker.address.city(),
-  //       phone: faker.phone.number("+84 01 ### ## ##"),
-  //       bank: faker.finance.routingNumber(),
-  //     };
+  afterAll(async () => {});
 
-  //     const { body: data } = await request.post(`/api/auth/register`).send(fake_data);
-  //     expect(data.type).toBe("success");
-  //   });
-  // }
+  for (let i = 0; i < 25; i++) {
+    test("register users", async () => {
+      const fake_data = {
+        username: faker.name.findName(),
+        email: faker.internet.email(),
+        password: "12345678",
+        role: "user",
+        sex: Math.random() > 0.5 ? 1 : 0,
+        image: faker.image.avatar(),
+        address: faker.address.city(),
+        phone: faker.phone.number("+84 01 ### ## ##"),
+        bank: faker.finance.routingNumber(),
+      };
+
+      const { body: data } = await request.post(`/api/auth/register`).send(fake_data);
+      expect(data.type).toBe("success");
+    });
+  }
 
   test("login admin", async () => {
     const { body: data } = await request.post(`/api/auth/login`).send({
@@ -67,7 +69,7 @@ describe("start", () => {
   });
 
   test("delete user", async () => {
-    const { body: data } = await request.delete(`/api/users/${list_user[0].id}`).set("Authorization", `Bear ${accessToken}`);
+    const { body: data } = await request.delete(`/api/users/${list_user[1].id}`).set("Authorization", `Bear ${accessToken}`);
     expect(data.type).toBe("success");
   });
 });

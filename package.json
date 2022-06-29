@@ -6,7 +6,7 @@
     "lint": "eslint . --ext .ts",
     "start": "node -r module-alias/register ./dist --env=production",
     "start:dev": "nodemon",
-    "test": "jest"
+    "test": "jest --forceExit"
   },
   "nodemonConfig": {
     "watch": [
