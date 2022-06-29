@@ -5,7 +5,7 @@ import { UserInfo } from "@models/user/UserInfo";
 import { BookRepository } from "@repos/book.repository";
 import { CategoryRepository } from "@repos/category.repository";
 import { StatusCodes } from "http-status-codes";
-import { ApiError } from "src/ultis/apiError";
+import { ApiError } from "../ultis/apiError";
 import { Service } from "typedi";
 
 require("dotenv").config();
@@ -41,6 +41,21 @@ export class CategoryService {
   }
 
   async detail(id: string) {
+    const category = await CategoryRepository.findOne({
+      where: { id },
+      relations: {
+        books: true,
+      },
+    });
+
+    if (!category) {
+      throw ApiError(StatusCodes.NOT_FOUND);
+    }
+
+    return category;
+  }
+
+  async update(id: string) {
     const category = await CategoryRepository.findOne({
       where: { id },
       relations: {

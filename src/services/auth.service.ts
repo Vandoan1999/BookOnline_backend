@@ -5,7 +5,7 @@ import { AuthRepository } from "@repos/auth.repository";
 import { Service } from "typedi";
 import { StatusCodes } from "http-status-codes";
 import { hashSync, compareSync } from "bcryptjs";
-import { ApiError } from "src/ultis/apiError";
+import { ApiError } from "../ultis/apiError";
 import jwt from "jsonwebtoken";
 require("dotenv").config();
 @Service()
@@ -16,7 +16,6 @@ export class AuthService {
     if (!user || !compareSync(request.password, user.password)) {
       throw ApiError(StatusCodes.NOT_FOUND, "Username or password not correct !");
     }
-
     const token = jwt.sign(
       {
         id: user.id,

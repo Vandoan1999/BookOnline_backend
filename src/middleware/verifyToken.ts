@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 import logger from "jet-logger";
-import { ApiError } from "src/ultis/apiError";
+import { ApiError } from "../ultis/apiError";
 import { StatusCodes } from "http-status-codes";
-import { ResponseBuilder } from "src/ultis/response-builder";
+import { ResponseBuilder } from "../ultis/response-builder";
 import Container from "typedi";
 import { UserService } from "@services/user.service";
 require("dotenv").config();

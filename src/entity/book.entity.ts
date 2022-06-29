@@ -4,7 +4,7 @@ import { CategoryEntity } from "./category.entity";
 import { ImageEntity } from "./image.entity";
 import { OrderDetail as OrderDetailEntity } from "./order-detail.entity";
 import { RatingEntity } from "./rating.entity";
-import { SuppliersEnity } from "./suppliers.entity";
+import { SupplierEnity } from "./suppliers.entity";
 
 @Entity("books")
 export class BookEntity {
@@ -53,9 +53,12 @@ export class BookEntity {
   @UpdateDateColumn({ type: "timestamptz" })
   updated_at: Date;
 
-  @OneToOne(() => SuppliersEnity)
+  @OneToOne(() => SupplierEnity, {
+    onDelete: "SET NULL",
+    nullable: true,
+  })
   @JoinColumn()
-  public suppplier!: SuppliersEnity;
+  suppplier: SupplierEnity;
 
   @OneToMany(() => CommentEntity, (comment) => comment.book, {
     onDelete: "CASCADE",

@@ -1,14 +1,14 @@
 import { CreateBookRequest } from "@models/book/create-book.request";
 import { BookService } from "@services/book.service";
 import { Router } from "express";
-import { ResponseBuilder } from "src/ultis/response-builder";
-import { transformAndValidate } from "src/ultis/transformAndValidate";
+import { ResponseBuilder } from "../ultis/response-builder";
+import { transformAndValidate } from "../ultis/transformAndValidate";
 import Container from "typedi";
 import { verifyToken } from "@middleware/verifyToken";
 import { ListBookRequest } from "@models/book/list-book.request";
 import { BookEntity } from "@entity/book.entity";
 import { UpdateBookRequest } from "@models/book/update-book.request";
-import { ApiError } from "src/ultis/apiError";
+import { ApiError } from "../ultis/apiError";
 import { StatusCodes } from "http-status-codes";
 const router = Router();
 

@@ -5,7 +5,7 @@ import { UpdateBookRequest } from "@models/book/update-book.request";
 import { BookRepository } from "@repos/book.repository";
 import { plainToClass } from "class-transformer";
 import { StatusCodes } from "http-status-codes";
-import { ApiError } from "src/ultis/apiError";
+import { ApiError } from "../ultis/apiError";
 import { Service } from "typedi";
 import { ImageRepository } from "@repos/image.repository";
 import { ImageEntity } from "@entity/image.entity";

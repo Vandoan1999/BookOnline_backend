@@ -1,6 +1,5 @@
 import { Router } from "express";
-import { ResponseBuilder } from "src/ultis/response-builder";
-import { Container } from "typedi";
+import { ResponseBuilder } from "../ultis/response-builder";
 const router = Router();
 
 const url = {

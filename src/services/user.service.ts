@@ -4,7 +4,7 @@ import { UpdateUserRequest } from "@models/user/update-user.request";
 import { UserInfo } from "@models/user/UserInfo";
 import { UserRepository } from "@repos/user.repository";
 import { StatusCodes } from "http-status-codes";
-import { ApiError } from "src/ultis/apiError";
+import { ApiError } from "../ultis/apiError";
 
 import { Service } from "typedi";
 

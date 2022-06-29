@@ -1,16 +1,16 @@
 import { Pagination } from "@models/Pagination";
-import { SortEnum } from "@models/sort";
+import { Sort } from "@models/sort";
 import { Allow, IsEnum, IsOptional } from "class-validator";
 import { OrderByEnum } from "./orderBy.enum";
 export class ListUserRequest extends Pagination {
-    @Allow()
-    search: string;
+  @Allow()
+  search: string;
 
-    @IsOptional()
-    @IsEnum(SortEnum)
-    order: SortEnum;
+  @IsOptional()
+  @IsEnum(Sort)
+  order: Sort;
 
-    @IsOptional()
-    @IsEnum(OrderByEnum)
-    orderBy: OrderByEnum;
+  @IsOptional()
+  @IsEnum(OrderByEnum)
+  orderBy: OrderByEnum;
 }

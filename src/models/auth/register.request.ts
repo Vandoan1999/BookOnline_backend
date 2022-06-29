@@ -3,9 +3,6 @@ import { Role } from "@enums/role.enum";
 import { Allow, IsEmail, IsEnum, IsNotEmpty } from "class-validator";
 export class RegisterRequest {
   @IsNotEmpty()
-  name: string;
-
-  @IsNotEmpty()
   username: string;
 
   @IsEmail()

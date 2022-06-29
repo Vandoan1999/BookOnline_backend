@@ -1,8 +1,8 @@
 import { CreateCategoryRequest } from "@models/category/create-category.request";
 import { CategoryService } from "@services/category.service";
 import { Router } from "express";
-import { ResponseBuilder } from "src/ultis/response-builder";
-import { transformAndValidate } from "src/ultis/transformAndValidate";
+import { ResponseBuilder } from "../ultis/response-builder";
+import { transformAndValidate } from "../ultis/transformAndValidate";
 import { Container } from "typedi";
 import { verifyToken } from "@middleware/verifyToken";
 import { CategoryEntity } from "@entity/category.entity";
@@ -13,6 +13,7 @@ const url = {
   get: "/",
   detail: "/:id",
   create: "/",
+  update: "/",
 };
 
 router.get(url.get, verifyToken, async (req, res) => {
@@ -34,7 +35,7 @@ router.post(url.create, verifyToken, async (req, res) => {
   res.json(new ResponseBuilder<object>().withSuccess().build());
 });
 
-router.put(url.create, verifyToken, async (req, res) => {
+router.put(url.update, verifyToken, async (req, res) => {
   const request = await transformAndValidate<CreateCategoryRequest>(CreateCategoryRequest, req.body);
   const categoryService = Container.get(CategoryService);
   await categoryService.create(request, req["user"]);
