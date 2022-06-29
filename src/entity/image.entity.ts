@@ -1,11 +1,5 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  JoinColumn,
-  ManyToOne,
-} from "typeorm";
-import { BooksEntity } from "./book.entity";
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from "typeorm";
+import { BookEntity } from "./book.entity";
 
 @Entity("book_images")
 export class ImageEntity {
@@ -18,10 +12,10 @@ export class ImageEntity {
   @Column({ nullable: true })
   order: number;
 
-  @ManyToOne((type) => BooksEntity, (book) => book.images, {
+  @ManyToOne((type) => BookEntity, (book) => book.images, {
     onDelete: "CASCADE",
-    nullable: true
+    nullable: true,
   })
   @JoinColumn({ name: "book_id" })
-  public book_id?: BooksEntity;
+  public book_id?: BookEntity;
 }

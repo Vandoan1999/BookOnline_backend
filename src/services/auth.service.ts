@@ -1,24 +1,24 @@
-import { UserRole } from "@enums/role.enum";
+import { Role } from "@enums/role.enum";
 import { LoginRequest } from "@models/auth/login.request";
 import { RegisterRequest } from "@models/auth/register.request";
 import { AuthRepository } from "@repos/auth.repository";
 import { Service } from "typedi";
 import { StatusCodes } from "http-status-codes";
 import { hashSync, compareSync } from "bcryptjs";
-import { ApiError } from "src/ultis/apiError";
+import { ApiError } from "../ultis/apiError";
 import jwt from "jsonwebtoken";
 require("dotenv").config();
 @Service()
 export class AuthService {
-  constructor() { }
+  constructor() {}
   async login(request: LoginRequest) {
     const user = await AuthRepository.getUserByName(request.username);
     if (!user || !compareSync(request.password, user.password)) {
       throw ApiError(StatusCodes.NOT_FOUND, "Username or password not correct !");
     }
-
     const token = jwt.sign(
       {
+        id: user.id,
         namename: user.username,
         role: user.role,
         email: user.email,
@@ -31,7 +31,7 @@ export class AuthService {
 
   register(request: RegisterRequest) {
     const user = Object.assign(AuthRepository.create(), request);
-    if (user.role === UserRole.ADMIN) {
+    if (user.role === Role.ADMIN) {
       throw ApiError(StatusCodes.FORBIDDEN, "You cannot create user admin !");
     }
     user.password = hashSync(user.password, 10);

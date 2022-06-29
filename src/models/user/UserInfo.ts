@@ -1,32 +1,14 @@
 import { Allow } from "class-validator";
 export class UserInfo {
   @Allow()
-  discounted: number;
+  id: string;
 
   @Allow()
-  price_import: number;
+  username: string;
 
   @Allow()
-  price_export: number;
+  role: string;
 
   @Allow()
-  sold: number;
-
-  @Allow()
-  views: number;
-
-  @Allow()
-  published_date: Date;
-
-  @Allow()
-  quantity: number;
-
-  @Allow()
-  publisher: string;
-
-  @Allow()
-  author: string;
-
-  @Allow()
-  description: string;
+  email: string;
 }

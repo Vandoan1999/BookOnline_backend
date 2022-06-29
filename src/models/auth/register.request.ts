@@ -1,10 +1,7 @@
 import { Gender } from "@enums/gender.enum";
-import { UserRole } from "@enums/role.enum";
+import { Role } from "@enums/role.enum";
 import { Allow, IsEmail, IsEnum, IsNotEmpty } from "class-validator";
 export class RegisterRequest {
-  @IsNotEmpty()
-  name: string;
-
   @IsNotEmpty()
   username: string;
 
@@ -15,7 +12,7 @@ export class RegisterRequest {
   password: string;
 
   @IsNotEmpty()
-  role: UserRole;
+  role: Role;
 
   @IsEnum(Gender)
   sex: Gender;

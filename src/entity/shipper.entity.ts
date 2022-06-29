@@ -6,7 +6,7 @@ export class ShipperEntity {
   id: string;
 
   @Column({ nullable: true })
-  company_name: string;
+  company: string;
 
   @Column({ nullable: true })
   phone: string;

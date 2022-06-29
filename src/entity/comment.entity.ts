@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { BooksEntity } from "./book.entity";
+import { BookEntity } from "./book.entity";
 import { UserEntity } from "./user.entity";
 
 @Entity("comments")
@@ -25,6 +25,6 @@ export class CommentEntity {
   @ManyToOne(() => UserEntity, (user) => user.comments)
   user: UserEntity;
 
-  @ManyToOne(() => BooksEntity, (book) => book.comments)
-  book: BooksEntity;
+  @ManyToOne(() => BookEntity, (book) => book.comments)
+  book: BookEntity;
 }

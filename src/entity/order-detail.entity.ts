@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from "typeorm";
-import { BooksEntity as BookEntity } from "./book.entity";
+import { BookEntity as BookEntity } from "./book.entity";
 import { OrdersEntity as OrderEntity } from "./Order.entity";
 
 @Entity("order_detail")

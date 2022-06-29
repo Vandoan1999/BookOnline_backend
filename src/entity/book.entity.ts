@@ -1,13 +1,13 @@
 import { Entity, Column, OneToOne, JoinColumn, JoinTable, ManyToMany, OneToMany, CreateDateColumn, UpdateDateColumn, PrimaryColumn } from "typeorm";
 import { CommentEntity } from "./comment.entity";
-import { GenresEntity } from "./genres.entity";
+import { CategoryEntity } from "./category.entity";
 import { ImageEntity } from "./image.entity";
 import { OrderDetail as OrderDetailEntity } from "./order-detail.entity";
 import { RatingEntity } from "./rating.entity";
-import { SuppliersEnity } from "./suppliers.entity";
+import { SupplierEnity } from "./suppliers.entity";
 
 @Entity("books")
-export class BooksEntity {
+export class BookEntity {
   @PrimaryColumn()
   id: string;
 
@@ -53,26 +53,37 @@ export class BooksEntity {
   @UpdateDateColumn({ type: "timestamptz" })
   updated_at: Date;
 
-  @OneToOne(() => SuppliersEnity)
+  @OneToOne(() => SupplierEnity, {
+    onDelete: "SET NULL",
+    nullable: true,
+  })
   @JoinColumn()
-  public suppplier!: SuppliersEnity;
+  suppplier: SupplierEnity;
 
-  @ManyToMany(() => GenresEntity)
-  @JoinTable()
-  genres: GenresEntity[];
-
-  @OneToMany(() => CommentEntity, (comment) => comment.book)
+  @OneToMany(() => CommentEntity, (comment) => comment.book, {
+    onDelete: "CASCADE",
+  })
   @JoinTable()
   comments: CommentEntity[];
 
-  @OneToMany(() => OrderDetailEntity, (order) => order.book)
+  @OneToMany(() => OrderDetailEntity, (order) => order.book, {
+    onDelete: "CASCADE",
+  })
   order_detail: OrderDetailEntity[];
 
-  @OneToMany(() => RatingEntity, (rating) => rating.book_id)
-  ratings: []
+  @OneToMany(() => RatingEntity, (rating) => rating.book_id, {
+    onDelete: "CASCADE",
+  })
+  ratings: [];
 
-  @OneToMany(() => ImageEntity, (rating) => rating.book_id)
-  images: []
+  @OneToMany(() => ImageEntity, (rating) => rating.book_id, {
+    onDelete: "CASCADE",
+  })
+  images: [];
 
-  public rating_number: number
+  @ManyToMany(() => CategoryEntity, (category) => category.books, {
+    onDelete: "CASCADE",
+  })
+  @JoinTable()
+  categories: CategoryEntity[];
 }

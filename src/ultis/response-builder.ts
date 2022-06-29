@@ -1,5 +1,19 @@
-import { ResponseTypeEnum } from "@enums/response-type.enum";
-import { ResponsePayload } from "@models/response-payload";
+import { StatusCodes } from "http-status-codes";
+
+export enum ResponseTypeEnum {
+  ERROR = `error`,
+  SUCCESS = `success`,
+}
+
+export interface ResponsePayload<T> {
+  type: ResponseTypeEnum;
+  code?: StatusCodes;
+  message?: string;
+  error?: any;
+  data?: T;
+  meta?: unknown;
+  __debug__?: unknown;
+}
 
 export class ResponseBuilder<T> {
   private payload: ResponsePayload<T> = {
@@ -23,7 +37,7 @@ export class ResponseBuilder<T> {
 
   withError(err: any = null) {
     this.payload.type = ResponseTypeEnum.ERROR;
-    this.payload.error = err
+    this.payload.error = err;
     return this;
   }
 
