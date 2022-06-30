@@ -25,11 +25,12 @@ export const SupplierRepository = AppDataSource.getRepository(SupplierEnity).ext
 
     if (request.orderBy == OrderBy.address) {
       query.orderBy("supplier.address", request.order);
+    } else if (request.orderBy == OrderBy.company) {
+      query.orderBy("supplier.company", request.order);
+    } else {
+      query.orderBy("supplier.company", "ASC");
     }
 
-    if (request.orderBy == OrderBy.company) {
-      query.orderBy("supplier.company", request.order);
-    }
     return query.take(take).skip(skip).getManyAndCount();
   },
 });

@@ -1,12 +1,9 @@
-import { Allow, IsArray, IsNotEmpty, IsOptional } from "class-validator";
+import { Allow, IsArray, IsOptional } from "class-validator";
 export class CreateBookRequest {
-  @IsNotEmpty()
-  id: string;
-
-  @IsNotEmpty()
+  @Allow()
   name: string;
 
-  @IsNotEmpty()
+  @Allow()
   avatar: string;
 
   @Allow()
@@ -41,5 +38,11 @@ export class CreateBookRequest {
 
   @IsOptional()
   @IsArray()
-  images: string[]
+  images_url: string[];
+
+  @IsOptional()
+  supplier_id: string;
+
+  @IsOptional()
+  category_id: string[];
 }

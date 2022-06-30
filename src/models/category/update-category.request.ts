@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsOptional } from "class-validator";
-export class CreateCategoryRequest {
+export class UpdateCategoryRequest {
   @IsNotEmpty()
   id: string;
 
@@ -8,7 +8,4 @@ export class CreateCategoryRequest {
 
   @IsOptional()
   image: string;
-
-  @IsOptional()
-  books: string[];
 }

@@ -44,7 +44,7 @@ router.put(url.update, verifyToken, async (req, res) => {
 
   const bookService = Container.get(BookService);
 
-  await bookService.update(request, req.params.id);
+  await bookService.update(request);
 
   return res.json(new ResponseBuilder().withSuccess().withMessage("update product success.").build());
 });

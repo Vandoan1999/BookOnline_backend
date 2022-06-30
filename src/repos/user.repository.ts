@@ -20,6 +20,8 @@ export const UserRepository = AppDataSource.getRepository(UserEntity).extend({
       query.orderBy("user.email", request.order);
     } else if (request.orderBy === OrderByEnum.username) {
       query.orderBy("user.username", request.order);
+    } else {
+      query.orderBy("user.email", "ASC");
     }
 
     return query.take(take).skip(skip).getManyAndCount();

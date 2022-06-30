@@ -7,6 +7,7 @@ import { CategoryRepository } from "@repos/category.repository";
 import { StatusCodes } from "http-status-codes";
 import { ApiError } from "../ultis/apiError";
 import { Service } from "typedi";
+import { UpdateCategoryRequest } from "@models/category/update-category.request";
 
 require("dotenv").config();
 @Service()
@@ -14,29 +15,16 @@ export class CategoryService {
   constructor() {}
 
   getList() {
-    return CategoryRepository.findAndCount();
+    return CategoryRepository.findAndCount({
+      order: { name: "ASC" },
+    });
   }
 
   async create(request: CreateCategoryRequest, user: UserInfo) {
     if (user.role === Role.USER) {
       throw ApiError(StatusCodes.FORBIDDEN);
     }
-
-    const books: BookEntity[] = [];
-
-    for (const item of request.books) {
-      const book = await BookRepository.findOne({ where: { id: item } });
-      if (book) books.push(book);
-    }
-    request.books;
-    if (books.length <= 0) {
-      throw ApiError(StatusCodes.BAD_REQUEST);
-    }
-    const category = CategoryRepository.create();
-    category.name = request.name;
-    category.image = request.image;
-    category.books = books;
-
+    const category = CategoryRepository.create(request);
     return CategoryRepository.save(category);
   }
 
@@ -55,18 +43,35 @@ export class CategoryService {
     return category;
   }
 
-  async update(id: string) {
+  async update(request: UpdateCategoryRequest, user: UserInfo) {
+    if (user.role === Role.USER) {
+      throw ApiError(StatusCodes.FORBIDDEN);
+    }
+    const category = await CategoryRepository.findOne({
+      where: { id: request.id },
+    });
+
+    if (!category) {
+      throw ApiError(StatusCodes.NOT_FOUND);
+    }
+    category.name = request.name;
+    category.image = request.image;
+
+    return CategoryRepository.update({ id: request.id }, category);
+  }
+
+  async delete(id: string, user: UserInfo) {
+    if (user.role === Role.USER) {
+      throw ApiError(StatusCodes.FORBIDDEN);
+    }
     const category = await CategoryRepository.findOne({
       where: { id },
-      relations: {
-        books: true,
-      },
     });
 
     if (!category) {
       throw ApiError(StatusCodes.NOT_FOUND);
     }
 
-    return category;
+    return CategoryRepository.delete({ id });
   }
 }

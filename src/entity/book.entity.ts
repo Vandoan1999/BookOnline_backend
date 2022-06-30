@@ -1,4 +1,4 @@
-import { Entity, Column, OneToOne, JoinColumn, JoinTable, ManyToMany, OneToMany, CreateDateColumn, UpdateDateColumn, PrimaryColumn } from "typeorm";
+import { Entity, Column, OneToOne, JoinColumn, JoinTable, ManyToMany, OneToMany, CreateDateColumn, UpdateDateColumn, PrimaryColumn, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 import { CommentEntity } from "./comment.entity";
 import { CategoryEntity } from "./category.entity";
 import { ImageEntity } from "./image.entity";
@@ -8,7 +8,7 @@ import { SupplierEnity } from "./suppliers.entity";
 
 @Entity("books")
 export class BookEntity {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column({ unique: true })
@@ -53,12 +53,12 @@ export class BookEntity {
   @UpdateDateColumn({ type: "timestamptz" })
   updated_at: Date;
 
-  @OneToOne(() => SupplierEnity, {
+  @ManyToOne(() => SupplierEnity, (sp) => sp.phone, {
     onDelete: "SET NULL",
     nullable: true,
   })
   @JoinColumn()
-  suppplier: SupplierEnity;
+  supplier: SupplierEnity;
 
   @OneToMany(() => CommentEntity, (comment) => comment.book, {
     onDelete: "CASCADE",
@@ -73,16 +73,19 @@ export class BookEntity {
 
   @OneToMany(() => RatingEntity, (rating) => rating.book_id, {
     onDelete: "CASCADE",
+    nullable: true,
   })
   ratings: [];
 
   @OneToMany(() => ImageEntity, (rating) => rating.book_id, {
     onDelete: "CASCADE",
+    nullable: true,
   })
-  images: [];
+  images: ImageEntity[];
 
   @ManyToMany(() => CategoryEntity, (category) => category.books, {
     onDelete: "CASCADE",
+    nullable: true,
   })
   @JoinTable()
   categories: CategoryEntity[];

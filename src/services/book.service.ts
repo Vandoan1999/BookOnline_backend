@@ -8,24 +8,46 @@ import { StatusCodes } from "http-status-codes";
 import { ApiError } from "../ultis/apiError";
 import { Service } from "typedi";
 import { ImageRepository } from "@repos/image.repository";
-import { ImageEntity } from "@entity/image.entity";
+import { SupplierRepository } from "@repos/supplier.repository";
+import { CategoryRepository } from "@repos/category.repository";
 @Service()
 export class BookService {
   constructor() {}
   async create(request: CreateBookRequest) {
-    const book = Object.assign(BookRepository.create(), request);
-    const bookSaved = await BookRepository.save(book);
-    const images = request.images;
+    const book = BookRepository.create(request);
 
-    const imageTobeinsert: ImageEntity[] = images.map((item) => {
-      return {
-        url: item,
-        order: Math.floor(Math.random() * images.length),
-        book_id: bookSaved,
-      };
-    });
-    ImageRepository.insert(imageTobeinsert);
-    return BookRepository.save(book);
+    if (request.supplier_id) {
+      const supplier = await SupplierRepository.findOne({
+        where: {
+          id: request.supplier_id,
+        },
+      });
+      if (!supplier) throw ApiError(StatusCodes.BAD_REQUEST);
+      book.supplier = supplier;
+    }
+
+    if (request.category_id && request.category_id.length > 0) {
+      const categories: any[] = [];
+      for (let i = 0; i < request.category_id.length; i++) {
+        const data = await CategoryRepository.findOne({ where: { id: request.category_id[i] } });
+        if (data) {
+          categories.push(data);
+        }
+      }
+
+      book.categories = categories;
+    }
+    const bookSaved = await BookRepository.save(book);
+
+    if (bookSaved && request.images_url && request.images_url.length > 0) {
+      for (let i = 0; i < request.images_url.length; i++) {
+        await ImageRepository.insert({
+          url: request.images_url[i],
+          order: i,
+          book_id: bookSaved,
+        });
+      }
+    }
   }
 
   async getList(request: ListBookRequest) {
@@ -41,36 +63,10 @@ export class BookService {
     };
   }
 
-  update(request: UpdateBookRequest, id: string) {
-    let images: {
-      id: string;
-      url: string;
-    }[] = [];
-    if (request.images && request.images.length > 0) {
-      images = request.images;
-      delete request.images;
-    }
-    const book = plainToClass(BookEntity, request);
-
-    if (images.length > 0) {
-      images.forEach(async (item) => {
-        await ImageRepository.update(
-          {
-            id: item.id,
-          },
-          {
-            url: item.url,
-          }
-        );
-      });
-    }
-
-    return BookRepository.update(
-      {
-        id,
-      },
-      book
-    );
+  async update(request: UpdateBookRequest) {
+    const book = BookRepository.findOne({
+      where: { id: request.id },
+    });
   }
 
   async detail(id: string) {

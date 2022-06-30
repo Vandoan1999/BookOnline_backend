@@ -30,12 +30,22 @@ export class SupplierService {
   }
 
   async delete(id: string) {
+    const supplier = await SupplierRepository.findOne({
+      where: { id },
+    });
+
+    if (!supplier) throw ApiError(StatusCodes.NOT_FOUND, `suppier with id: ${id} not found !`);
+
+    return SupplierRepository.delete({ id });
+  }
+
+  async detail(id: string) {
     const supplier = await SupplierRepository.findOneBy({
       id,
     });
 
     if (!supplier) throw ApiError(StatusCodes.NOT_FOUND, `suppier with id: ${id} not found !`);
 
-    return SupplierRepository.delete(supplier);
+    return supplier;
   }
 }
