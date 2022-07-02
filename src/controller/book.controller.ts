@@ -22,31 +22,55 @@ const url = {
 
 //get list book
 router.get(url.get, verifyToken, async (req, res) => {
-  const request = await transformAndValidate<ListBookRequest>(ListBookRequest, req.query);
+  const request = await transformAndValidate<ListBookRequest>(
+    ListBookRequest,
+    req.query
+  );
   const bookService = Container.get(BookService);
   const { data, total } = await bookService.getList(request);
-  return res.json(new ResponseBuilder<BookEntity[]>(data).withMeta({ total }).withSuccess().build());
+  return res.json(
+    new ResponseBuilder<BookEntity[]>(data)
+      .withMeta({ total })
+      .withSuccess()
+      .build()
+  );
 });
 
 //add new book
 router.post(url.add, verifyToken, async (req, res) => {
-  const request = await transformAndValidate<CreateBookRequest>(CreateBookRequest, req.body);
+  const request = await transformAndValidate<CreateBookRequest>(
+    CreateBookRequest,
+    req.body
+  );
   const bookService = Container.get(BookService);
 
   await bookService.create(request);
 
-  return res.json(new ResponseBuilder().withSuccess().withMessage("create product success.").build());
+  return res.json(
+    new ResponseBuilder()
+      .withSuccess()
+      .withMessage("create product success.")
+      .build()
+  );
 });
 
 //update book
 router.put(url.update, verifyToken, async (req, res) => {
-  const request = await transformAndValidate<UpdateBookRequest>(UpdateBookRequest, req.body);
+  const request = await transformAndValidate<UpdateBookRequest>(
+    UpdateBookRequest,
+    req.body
+  );
 
   const bookService = Container.get(BookService);
 
   await bookService.update(request);
 
-  return res.json(new ResponseBuilder().withSuccess().withMessage("update product success.").build());
+  return res.json(
+    new ResponseBuilder()
+      .withSuccess()
+      .withMessage("update product success.")
+      .build()
+  );
 });
 
 //get detail book

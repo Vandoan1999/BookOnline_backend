@@ -1,63 +1,79 @@
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { ImageEntity } from "@entity/image.entity";
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from "class-validator";
 export class UpdateBookRequest {
   @IsNotEmpty()
   id: string;
 
   @IsOptional()
   @IsString()
-  name: string;
-
-  @IsOptional()
-  @IsNumber()
-  discounted: number;
-
-  @IsOptional()
-  @IsNumber()
-  price_import: number;
-
-  @IsOptional()
-  @IsNumber()
-  price_export: number;
-
-  @IsOptional()
-  @IsNumber()
-  sold: number;
-
-  @IsOptional()
-  @IsNumber()
-  views: number;
+  name?: string;
 
   @IsOptional()
   @IsString()
-  published_date: Date;
+  avatar?: string;
 
   @IsOptional()
   @IsNumber()
-  quantity: number;
+  discounted?: number;
+
+  @IsOptional()
+  @IsNumber()
+  price_import?: number;
+
+  @IsOptional()
+  @IsNumber()
+  price_export?: number;
+
+  @IsOptional()
+  @IsNumber()
+  sold?: number;
+
+  @IsOptional()
+  @IsNumber()
+  views?: number;
 
   @IsOptional()
   @IsString()
-  publisher: string;
+  published_date?: Date;
+
+  @IsOptional()
+  @IsNumber()
+  quantity?: number;
 
   @IsOptional()
   @IsString()
-  author: string;
+  publisher?: string;
 
   @IsOptional()
   @IsString()
-  description: string;
+  author?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
 
   @IsOptional()
   @IsArray()
-  images_url: {
-    id: string;
-    url: string;
-    delete?: boolean;
-  }[];
+  image_delete?: string[];
 
   @IsOptional()
-  supplier_id: string;
+  @IsArray()
+  image_update?: ImageEntity[];
 
   @IsOptional()
-  category_id: string[];
+  supplier_update?: string;
+
+  @IsOptional()
+  @IsArray()
+  category_delete?: string[];
+
+  @IsOptional()
+  @IsArray()
+  category_update?: string[];
 }

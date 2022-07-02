@@ -9,7 +9,6 @@ import "express-async-errors";
 import logger from "jet-logger";
 import { ResponseBuilder } from "./ultis/response-builder";
 import baseRouter from "@controller/api";
-import { AppDataSource } from "@config/db";
 
 export const get = () => {
   const app = express();
@@ -31,14 +30,24 @@ export const get = () => {
 
   // Add api router
   app.use("/api", baseRouter);
-  app.get("/", (req, res) => {
-    return res.json({ status: 500 });
+  app.use("/demo", (req, res) => {
+    res.json({
+      status: 200,
+      message: "server running success!",
+    });
   });
 
   // Error handling
   app.use((err: any, _: Request, res: Response, __: NextFunction) => {
     logger.err(err, true);
-    return res.status(StatusCodes.BAD_REQUEST).json(new ResponseBuilder().withMessage(err.message).withError(err.error).build());
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json(
+        new ResponseBuilder()
+          .withMessage(err.message)
+          .withError(err.error)
+          .build()
+      );
   });
   return app;
 };

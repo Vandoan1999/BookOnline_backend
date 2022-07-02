@@ -14,12 +14,17 @@ export const BookRepository = AppDataSource.getRepository(BookEntity).extend({
     query.leftJoinAndSelect("book.images", "image");
     query.leftJoinAndSelect("book.supplier", "supplier");
     query.leftJoinAndSelect("book.categories", "categories");
-    query.addSelect(`(select avg(r.rating_number)from rating r  where r."bookIdId" = book.id)`, "rating_number");
+    query.addSelect(
+      `(select avg(r.rating_number)from rating r  where r."bookIdId" = book.id)`,
+      "rating_number"
+    );
     if (request.search) {
       query.where("book.name LIKE :name", { name: `%${request.search}%` });
     }
     if (request.author) {
-      query.where("book.author LIKE :author", { author: `%${request.author}%` });
+      query.where("book.author LIKE :author", {
+        author: `%${request.author}%`,
+      });
     }
 
     if (request.orderBy === OrderByEnum.price) {
@@ -37,8 +42,13 @@ export const BookRepository = AppDataSource.getRepository(BookEntity).extend({
 
   findById(id: string) {
     return this.createQueryBuilder("book")
-      .leftJoinAndSelect("book.images", "images")
-      .addSelect(`(select avg(r.rating_number)from rating r  where r."bookIdId" = book.id)`, "rating_number")
+      .leftJoinAndSelect("book.images", "image")
+      .leftJoinAndSelect("book.supplier", "supplier")
+      .leftJoinAndSelect("book.categories", "categories")
+      .addSelect(
+        `(select avg(r.rating_number)from rating r  where r."bookIdId" = book.id)`,
+        "rating_number"
+      )
       .where("book.id = :id", { id })
       .getRawAndEntities();
   },
