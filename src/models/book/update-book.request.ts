@@ -49,8 +49,15 @@ export class UpdateBookRequest {
 
   @IsOptional()
   @IsArray()
-  images?: {
+  images_url: {
     id: string;
     url: string;
+    delete?: boolean;
   }[];
+
+  @IsOptional()
+  supplier_id: string;
+
+  @IsOptional()
+  category_id: string[];
 }

@@ -23,5 +23,8 @@ export class TestingService {
 
     await AppDataSource.query(`DELETE FROM ${config.TablePostgres.categories}`);
     logger.info(`clear data ${config.TablePostgres.categories} done !`);
+
+    await AppDataSource.query(`DELETE FROM ${config.TablePostgres.suppliers}`);
+    logger.info(`clear data ${config.TablePostgres.suppliers} done !`);
   }
 }

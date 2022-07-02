@@ -5,7 +5,4 @@ export class CreateCategoryRequest {
 
   @IsNotEmpty()
   image: string;
-
-  @IsOptional()
-  books: string[];
 }

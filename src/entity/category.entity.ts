@@ -20,7 +20,7 @@ export class CategoryEntity {
   updated_at: Date;
 
   @ManyToMany(() => BookEntity, (book) => book.categories, {
-    onDelete: "CASCADE",
+    onDelete: "SET NULL",
     nullable: true,
   })
   books: BookEntity[];

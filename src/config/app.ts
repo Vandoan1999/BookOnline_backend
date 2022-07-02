@@ -9,5 +9,6 @@ export const config = {
     ratings: "rating",
     book_images: "book_images",
     categories: "categories",
+    suppliers: "suppliers",
   },
 };

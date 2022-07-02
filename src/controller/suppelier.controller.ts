@@ -49,4 +49,11 @@ router.delete(url.delete, verifyToken, async (req, res) => {
   return res.json(new ResponseBuilder<any>(data).withSuccess().build());
 });
 
+router.get(url.detail, verifyToken, async (req, res) => {
+  if (!req.params.id) throw ApiError(StatusCodes.BAD_REQUEST);
+  const supplierService = Container.get(SupplierService);
+  const data = await supplierService.detail(req.params.id);
+  return res.json(new ResponseBuilder<any>(data).withSuccess().build());
+});
+
 export default router;
