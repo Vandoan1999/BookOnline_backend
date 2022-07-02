@@ -29,7 +29,7 @@ const get = () => {
     }
     // Add api router
     app.use("/api", api_1.default);
-    app.use("/demo", (req, res) => {
+    app.get("/demo", (req, res) => {
         res.json({
             status: 200,
             message: "server running success!",

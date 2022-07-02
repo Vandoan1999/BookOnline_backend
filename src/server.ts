@@ -30,7 +30,7 @@ export const get = () => {
 
   // Add api router
   app.use("/api", baseRouter);
-  app.use("/demo", (req, res) => {
+  app.get("/demo", (req, res) => {
     res.json({
       status: 200,
       message: "server running success!",
