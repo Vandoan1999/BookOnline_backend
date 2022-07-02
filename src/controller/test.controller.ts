@@ -6,12 +6,18 @@ const router = Router();
 
 const url = {
   test: "/",
+  migration: "/migration",
 };
 
 router.get(url.test, async (req, res) => {
   const testingService = Container.get(TestingService);
   await testingService.clear();
-  res.json(new ResponseBuilder<any>().withSuccess().withMessage("clear data success").build());
+  res.json(
+    new ResponseBuilder<any>()
+      .withSuccess()
+      .withMessage("clear data success")
+      .build()
+  );
 });
 
 // Export default

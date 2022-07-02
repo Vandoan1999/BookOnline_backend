@@ -317,8 +317,6 @@ describe("start test", () => {
         supplier_update: list_supplier[0].id,
       };
 
-      console.log(fake_data);
-
       const { body: data } = await request
         .put(`/api/books`)
         .send(fake_data)
