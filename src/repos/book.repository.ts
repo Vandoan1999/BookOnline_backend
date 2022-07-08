@@ -3,6 +3,7 @@ import { AppDataSource } from "@config/db";
 import { BookEntity as BookEntity } from "@entity/book.entity";
 import { ListBookRequest } from "@models/book/list-book.request";
 import { OrderByEnum } from "@models/book/orderBy.enum";
+import { Sort } from "@models/sort";
 
 export const BookRepository = AppDataSource.getRepository(BookEntity).extend({
   getList(request: ListBookRequest) {
@@ -33,8 +34,10 @@ export const BookRepository = AppDataSource.getRepository(BookEntity).extend({
       query.orderBy("book.sold", request.order);
     } else if (request.orderBy === OrderByEnum.views) {
       query.orderBy("book.views", request.order);
+    } else if (request.newest) {
+      query.orderBy("book.created_at", Sort.DESC);
     } else {
-      query.orderBy("book.name", "ASC");
+      query.orderBy("book.name", Sort.ASC);
     }
 
     return query.take(take).skip(skip).getRawAndEntities();

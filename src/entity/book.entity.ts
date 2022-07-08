@@ -1,4 +1,17 @@
-import { Entity, Column, OneToOne, JoinColumn, JoinTable, ManyToMany, OneToMany, CreateDateColumn, UpdateDateColumn, PrimaryColumn, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import {
+  Entity,
+  Column,
+  OneToOne,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+} from "typeorm";
 import { CommentEntity } from "./comment.entity";
 import { CategoryEntity } from "./category.entity";
 import { ImageEntity } from "./image.entity";
@@ -53,9 +66,9 @@ export class BookEntity {
   @UpdateDateColumn({ type: "timestamptz" })
   updated_at: Date;
 
-  @ManyToOne(() => SupplierEnity, (sp) => sp.phone, {
-    onDelete: "SET NULL",
+  @ManyToOne(() => SupplierEnity, (sp) => sp.books, {
     nullable: true,
+    onDelete: "SET NULL",
   })
   @JoinColumn()
   supplier: SupplierEnity;
@@ -84,7 +97,7 @@ export class BookEntity {
   images: ImageEntity[];
 
   @ManyToMany(() => CategoryEntity, (category) => category.books, {
-    onDelete: "CASCADE",
+    onDelete: "SET NULL",
     nullable: true,
   })
   @JoinTable()

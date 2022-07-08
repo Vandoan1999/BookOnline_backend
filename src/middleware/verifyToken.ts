@@ -7,9 +7,20 @@ import { ResponseBuilder } from "../ultis/response-builder";
 import Container from "typedi";
 import { UserService } from "@services/user.service";
 require("dotenv").config();
-export async function verifyToken(req: Request, res: Response, next: NextFunction) {
+export async function verifyToken(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   if (!req.headers.authorization) {
-    return res.status(403).json(new ResponseBuilder().withSuccess().withMessage("No credentials sent!").build());
+    return res
+      .status(403)
+      .json(
+        new ResponseBuilder()
+          .withError()
+          .withMessage("No credentials sent!")
+          .build()
+      );
   }
   try {
     const token = req.headers.authorization.split(" ")[1];

@@ -5,8 +5,8 @@ import { UpdateSupplierRequest } from "@models/supplier/update-supplier.request"
 import { SupplierRepository } from "@repos/supplier.repository";
 import { StatusCodes } from "http-status-codes";
 import { ApiError } from "../ultis/apiError";
-
 import { Service } from "typedi";
+import { In } from "typeorm";
 
 @Service()
 export class SupplierService {
@@ -23,7 +23,10 @@ export class SupplierService {
     });
 
     if (!supplier) {
-      throw ApiError(StatusCodes.NOT_FOUND, `suppier with id: ${request.id} not found !`);
+      throw ApiError(
+        StatusCodes.NOT_FOUND,
+        `suppier with id: ${request.id} not found !`
+      );
     }
 
     return SupplierRepository.update({ id: request.id }, request);
@@ -34,9 +37,28 @@ export class SupplierService {
       where: { id },
     });
 
-    if (!supplier) throw ApiError(StatusCodes.NOT_FOUND, `suppier with id: ${id} not found !`);
+    if (!supplier)
+      throw ApiError(
+        StatusCodes.NOT_FOUND,
+        `suppier with id: ${id} not found !`
+      );
 
     return SupplierRepository.delete({ id });
+  }
+  async deleteMuiltiple(request: any) {
+    if (request.query && request.query.ids) {
+      let ids: any[] = request.query.ids.split(",");
+      const books = await SupplierRepository.find({ where: { id: In(ids) } });
+      if (books.length <= 0) {
+        throw ApiError(
+          StatusCodes.NOT_FOUND,
+          `supplier width ids ${ids.toString()} not found`
+        );
+      }
+      return SupplierRepository.remove(books);
+    } else {
+      throw ApiError(StatusCodes.BAD_REQUEST);
+    }
   }
 
   async detail(id: string) {
@@ -44,7 +66,11 @@ export class SupplierService {
       id,
     });
 
-    if (!supplier) throw ApiError(StatusCodes.NOT_FOUND, `suppier with id: ${id} not found !`);
+    if (!supplier)
+      throw ApiError(
+        StatusCodes.NOT_FOUND,
+        `suppier with id: ${id} not found !`
+      );
 
     return supplier;
   }

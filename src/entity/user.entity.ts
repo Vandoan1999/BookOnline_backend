@@ -1,6 +1,13 @@
 import { Gender as Sex } from "@enums/gender.enum";
 import { Role as Role } from "@enums/role.enum";
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import { CommentEntity } from "./comment.entity";
 import { RatingEntity } from "./rating.entity";
 
@@ -28,7 +35,7 @@ export class UserEntity {
   @Column({
     type: "enum",
     enum: Sex,
-    default: Sex.MALE,
+    nullable: true,
   })
   sex: Sex;
 

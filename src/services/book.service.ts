@@ -184,4 +184,20 @@ export class BookService {
     const result = await BookRepository.delete({ id });
     return result;
   }
+
+  async delete_multiple(request: any) {
+    if (request.query && request.query.ids) {
+      let ids: any[] = request.query.ids.split(",");
+      const books = await BookRepository.find({ where: { id: In(ids) } });
+      if (books.length <= 0) {
+        throw ApiError(
+          StatusCodes.NOT_FOUND,
+          `products width ids ${ids.toString()} not found`
+        );
+      }
+      return BookRepository.remove(books);
+    } else {
+      throw ApiError(StatusCodes.BAD_REQUEST);
+    }
+  }
 }

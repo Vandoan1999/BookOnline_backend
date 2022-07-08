@@ -7,6 +7,7 @@ import { StatusCodes } from "http-status-codes";
 import { hashSync, compareSync } from "bcryptjs";
 import { ApiError } from "../ultis/apiError";
 import jwt from "jsonwebtoken";
+import { UserInfo } from "@models/user/UserInfo";
 require("dotenv").config();
 @Service()
 export class AuthService {
@@ -14,7 +15,10 @@ export class AuthService {
   async login(request: LoginRequest) {
     const user = await AuthRepository.getUserByName(request.username);
     if (!user || !compareSync(request.password, user.password)) {
-      throw ApiError(StatusCodes.NOT_FOUND, "Username or password not correct !");
+      throw ApiError(
+        StatusCodes.NOT_FOUND,
+        "Username or password not correct !"
+      );
     }
     const token = jwt.sign(
       {
@@ -30,11 +34,16 @@ export class AuthService {
   }
 
   register(request: RegisterRequest) {
-    const user = Object.assign(AuthRepository.create(), request);
-    if (user.role === Role.ADMIN) {
-      throw ApiError(StatusCodes.FORBIDDEN, "You cannot create user admin !");
-    }
+    const user = AuthRepository.create(request);
     user.password = hashSync(user.password, 10);
     return AuthRepository.save(user);
+  }
+
+  getProfile(userInfo: UserInfo) {
+    return AuthRepository.findOne({
+      where: {
+        id: userInfo.id,
+      },
+    });
   }
 }

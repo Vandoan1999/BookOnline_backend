@@ -17,30 +17,50 @@ const url = {
   add: "/",
   detail: "/:id",
   delete: "/:id",
+  delete_multiple: "/multiple",
   update: "/",
 };
 
 router.get(url.get, verifyToken, async (req, res) => {
-  const request = await transformAndValidate<ListSupplierRequest>(ListSupplierRequest, req.query);
+  const request = await transformAndValidate<ListSupplierRequest>(
+    ListSupplierRequest,
+    req.query
+  );
   const supplierService = Container.get(SupplierService);
   const [supplier, total] = await supplierService.getList(request);
-  return res.json(new ResponseBuilder<SupplierEnity[]>(supplier).withMeta({ total }).withSuccess().build());
+  return res.json(
+    new ResponseBuilder<SupplierEnity[]>(supplier)
+      .withMeta({ total })
+      .withSuccess()
+      .build()
+  );
 });
 
 router.post(url.add, verifyToken, async (req, res) => {
-  const request = await transformAndValidate<CreateSupplierRequest>(CreateSupplierRequest, req.body);
+  const request = await transformAndValidate<CreateSupplierRequest>(
+    CreateSupplierRequest,
+    req.body
+  );
   const supplierService = Container.get(SupplierService);
   await supplierService.create(request);
   return res.json(new ResponseBuilder().withSuccess().build());
 });
 
 router.put(url.update, verifyToken, async (req, res) => {
-  const request = await transformAndValidate<UpdateSupplierRequest>(UpdateSupplierRequest, req.body);
+  const request = await transformAndValidate<UpdateSupplierRequest>(
+    UpdateSupplierRequest,
+    req.body
+  );
   const supplierService = Container.get(SupplierService);
   await supplierService.update(request);
   return res.json(new ResponseBuilder().withSuccess().build());
 });
-``;
+
+router.delete(url.delete_multiple, verifyToken, async (req, res) => {
+  const supplierService = Container.get(SupplierService);
+  const data = await supplierService.deleteMuiltiple(req);
+  return res.json(new ResponseBuilder<any>(data).withSuccess().build());
+});
 
 router.delete(url.delete, verifyToken, async (req, res) => {
   if (!req.params.id) throw ApiError(StatusCodes.BAD_REQUEST);

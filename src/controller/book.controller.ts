@@ -18,10 +18,11 @@ const url = {
   detail: "/:id",
   delete: "/:id",
   update: "/",
+  delete_multiple: "/multiple",
 };
 
 //get list book
-router.get(url.get, verifyToken, async (req, res) => {
+router.get(url.get, async (req, res) => {
   const request = await transformAndValidate<ListBookRequest>(
     ListBookRequest,
     req.query
@@ -65,16 +66,11 @@ router.put(url.update, verifyToken, async (req, res) => {
 
   await bookService.update(request);
 
-  return res.json(
-    new ResponseBuilder()
-      .withSuccess()
-      .withMessage("update product success.")
-      .build()
-  );
+  return res.json(new ResponseBuilder().withSuccess().build());
 });
 
 //get detail book
-router.get(url.detail, verifyToken, async (req, res) => {
+router.get(url.detail, async (req, res) => {
   if (!req.params.id) {
     throw ApiError(StatusCodes.BAD_REQUEST, "id param empty");
   }
@@ -84,6 +80,17 @@ router.get(url.detail, verifyToken, async (req, res) => {
   const book = await bookService.detail(req.params.id);
 
   return res.json(new ResponseBuilder<BookEntity>(book).withSuccess().build());
+});
+
+//delete multiple
+router.delete(url.delete_multiple, verifyToken, async (req, res) => {
+  const bookService = Container.get(BookService);
+
+  const result = await bookService.delete_multiple(req);
+
+  return res.json(
+    new ResponseBuilder<any>({ book_deleted: result }).withSuccess().build()
+  );
 });
 
 //delete book

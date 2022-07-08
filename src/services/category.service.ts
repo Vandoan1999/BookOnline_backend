@@ -8,6 +8,7 @@ import { StatusCodes } from "http-status-codes";
 import { ApiError } from "../ultis/apiError";
 import { Service } from "typedi";
 import { UpdateCategoryRequest } from "@models/category/update-category.request";
+import { Sort } from "@models/sort";
 
 require("dotenv").config();
 @Service()
@@ -16,7 +17,7 @@ export class CategoryService {
 
   getList() {
     return CategoryRepository.findAndCount({
-      order: { name: "ASC" },
+      order: { created_at: Sort.DESC },
     });
   }
 

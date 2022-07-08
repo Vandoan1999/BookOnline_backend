@@ -201,7 +201,7 @@ describe("start test", () => {
         image: faker.image.animals(),
       };
       const { body: data } = await request
-        .put(`/api/suppliers`)
+        .put(`/api/categories`)
         .send(fake_data)
         .set("Authorization", `Bear ${accessToken}`);
       expect(data.type).toBe("success");

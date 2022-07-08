@@ -15,6 +15,8 @@ export class SupplierEnity {
   @Column({ nullable: true })
   phone: string;
 
-  @OneToMany(() => BookEntity, (book) => book.supplier)
+  @OneToMany(() => BookEntity, (book) => book.supplier, {
+    nullable: true,
+  })
   books: BookEntity[];
 }
