@@ -24,7 +24,12 @@ require("dotenv").config();
 function verifyToken(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!req.headers.authorization) {
-            return res.status(403).json(new response_builder_1.ResponseBuilder().withSuccess().withMessage("No credentials sent!").build());
+            return res
+                .status(403)
+                .json(new response_builder_1.ResponseBuilder()
+                .withError()
+                .withMessage("No credentials sent!")
+                .build());
         }
         try {
             const token = req.headers.authorization.split(" ")[1];

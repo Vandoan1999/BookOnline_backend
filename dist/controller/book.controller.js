@@ -30,9 +30,10 @@ const url = {
     detail: "/:id",
     delete: "/:id",
     update: "/",
+    delete_multiple: "/multiple",
 };
 //get list book
-router.get(url.get, verifyToken_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get(url.get, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(list_book_request_1.ListBookRequest, req.query);
     const bookService = typedi_1.default.get(book_service_1.BookService);
     const { data, total } = yield bookService.getList(request);
@@ -56,19 +57,22 @@ router.put(url.update, verifyToken_1.verifyToken, (req, res) => __awaiter(void 0
     const request = yield (0, transformAndValidate_1.transformAndValidate)(update_book_request_1.UpdateBookRequest, req.body);
     const bookService = typedi_1.default.get(book_service_1.BookService);
     yield bookService.update(request);
-    return res.json(new response_builder_1.ResponseBuilder()
-        .withSuccess()
-        .withMessage("update product success.")
-        .build());
+    return res.json(new response_builder_1.ResponseBuilder().withSuccess().build());
 }));
 //get detail book
-router.get(url.detail, verifyToken_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get(url.detail, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.params.id) {
         throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.BAD_REQUEST, "id param empty");
     }
     const bookService = typedi_1.default.get(book_service_1.BookService);
     const book = yield bookService.detail(req.params.id);
     return res.json(new response_builder_1.ResponseBuilder(book).withSuccess().build());
+}));
+//delete multiple
+router.delete(url.delete_multiple, verifyToken_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const bookService = typedi_1.default.get(book_service_1.BookService);
+    const result = yield bookService.delete_multiple(req);
+    return res.json(new response_builder_1.ResponseBuilder({ book_deleted: result }).withSuccess().build());
 }));
 //delete book
 router.delete(url.delete, verifyToken_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

@@ -5,7 +5,7 @@ import userRouter from "./user.controller";
 import ratingRouter from "./rating.controller";
 import testRouter from "./test.controller";
 import categorRouter from "./category.controller";
-import supplierRouter from "./suppelier.controller";
+import supplierRouter from "./supplier.controller";
 // Export the base-router
 const baseRouter = Router();
 

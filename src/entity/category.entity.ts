@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToMany } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToMany,
+} from "typeorm";
 import { BookEntity } from "./book.entity";
 
 @Entity("categories")
@@ -20,7 +27,7 @@ export class CategoryEntity {
   updated_at: Date;
 
   @ManyToMany(() => BookEntity, (book) => book.categories, {
-    onDelete: "SET NULL",
+    onDelete: "CASCADE",
     nullable: true,
   })
   books: BookEntity[];

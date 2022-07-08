@@ -1,4 +1,12 @@
-import { Entity, Column, JoinColumn, PrimaryColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from "typeorm";
+import {
+  Entity,
+  Column,
+  JoinColumn,
+  PrimaryColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+} from "typeorm";
 import { BookEntity } from "./book.entity";
 import { UserEntity } from "./user.entity";
 
@@ -21,7 +29,7 @@ export class RatingEntity {
   @Column({ nullable: true, type: "text" })
   content: string;
 
-  @Column({ nullable: true, type: "int" })
+  @Column({ nullable: true, type: "float" })
   rating_number: number;
 
   @CreateDateColumn({ type: "timestamptz" })

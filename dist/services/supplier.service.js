@@ -20,6 +20,7 @@ const supplier_repository_1 = require("@repos/supplier.repository");
 const http_status_codes_1 = require("http-status-codes");
 const apiError_1 = require("../ultis/apiError");
 const typedi_1 = require("typedi");
+const typeorm_1 = require("typeorm");
 let SupplierService = class SupplierService {
     getList(request) {
         return supplier_repository_1.SupplierRepository.getList(request);
@@ -45,6 +46,21 @@ let SupplierService = class SupplierService {
             if (!supplier)
                 throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.NOT_FOUND, `suppier with id: ${id} not found !`);
             return supplier_repository_1.SupplierRepository.delete({ id });
+        });
+    }
+    deleteMuiltiple(request) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (request.query && request.query.ids) {
+                let ids = request.query.ids.split(",");
+                const books = yield supplier_repository_1.SupplierRepository.find({ where: { id: (0, typeorm_1.In)(ids) } });
+                if (books.length <= 0) {
+                    throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.NOT_FOUND, `supplier width ids ${ids.toString()} not found`);
+                }
+                return supplier_repository_1.SupplierRepository.remove(books);
+            }
+            else {
+                throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.BAD_REQUEST);
+            }
         });
     }
     detail(id) {

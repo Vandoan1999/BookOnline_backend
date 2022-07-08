@@ -32,12 +32,6 @@ describe("start test", () => {
           username: faker.name.findName() + Math.floor(Math.random() * 100),
           email: faker.internet.email(),
           password: "12345678",
-          role: "user",
-          sex: Math.random() > 0.5 ? 1 : 0,
-          image: faker.image.avatar(),
-          address: faker.address.city(),
-          phone: faker.phone.number("+84 01 ### ## ##"),
-          bank: faker.finance.routingNumber(),
         };
 
         const { body: data } = await request
@@ -53,6 +47,13 @@ describe("start test", () => {
         password: "12345678",
       });
       accessToken = data.data.accessToken;
+      expect(data.type).toBe("success");
+    });
+
+    test("get profile user", async () => {
+      const { body: data } = await request
+        .get(`/api/auth/profile`)
+        .set("Authorization", `Bear ${accessToken}`);
       expect(data.type).toBe("success");
     });
   });
@@ -108,6 +109,7 @@ describe("start test", () => {
   //supplier controller
   describe("supplier controller", () => {
     let supplier_to_be_delete;
+    let list_supplier_to_be_delete;
     for (let i = 0; i < 25; i++) {
       test("create supplier", async () => {
         const fake_data = {
@@ -133,6 +135,9 @@ describe("start test", () => {
       expect(data.type).toBe("success");
       expect(data.data.length).toBeGreaterThan(19);
       supplier_to_be_delete = list_supplier.pop();
+      list_supplier_to_be_delete = list_supplier
+        .splice(0, 5)
+        .map((item) => item.id);
     });
 
     test("update supplier", async () => {
@@ -163,6 +168,16 @@ describe("start test", () => {
         .set("Authorization", `Bear ${accessToken}`);
       expect(data.type).toBe("success");
       expect(data.data.affected).toBe(1);
+    });
+
+    test("delete multiple supplier", async () => {
+      const { body: data } = await request
+        .delete(
+          `/api/suppliers/multiple?ids=${list_supplier_to_be_delete.toString()}`
+        )
+        .set("Authorization", `Bear ${accessToken}`);
+      expect(data.type).toBe("success");
+      expect(data.data.supplier_deleted.length).toBeGreaterThan(0);
     });
   });
 
@@ -226,6 +241,7 @@ describe("start test", () => {
 
   describe("book controller", () => {
     let book_to_be_delete;
+    let list_book_to_be_delete;
     for (let i = 0; i < 13; i++) {
       test("create book", async () => {
         const fake_data: CreateBookRequest = {
@@ -268,15 +284,14 @@ describe("start test", () => {
     }
 
     test("get list book", async () => {
-      const { body: data } = await request
-        .get(`/api/books`)
-        .set("Authorization", `Bear ${accessToken}`);
+      const { body: data } = await request.get(`/api/books`);
       list_book = data.data;
       expect(list_book.length).toBeGreaterThan(10);
       expect(list_book[0].images.length).toBeGreaterThan(0);
       expect(list_book[0].categories.length).toBeGreaterThan(0);
       expect(Object.keys(list_book[0].supplier)[0] === "id").toBe(true);
       book_to_be_delete = list_book.pop();
+      list_book_to_be_delete = list_book.splice(0, 5).map((item) => item.id);
     });
 
     test("update book", async () => {
@@ -323,6 +338,42 @@ describe("start test", () => {
         .set("Authorization", `Bear ${accessToken}`);
       expect(data.type).toBe("success");
       expect(true).toBe(true);
+    });
+
+    test("delete book", async () => {
+      const { body: data } = await request
+        .delete(`/api/books/${book_to_be_delete.id}`)
+        .set("Authorization", `Bear ${accessToken}`);
+      expect(data.type).toBe("success");
+      expect(data.data.affected).toBe(1);
+    });
+
+    test("delete muitiple book", async () => {
+      const { body: data } = await request
+        .delete(`/api/books/multiple?ids=${list_book_to_be_delete.toString()}`)
+        .set("Authorization", `Bear ${accessToken}`);
+      expect(data.type).toBe("success");
+      expect(data.data.book_deleted.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("rating controller", () => {
+    test("delete category", async () => {
+      for (const user of list_user) {
+        for (const book of list_book) {
+          const fake_data = {
+            user_id: user.id,
+            book_id: book.id,
+            rating_number: Math.floor(Math.random() * 6),
+            content: faker.lorem.paragraphs(),
+          };
+
+          const { body: data } = await request
+            .post(`/api/rating`)
+            .send(fake_data);
+          expect(data.type).toBe("success");
+        }
+      }
     });
   });
 });

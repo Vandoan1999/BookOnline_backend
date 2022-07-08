@@ -57,11 +57,12 @@ export class BookService {
 
   async getList(request: ListBookRequest) {
     const result = await BookRepository.getList(request);
-    result.entities.forEach((item, index) => {
-      item["rating_number"] = result.raw[index]["rating_number"] || 0;
+    result.entities.forEach((item) => {
+      const book_raw = result.raw.find((raw) => raw.book_id == item.id);
+
+      item["ratings_number"] = book_raw ? book_raw.rating_number : 0;
     });
     const total = await BookRepository.count();
-
     return {
       data: result.entities,
       total,

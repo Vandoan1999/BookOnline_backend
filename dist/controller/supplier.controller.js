@@ -29,13 +29,17 @@ const url = {
     add: "/",
     detail: "/:id",
     delete: "/:id",
+    delete_multiple: "/multiple",
     update: "/",
 };
 router.get(url.get, verifyToken_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(list_supplier_request_1.ListSupplierRequest, req.query);
     const supplierService = typedi_1.default.get(supplier_service_1.SupplierService);
     const [supplier, total] = yield supplierService.getList(request);
-    return res.json(new response_builder_1.ResponseBuilder(supplier).withMeta({ total }).withSuccess().build());
+    return res.json(new response_builder_1.ResponseBuilder(supplier)
+        .withMeta({ total })
+        .withSuccess()
+        .build());
 }));
 router.post(url.add, verifyToken_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(create_supplier_request_1.CreateSupplierRequest, req.body);
@@ -49,7 +53,11 @@ router.put(url.update, verifyToken_1.verifyToken, (req, res) => __awaiter(void 0
     yield supplierService.update(request);
     return res.json(new response_builder_1.ResponseBuilder().withSuccess().build());
 }));
-``;
+router.delete(url.delete_multiple, verifyToken_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const supplierService = typedi_1.default.get(supplier_service_1.SupplierService);
+    const data = yield supplierService.deleteMuiltiple(req);
+    return res.json(new response_builder_1.ResponseBuilder({ supplier_deleted: data }).withSuccess().build());
+}));
 router.delete(url.delete, verifyToken_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.params.id)
         throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.BAD_REQUEST);

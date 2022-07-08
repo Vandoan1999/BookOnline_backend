@@ -36,7 +36,7 @@ __decorate([
     __metadata("design:type", String)
 ], RatingEntity.prototype, "content", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true, type: "int" }),
+    (0, typeorm_1.Column)({ nullable: true, type: "float" }),
     __metadata("design:type", Number)
 ], RatingEntity.prototype, "rating_number", void 0);
 __decorate([

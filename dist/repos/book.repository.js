@@ -5,6 +5,7 @@ const app_1 = require("@config/app");
 const db_1 = require("@config/db");
 const book_entity_1 = require("@entity/book.entity");
 const orderBy_enum_1 = require("@models/book/orderBy.enum");
+const sort_1 = require("@models/sort");
 exports.BookRepository = db_1.AppDataSource.getRepository(book_entity_1.BookEntity).extend({
     getList(request) {
         const take = request.limit || app_1.config.page.default_limit;
@@ -32,8 +33,11 @@ exports.BookRepository = db_1.AppDataSource.getRepository(book_entity_1.BookEnti
         else if (request.orderBy === orderBy_enum_1.OrderByEnum.views) {
             query.orderBy("book.views", request.order);
         }
+        else if (request.newest) {
+            query.orderBy("book.created_at", sort_1.Sort.DESC);
+        }
         else {
-            query.orderBy("book.name", "ASC");
+            query.orderBy("book.name", sort_1.Sort.ASC);
         }
         return query.take(take).skip(skip).getRawAndEntities();
     },
@@ -42,6 +46,7 @@ exports.BookRepository = db_1.AppDataSource.getRepository(book_entity_1.BookEnti
             .leftJoinAndSelect("book.images", "image")
             .leftJoinAndSelect("book.supplier", "supplier")
             .leftJoinAndSelect("book.categories", "categories")
+            .leftJoinAndSelect("book.ratings", "ratings")
             .addSelect(`(select avg(r.rating_number)from rating r  where r."bookIdId" = book.id)`, "rating_number")
             .where("book.id = :id", { id })
             .getRawAndEntities();

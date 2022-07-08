@@ -16,13 +16,21 @@ const url = {
 };
 
 //add new book
-router.post(url.add, verifyToken, async (req, res) => {
-  const request = await transformAndValidate<CreateRatingRequest>(CreateRatingRequest, req.body);
+router.post(url.add, async (req, res) => {
+  const request = await transformAndValidate<CreateRatingRequest>(
+    CreateRatingRequest,
+    req.body
+  );
   const ratingService = Container.get(RatingService);
 
   await ratingService.create(request);
 
-  return res.json(new ResponseBuilder().withSuccess().withMessage("create rating success.").build());
+  return res.json(
+    new ResponseBuilder()
+      .withSuccess()
+      .withMessage("create rating success.")
+      .build()
+  );
 });
 
 // Export default

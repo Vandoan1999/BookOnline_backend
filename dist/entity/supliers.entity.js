@@ -31,7 +31,9 @@ __decorate([
     __metadata("design:type", String)
 ], SupplierEnity.prototype, "phone", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => book_entity_1.BookEntity, (book) => book.supplier),
+    (0, typeorm_1.OneToMany)(() => book_entity_1.BookEntity, (book) => book.supplier, {
+        nullable: true,
+    }),
     __metadata("design:type", Array)
 ], SupplierEnity.prototype, "books", void 0);
 SupplierEnity = __decorate([

@@ -16,11 +16,15 @@ const typedi_1 = require("typedi");
 const router = (0, express_1.Router)();
 const url = {
     test: "/",
+    migration: "/migration",
 };
 router.get(url.test, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const testingService = typedi_1.Container.get(testing_service_1.TestingService);
     yield testingService.clear();
-    res.json(new response_builder_1.ResponseBuilder().withSuccess().withMessage("clear data success").build());
+    res.json(new response_builder_1.ResponseBuilder()
+        .withSuccess()
+        .withMessage("clear data success")
+        .build());
 }));
 // Export default
 exports.default = router;

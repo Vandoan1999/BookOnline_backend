@@ -10,8 +10,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RegisterRequest = void 0;
-const gender_enum_1 = require("@enums/gender.enum");
-const role_enum_1 = require("@enums/role.enum");
 const class_validator_1 = require("class-validator");
 class RegisterRequest {
 }
@@ -27,28 +25,4 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], RegisterRequest.prototype, "password", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], RegisterRequest.prototype, "role", void 0);
-__decorate([
-    (0, class_validator_1.IsEnum)(gender_enum_1.Gender),
-    __metadata("design:type", Number)
-], RegisterRequest.prototype, "sex", void 0);
-__decorate([
-    (0, class_validator_1.Allow)(),
-    __metadata("design:type", String)
-], RegisterRequest.prototype, "image", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], RegisterRequest.prototype, "address", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], RegisterRequest.prototype, "phone", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], RegisterRequest.prototype, "bank", void 0);
 exports.RegisterRequest = RegisterRequest;

@@ -8,7 +8,6 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
   ManyToOne,
 } from "typeorm";
@@ -17,7 +16,7 @@ import { CategoryEntity } from "./category.entity";
 import { ImageEntity } from "./image.entity";
 import { OrderDetail as OrderDetailEntity } from "./order-detail.entity";
 import { RatingEntity } from "./rating.entity";
-import { SupplierEnity } from "./suppliers.entity";
+import { SupplierEnity } from "./supliers.entity";
 
 @Entity("books")
 export class BookEntity {
@@ -97,7 +96,6 @@ export class BookEntity {
   images: ImageEntity[];
 
   @ManyToMany(() => CategoryEntity, (category) => category.books, {
-    onDelete: "SET NULL",
     nullable: true,
   })
   @JoinTable()

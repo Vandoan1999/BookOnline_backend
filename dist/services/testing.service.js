@@ -27,7 +27,12 @@ const db_1 = require("@config/db");
 const typedi_1 = require("typedi");
 const jet_logger_1 = __importDefault(require("jet-logger"));
 let TestingService = class TestingService {
-    constructor() { }
+    constructor() {
+        this.list_user = [];
+        this.list_supplier = [];
+        this.list_category = [];
+        this.list_book = [];
+    }
     clear() {
         return __awaiter(this, void 0, void 0, function* () {
             jet_logger_1.default.info(`start clearing data !`);

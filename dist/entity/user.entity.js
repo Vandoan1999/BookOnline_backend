@@ -45,7 +45,7 @@ __decorate([
     (0, typeorm_1.Column)({
         type: "enum",
         enum: gender_enum_1.Gender,
-        default: gender_enum_1.Gender.MALE,
+        nullable: true,
     }),
     __metadata("design:type", Number)
 ], UserEntity.prototype, "sex", void 0);

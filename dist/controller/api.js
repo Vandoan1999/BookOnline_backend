@@ -10,7 +10,7 @@ const user_controller_1 = __importDefault(require("./user.controller"));
 const rating_controller_1 = __importDefault(require("./rating.controller"));
 const test_controller_1 = __importDefault(require("./test.controller"));
 const category_controller_1 = __importDefault(require("./category.controller"));
-const suppelier_controller_1 = __importDefault(require("./suppelier.controller"));
+const supplier_controller_1 = __importDefault(require("./supplier.controller"));
 // Export the base-router
 const baseRouter = (0, express_1.Router)();
 // Setup routers
@@ -19,7 +19,7 @@ baseRouter.use("/auth", auth_controller_1.default);
 baseRouter.use("/users", user_controller_1.default);
 baseRouter.use("/rating", rating_controller_1.default);
 baseRouter.use("/categories", category_controller_1.default);
-baseRouter.use("/suppliers", suppelier_controller_1.default);
+baseRouter.use("/suppliers", supplier_controller_1.default);
 baseRouter.use("/test", test_controller_1.default);
 // Export default.
 exports.default = baseRouter;

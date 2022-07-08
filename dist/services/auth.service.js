@@ -22,7 +22,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
-const role_enum_1 = require("@enums/role.enum");
 const auth_repository_1 = require("@repos/auth.repository");
 const typedi_1 = require("typedi");
 const http_status_codes_1 = require("http-status-codes");
@@ -48,12 +47,16 @@ let AuthService = class AuthService {
         });
     }
     register(request) {
-        const user = Object.assign(auth_repository_1.AuthRepository.create(), request);
-        if (user.role === role_enum_1.Role.ADMIN) {
-            throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.FORBIDDEN, "You cannot create user admin !");
-        }
+        const user = auth_repository_1.AuthRepository.create(request);
         user.password = (0, bcryptjs_1.hashSync)(user.password, 10);
         return auth_repository_1.AuthRepository.save(user);
+    }
+    getProfile(userInfo) {
+        return auth_repository_1.AuthRepository.findOne({
+            where: {
+                id: userInfo.id,
+            },
+        });
     }
 };
 AuthService = __decorate([

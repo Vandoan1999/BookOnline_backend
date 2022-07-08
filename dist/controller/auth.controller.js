@@ -16,22 +16,37 @@ const express_1 = require("express");
 const response_builder_1 = require("../ultis/response-builder");
 const transformAndValidate_1 = require("../ultis/transformAndValidate");
 const typedi_1 = require("typedi");
+const verifyToken_1 = require("@middleware/verifyToken");
 const router = (0, express_1.Router)();
 const url = {
     login: "/login",
     register: "/register",
+    profile: "/profile",
 };
 router.post(url.login, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(login_request_1.LoginRequest, req.body);
     const authService = typedi_1.Container.get(auth_service_1.AuthService);
     const token = yield authService.login(request);
-    res.json(new response_builder_1.ResponseBuilder({ accessToken: token, refeshToken: "" }).withSuccess().build());
+    res.json(new response_builder_1.ResponseBuilder({ accessToken: token, refeshToken: "" })
+        .withSuccess()
+        .build());
 }));
 router.post(url.register, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(register_request_1.RegisterRequest, req.body);
     const authService = typedi_1.Container.get(auth_service_1.AuthService);
     yield authService.register(request);
-    res.json(new response_builder_1.ResponseBuilder().withSuccess().withMessage("create account success").build());
+    res.json(new response_builder_1.ResponseBuilder()
+        .withSuccess()
+        .withMessage("create account success")
+        .build());
+}));
+router.get(url.profile, verifyToken_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const authService = typedi_1.Container.get(auth_service_1.AuthService);
+    const user = yield authService.getProfile(req["user"]);
+    res.json(new response_builder_1.ResponseBuilder(user)
+        .withSuccess()
+        .withMessage("create account success")
+        .build());
 }));
 // Export default
 exports.default = router;

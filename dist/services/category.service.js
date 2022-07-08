@@ -24,12 +24,13 @@ const category_repository_1 = require("@repos/category.repository");
 const http_status_codes_1 = require("http-status-codes");
 const apiError_1 = require("../ultis/apiError");
 const typedi_1 = require("typedi");
+const sort_1 = require("@models/sort");
 require("dotenv").config();
 let CategoryService = class CategoryService {
     constructor() { }
     getList() {
         return category_repository_1.CategoryRepository.findAndCount({
-            order: { name: "ASC" },
+            order: { created_at: sort_1.Sort.DESC },
         });
     }
     create(request, user) {

@@ -22,7 +22,10 @@ export class UserService {
     }
     const res = await UserRepository.findBy({ id: request.id });
     if (!res[0]) {
-      throw ApiError(StatusCodes.NOT_FOUND, `user with id ${request.id} not found`);
+      throw ApiError(
+        StatusCodes.NOT_FOUND,
+        `user with id ${request.id} not found`
+      );
     }
     return UserRepository.update(
       { id: request.id },

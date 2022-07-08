@@ -16,7 +16,7 @@ const category_entity_1 = require("./category.entity");
 const image_entity_1 = require("./image.entity");
 const order_detail_entity_1 = require("./order-detail.entity");
 const rating_entity_1 = require("./rating.entity");
-const suppliers_entity_1 = require("./suppliers.entity");
+const supliers_entity_1 = require("./supliers.entity");
 let BookEntity = class BookEntity {
 };
 __decorate([
@@ -80,12 +80,12 @@ __decorate([
     __metadata("design:type", Date)
 ], BookEntity.prototype, "updated_at", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => suppliers_entity_1.SupplierEnity, (sp) => sp.phone, {
-        onDelete: "SET NULL",
+    (0, typeorm_1.ManyToOne)(() => supliers_entity_1.SupplierEnity, (sp) => sp.books, {
         nullable: true,
+        onDelete: "SET NULL",
     }),
     (0, typeorm_1.JoinColumn)(),
-    __metadata("design:type", suppliers_entity_1.SupplierEnity)
+    __metadata("design:type", supliers_entity_1.SupplierEnity)
 ], BookEntity.prototype, "supplier", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => comment_entity_1.CommentEntity, (comment) => comment.book, {
@@ -116,7 +116,6 @@ __decorate([
 ], BookEntity.prototype, "images", void 0);
 __decorate([
     (0, typeorm_1.ManyToMany)(() => category_entity_1.CategoryEntity, (category) => category.books, {
-        onDelete: "CASCADE",
         nullable: true,
     }),
     (0, typeorm_1.JoinTable)(),

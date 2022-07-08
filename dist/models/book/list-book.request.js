@@ -25,6 +25,10 @@ __decorate([
     __metadata("design:type", String)
 ], ListBookRequest.prototype, "author", void 0);
 __decorate([
+    (0, class_validator_1.Allow)(),
+    __metadata("design:type", Boolean)
+], ListBookRequest.prototype, "newest", void 0);
+__decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsEnum)(sort_1.Sort),
     __metadata("design:type", String)

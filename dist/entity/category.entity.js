@@ -36,7 +36,7 @@ __decorate([
 ], CategoryEntity.prototype, "updated_at", void 0);
 __decorate([
     (0, typeorm_1.ManyToMany)(() => book_entity_1.BookEntity, (book) => book.categories, {
-        onDelete: "SET NULL",
+        onDelete: "CASCADE",
         nullable: true,
     }),
     __metadata("design:type", Array)

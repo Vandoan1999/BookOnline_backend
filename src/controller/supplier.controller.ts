@@ -5,7 +5,7 @@ import Container from "typedi";
 import { verifyToken } from "@middleware/verifyToken";
 import { ListSupplierRequest } from "@models/supplier/list-supplier.request";
 import { SupplierService } from "@services/supplier.service";
-import { SupplierEnity } from "@entity/suppliers.entity";
+import { SupplierEnity } from "@entity/supliers.entity";
 import { CreateSupplierRequest } from "@models/supplier/create-supplier.request";
 import { UpdateSupplierRequest } from "@models/supplier/update-supplier.request";
 import { ApiError } from "../ultis/apiError";
@@ -59,7 +59,9 @@ router.put(url.update, verifyToken, async (req, res) => {
 router.delete(url.delete_multiple, verifyToken, async (req, res) => {
   const supplierService = Container.get(SupplierService);
   const data = await supplierService.deleteMuiltiple(req);
-  return res.json(new ResponseBuilder<any>(data).withSuccess().build());
+  return res.json(
+    new ResponseBuilder<any>({ supplier_deleted: data }).withSuccess().build()
+  );
 });
 
 router.delete(url.delete, verifyToken, async (req, res) => {

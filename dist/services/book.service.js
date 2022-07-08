@@ -26,6 +26,7 @@ const typedi_1 = require("typedi");
 const image_repository_1 = require("@repos/image.repository");
 const supplier_repository_1 = require("@repos/supplier.repository");
 const category_repository_1 = require("@repos/category.repository");
+const typeorm_1 = require("typeorm");
 const db_1 = require("@config/db");
 let BookService = class BookService {
     constructor() { }
@@ -69,8 +70,9 @@ let BookService = class BookService {
     getList(request) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield book_repository_1.BookRepository.getList(request);
-            result.entities.forEach((item, index) => {
-                item["rating_number"] = result.raw[index]["rating_number"] || 0;
+            result.entities.forEach((item) => {
+                const book_raw = result.raw.find((raw) => raw.book_id == item.id);
+                item["ratings_number"] = book_raw ? book_raw.rating_number : 0;
             });
             const total = yield book_repository_1.BookRepository.count();
             return {
@@ -173,6 +175,21 @@ let BookService = class BookService {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield book_repository_1.BookRepository.delete({ id });
             return result;
+        });
+    }
+    delete_multiple(request) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (request.query && request.query.ids) {
+                let ids = request.query.ids.split(",");
+                const books = yield book_repository_1.BookRepository.find({ where: { id: (0, typeorm_1.In)(ids) } });
+                if (books.length <= 0) {
+                    throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.NOT_FOUND, `products width ids ${ids.toString()} not found`);
+                }
+                return book_repository_1.BookRepository.remove(books);
+            }
+            else {
+                throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.BAD_REQUEST);
+            }
         });
     }
 };

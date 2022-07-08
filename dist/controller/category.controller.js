@@ -25,12 +25,15 @@ const url = {
     create: "/",
     update: "/",
 };
-router.get(url.get, verifyToken_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get(url.get, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const categoryService = typedi_1.Container.get(category_service_1.CategoryService);
     const [category, total] = yield categoryService.getList();
-    res.json(new response_builder_1.ResponseBuilder(category).withSuccess().withMeta({ total: total }).build());
+    res.json(new response_builder_1.ResponseBuilder(category)
+        .withSuccess()
+        .withMeta({ total: total })
+        .build());
 }));
-router.get(url.detail, verifyToken_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get(url.detail, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const categoryService = typedi_1.Container.get(category_service_1.CategoryService);
     const category = yield categoryService.detail(req.params.id);
     res.json(new response_builder_1.ResponseBuilder(category).withSuccess().build());
