@@ -18,16 +18,6 @@ export class BookService {
   async create(request: CreateBookRequest) {
     const book = BookRepository.create(request);
 
-    if (request.supplier_id) {
-      const supplier = await SupplierRepository.findOne({
-        where: {
-          id: request.supplier_id,
-        },
-      });
-      if (!supplier) throw ApiError(StatusCodes.BAD_REQUEST);
-      book.supplier = supplier;
-    }
-
     if (request.category_id && request.category_id.length > 0) {
       const categories: any[] = [];
       for (let i = 0; i < request.category_id.length; i++) {
@@ -72,7 +62,7 @@ export class BookService {
   async update(request: UpdateBookRequest) {
     const book = await BookRepository.findOne({
       where: { id: request.id },
-      relations: { images: true, categories: true, supplier: true },
+      relations: { images: true, categories: true },
     });
     let imageToBeDeleted;
     let categoryToBeDelete;
@@ -143,15 +133,6 @@ export class BookService {
           }
           book.categories.push(categoryToBeSaved);
         }
-      }
-    }
-
-    if (request.supplier_update) {
-      const supplier = await SupplierRepository.findOne({
-        where: { id: request.supplier_update },
-      });
-      if (supplier) {
-        book.supplier = supplier;
       }
     }
 

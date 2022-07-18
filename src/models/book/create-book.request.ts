@@ -16,16 +16,10 @@ export class CreateBookRequest {
   price_export: number;
 
   @Allow()
-  sold: number;
-
-  @Allow()
   views: number;
 
   @Allow()
   published_date: Date;
-
-  @Allow()
-  quantity: number;
 
   @Allow()
   publisher: string;
@@ -39,9 +33,6 @@ export class CreateBookRequest {
   @IsOptional()
   @IsArray()
   images_url: string[];
-
-  @IsOptional()
-  supplier_id: string;
 
   @IsOptional()
   category_id: string[];

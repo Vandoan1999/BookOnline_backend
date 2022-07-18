@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional } from "class-validator";
 export class RegisterRequest {
   @IsNotEmpty()
   username: string;
@@ -8,4 +8,13 @@ export class RegisterRequest {
 
   @IsNotEmpty()
   password: string;
+
+  @IsOptional()
+  fullName: string;
+
+  @IsOptional()
+  address: string;
+
+  @IsOptional()
+  phone: string;
 }

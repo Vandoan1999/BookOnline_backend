@@ -1,5 +1,5 @@
 import { Allow, IsNotEmpty, IsNumber, Max, Min } from "class-validator";
-export class CreateRatingRequest {
+export class UpdateRatingRequest {
   @IsNotEmpty()
   user_id: string;
 

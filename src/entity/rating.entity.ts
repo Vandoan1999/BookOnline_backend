@@ -1,8 +1,6 @@
 import {
   Entity,
   Column,
-  JoinColumn,
-  PrimaryColumn,
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
@@ -17,14 +15,14 @@ export class RatingEntity {
     nullable: false,
   })
   @Column({ type: "uuid", name: "user_id", primary: true })
-  public user_id!: UserEntity;
+  public user_id: UserEntity;
 
   @ManyToOne(() => BookEntity, (book) => book.ratings, {
     onDelete: "CASCADE",
     nullable: false,
   })
   @Column({ type: "uuid", name: "book_id", primary: true })
-  public book_id!: BookEntity;
+  public book_id: BookEntity;
 
   @Column({ nullable: true, type: "text" })
   content: string;

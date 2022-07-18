@@ -43,10 +43,6 @@ export class UpdateBookRequest {
   published_date?: Date;
 
   @IsOptional()
-  @IsNumber()
-  quantity?: number;
-
-  @IsOptional()
   @IsString()
   publisher?: string;
 
@@ -65,9 +61,6 @@ export class UpdateBookRequest {
   @IsOptional()
   @IsArray()
   image_update?: ImageEntity[];
-
-  @IsOptional()
-  supplier_update?: string;
 
   @IsOptional()
   @IsArray()

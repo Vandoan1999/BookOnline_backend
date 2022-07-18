@@ -16,7 +16,8 @@ import { CategoryEntity } from "./category.entity";
 import { ImageEntity } from "./image.entity";
 import { OrderDetail as OrderDetailEntity } from "./order-detail.entity";
 import { RatingEntity } from "./rating.entity";
-import { SupplierEnity } from "./supliers.entity";
+import { BillImportDetail } from "./bill-import-detail.entity";
+import { BillExportDetail } from "./bill-export-detail.entity";
 
 @Entity("books")
 export class BookEntity {
@@ -65,13 +66,6 @@ export class BookEntity {
   @UpdateDateColumn({ type: "timestamptz" })
   updated_at: Date;
 
-  @ManyToOne(() => SupplierEnity, (sp) => sp.books, {
-    nullable: true,
-    onDelete: "SET NULL",
-  })
-  @JoinColumn()
-  supplier: SupplierEnity;
-
   @OneToMany(() => CommentEntity, (comment) => comment.book, {
     onDelete: "CASCADE",
   })
@@ -100,4 +94,16 @@ export class BookEntity {
   })
   @JoinTable()
   categories: CategoryEntity[];
+
+  @OneToMany(
+    () => BillImportDetail,
+    (bill_export_detail) => bill_export_detail.book
+  )
+  bill_import_detail: BillImportDetail[];
+
+  @OneToMany(
+    () => BillExportDetail,
+    (bill_export_detail) => bill_export_detail.book
+  )
+  bill_export_detail: BillExportDetail[];
 }

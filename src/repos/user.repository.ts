@@ -3,6 +3,7 @@ import { AppDataSource } from "@config/db";
 import { UserEntity } from "@entity/user.entity";
 import { OrderByEnum } from "@models/user/orderBy.enum";
 import { ListUserRequest } from "@models/user/list-user.request";
+import { Role } from "@enums/role.enum";
 
 export const UserRepository = AppDataSource.getRepository(UserEntity).extend({
   getList(request: ListUserRequest) {
@@ -25,5 +26,12 @@ export const UserRepository = AppDataSource.getRepository(UserEntity).extend({
     }
 
     return query.take(take).skip(skip).getManyAndCount();
+  },
+
+  totalCustomer() {
+    return this.createQueryBuilder("user")
+      .select("COUNT(user.id)", "total_user")
+      .where("user.role = :role", { role: Role.USER })
+      .getRawOne();
   },
 });

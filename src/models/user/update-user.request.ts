@@ -8,6 +8,9 @@ export class UpdateUserRequest {
   @Allow()
   email: string;
 
+  @Allow()
+  fullName: string;
+
   @IsOptional()
   @IsEnum(Gender)
   sex: Gender;

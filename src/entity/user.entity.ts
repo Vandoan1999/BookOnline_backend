@@ -8,6 +8,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { BillExport } from "./bill-export.entity";
 import { CommentEntity } from "./comment.entity";
 import { RatingEntity } from "./rating.entity";
 
@@ -18,6 +19,9 @@ export class UserEntity {
 
   @Column({ unique: true })
   username: string;
+
+  @Column({ nullable: true })
+  fullName: string;
 
   @Column({ unique: true })
   email: string;
@@ -72,4 +76,7 @@ export class UserEntity {
     onDelete: "CASCADE",
   })
   ratings: [];
+
+  @OneToMany(() => BillExport, (bill_import) => bill_import.user)
+  bill_export: BillExport[];
 }

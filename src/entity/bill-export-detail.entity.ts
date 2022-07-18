@@ -6,13 +6,13 @@ import {
   ManyToOne,
   PrimaryColumn,
 } from "typeorm";
-import { BillImport } from "./bill-import.entity";
+import { BillExport } from "./bill-export.entity";
 import { BookEntity } from "./book.entity";
 
-@Entity("bill_import_detail")
-export class BillImportDetail {
+@Entity("bill_export_detail")
+export class BillExportDetail {
   @PrimaryColumn({ type: "uuid" })
-  bill_import_id: string;
+  bill_export_id: string;
 
   @PrimaryColumn({ type: "uuid" })
   book_id: string;
@@ -20,17 +20,17 @@ export class BillImportDetail {
   @Column({ type: "int" })
   quantity: number;
 
-  @ManyToOne(() => BookEntity, (book) => book.bill_import_detail, {
+  @ManyToOne(() => BookEntity, (book) => book.bill_export_detail, {
     onDelete: "CASCADE",
   })
   @JoinColumn({ name: "book_id", referencedColumnName: "id" })
   book: BookEntity;
 
-  @ManyToOne(() => BillImport, (bill) => bill.bill_import_details, {
+  @ManyToOne(() => BillExport, (bill) => bill.bill_export_detail, {
     onDelete: "CASCADE",
   })
-  @JoinColumn({ name: "bill_import_id", referencedColumnName: "id" })
-  bill_import: BillImport;
+  @JoinColumn({ name: "bill_export_id", referencedColumnName: "id" })
+  bill_export: BillExport;
 
   @CreateDateColumn({ type: "timestamptz" })
   created_at: Date;

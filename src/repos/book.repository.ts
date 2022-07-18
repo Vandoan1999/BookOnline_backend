@@ -13,7 +13,6 @@ export const BookRepository = AppDataSource.getRepository(BookEntity).extend({
 
     const query = this.createQueryBuilder("book");
     query.leftJoinAndSelect("book.images", "image");
-    query.leftJoinAndSelect("book.supplier", "supplier");
     query.leftJoinAndSelect("book.categories", "categories");
     query.addSelect(
       `(select avg(r.rating_number)from rating r  where r."bookIdId" = book.id)`,

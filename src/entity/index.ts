@@ -8,3 +8,7 @@ export * from "@entity/category.entity"; //7
 export * from "@entity/comment.entity"; //8
 export * from "@entity/book.entity"; //9
 export * from "@entity/shipper.entity"; //10
+export * from "@entity/bill-import.entity"; //11
+export * from "@entity/bill-import-detail.entity"; //12
+export * from "@entity/bill-export.entity"; //13
+export * from "@entity/bill-export-detail.entity"; //14
