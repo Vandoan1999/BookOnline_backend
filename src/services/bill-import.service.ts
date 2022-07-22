@@ -8,10 +8,11 @@ import { StatusCodes } from "http-status-codes";
 import { BillImportDetailRepository } from "@repos/bill-import-detail.repository";
 import { BillImportRepository } from "@repos/bill-import.repository";
 import { ListBillImportRequest } from "@models/bill_import/list-bill-import.request";
-import { LessThan, MoreThanOrEqual } from "typeorm";
+import { MoreThanOrEqual } from "typeorm";
 import { UpdateBillImportRequest } from "@models/bill_import/update-bill-import.request";
 import { SupplierRepository } from "@repos/supplier.repository";
 import { BookRepository } from "@repos/book.repository";
+
 require("dotenv").config();
 @Service()
 export class BillImportService {
@@ -58,7 +59,8 @@ export class BillImportService {
 
   async delete(id: string) {
     if (id) {
-      return BillImportRepository.delete({ id });
+      const bill = await BillImportRepository.findOneByOrFail({ id });
+      return BillImportRepository.delete({ id: bill.id });
     }
   }
 
@@ -73,5 +75,17 @@ export class BillImportService {
       totalBill: res[0],
       totalBillInCurrentDate: res[1],
     };
+  }
+
+  async update(request: UpdateBillImportRequest) {
+    const billImport = await BillImportRepository.findOneOrFail({
+      where: { id: request.id },
+    });
+    if (request.supplier_id) {
+      const supplier = await SupplierRepository.findOneOrFail({
+        where: { id: request.supplier_id },
+      });
+      billImport.supplier = supplier;
+    }
   }
 }

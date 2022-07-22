@@ -9,6 +9,9 @@ import supplierRouter from "./supplier.controller";
 import billImportRouter from "./bill-import.controller";
 import billExportRouter from "./bill-export.controller";
 import dashboardRouter from "./dashboard.controller";
+import imageRouter from "./image.controller";
+import billImportDetailRouter from "./bill-import-detail.controller";
+import billExportDetailRouter from "./bill-export-detail.controller";
 // Export the base-router
 const baseRouter = Router();
 
@@ -20,8 +23,11 @@ baseRouter.use("/rating", ratingRouter);
 baseRouter.use("/categories", categorRouter);
 baseRouter.use("/suppliers", supplierRouter);
 baseRouter.use("/bill_import", billImportRouter);
+baseRouter.use("/bill_import_detail", billImportDetailRouter);
 baseRouter.use("/bill_export", billExportRouter);
+baseRouter.use("/bill_export_detail", billExportDetailRouter);
 baseRouter.use("/dashboard", dashboardRouter);
+baseRouter.use("/images", imageRouter);
 baseRouter.use("/test", testRouter);
 
 // Export default.

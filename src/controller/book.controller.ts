@@ -4,12 +4,14 @@ import { Router } from "express";
 import { ResponseBuilder } from "../ultis/response-builder";
 import { transformAndValidate } from "../ultis/transformAndValidate";
 import Container from "typedi";
-import { verifyToken } from "@middleware/verifyToken";
+import { verifyToken } from "@middleware/verify-token";
 import { ListBookRequest } from "@models/book/list-book.request";
 import { BookEntity } from "@entity/book.entity";
 import { UpdateBookRequest } from "@models/book/update-book.request";
 import { ApiError } from "../ultis/apiError";
 import { StatusCodes } from "http-status-codes";
+import { verifyUser } from "@middleware/verify-user";
+
 const router = Router();
 
 const url = {
@@ -38,7 +40,7 @@ router.get(url.get, async (req, res) => {
 });
 
 //add new book
-router.post(url.add, verifyToken, async (req, res) => {
+router.post(url.add, verifyToken, verifyUser, async (req, res) => {
   const request = await transformAndValidate<CreateBookRequest>(
     CreateBookRequest,
     req.body
@@ -56,7 +58,7 @@ router.post(url.add, verifyToken, async (req, res) => {
 });
 
 //update book
-router.put(url.update, verifyToken, async (req, res) => {
+router.put(url.update, verifyToken, verifyUser, async (req, res) => {
   const request = await transformAndValidate<UpdateBookRequest>(
     UpdateBookRequest,
     req.body
@@ -83,27 +85,37 @@ router.get(url.detail, async (req, res) => {
 });
 
 //delete multiple
-router.delete(url.delete_multiple, verifyToken, async (req, res) => {
-  const bookService = Container.get(BookService);
+router.delete(
+  url.delete_multiple,
+  verifyToken,
+  verifyUser,
+  async (req, res) => {
+    const bookService = Container.get(BookService);
 
-  const result = await bookService.delete_multiple(req);
+    const result = await bookService.delete_multiple(req);
 
-  return res.json(
-    new ResponseBuilder<any>({ book_deleted: result }).withSuccess().build()
-  );
-});
+    return res.json(
+      new ResponseBuilder<any>({ book_deleted: result }).withSuccess().build()
+    );
+  }
+);
 
 //delete book
-router.delete(url.delete, verifyToken, async (req, res) => {
+router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
   if (!req.params.id) {
     throw ApiError(StatusCodes.BAD_REQUEST, "id param empty");
   }
 
   const bookService = Container.get(BookService);
 
-  const result = await bookService.delete(req.params.id);
+  await bookService.delete(req.params.id);
 
-  return res.json(new ResponseBuilder<any>(result).withSuccess().build());
+  return res.json(
+    new ResponseBuilder<any>()
+      .withSuccess()
+      .withMessage("delete book success ")
+      .build()
+  );
 });
 
 // Export default

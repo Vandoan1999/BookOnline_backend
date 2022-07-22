@@ -1,14 +1,11 @@
-import { BookEntity } from "@entity/book.entity";
 import { CreateBookRequest } from "@models/book/create-book.request";
 import { ListBookRequest } from "@models/book/list-book.request";
 import { UpdateBookRequest } from "@models/book/update-book.request";
 import { BookRepository } from "@repos/book.repository";
-import { plainToClass } from "class-transformer";
 import { StatusCodes } from "http-status-codes";
 import { ApiError } from "../ultis/apiError";
 import { Service } from "typedi";
 import { ImageRepository } from "@repos/image.repository";
-import { SupplierRepository } from "@repos/supplier.repository";
 import { CategoryRepository } from "@repos/category.repository";
 import { In } from "typeorm";
 import { AppDataSource } from "@config/db";
@@ -50,7 +47,7 @@ export class BookService {
     result.entities.forEach((item) => {
       const book_raw = result.raw.find((raw) => raw.book_id == item.id);
 
-      item["ratings_number"] = book_raw ? book_raw.rating_number : 0;
+      item["rating_number"] = book_raw ? book_raw.rating_number : 0;
     });
     const total = await BookRepository.count();
     return {
@@ -154,7 +151,7 @@ export class BookService {
   async detail(id: string) {
     const result = await BookRepository.findById(id);
     if (!result.entities[0])
-      throw ApiError(StatusCodes.NOT_FOUND, `product width id ${id} not found`);
+      throw ApiError(StatusCodes.NOT_FOUND, `book width id ${id} not found`);
     result.entities.forEach((item, index) => {
       item["rating_number"] = result.raw[index]["rating_number"] || 0;
     });
@@ -163,8 +160,8 @@ export class BookService {
   }
 
   async delete(id: string) {
-    const result = await BookRepository.delete({ id });
-    return result;
+    const book = await BookRepository.findOneOrFail({ where: { id: id } });
+    await BookRepository.delete({ id: book.id });
   }
 
   async delete_multiple(request: any) {

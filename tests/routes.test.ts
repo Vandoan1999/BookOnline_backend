@@ -348,7 +348,6 @@ describe("start test", () => {
         .delete(`/api/books/${book_to_be_delete.id}`)
         .set("Authorization", `Bear ${accessToken}`);
       expect(data.type).toBe("success");
-      expect(data.data.affected).toBe(1);
     });
 
     test("delete muitiple book", async () => {
@@ -421,6 +420,7 @@ describe("start test", () => {
 
           const { body: data } = await request
             .post(`/api/rating`)
+            .set("Authorization", `Bear ${accessToken}`)
             .send(fake_data);
 
           expect(data.type).toBe("success");

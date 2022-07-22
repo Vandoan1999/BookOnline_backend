@@ -5,7 +5,7 @@ import { Router } from "express";
 import { ResponseBuilder } from "../ultis/response-builder";
 import { transformAndValidate } from "../ultis/transformAndValidate";
 import { Container } from "typedi";
-import { verifyToken } from "@middleware/verifyToken";
+import { verifyToken } from "@middleware/verify-token";
 const router = Router();
 
 const url = {
@@ -22,9 +22,7 @@ router.post(url.login, async (req, res) => {
   const authService = Container.get(AuthService);
   const token = await authService.login(request);
   res.json(
-    new ResponseBuilder<object>({ accessToken: token, refeshToken: "" })
-      .withSuccess()
-      .build()
+    new ResponseBuilder<object>({ accessToken: token }).withSuccess().build()
   );
 });
 
