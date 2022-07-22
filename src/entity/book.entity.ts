@@ -77,7 +77,7 @@ export class BookEntity {
   })
   order_detail: OrderDetailEntity[];
 
-  @OneToMany(() => RatingEntity, (rating) => rating.book_id, {
+  @OneToMany(() => RatingEntity, (rating) => rating.book, {
     onDelete: "CASCADE",
     nullable: true,
   })

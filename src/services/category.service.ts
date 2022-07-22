@@ -17,7 +17,7 @@ export class CategoryService {
 
   getList() {
     return CategoryRepository.findAndCount({
-      order: { created_at: Sort.DESC },
+      order: { name: Sort.ASC },
     });
   }
 
@@ -65,14 +65,10 @@ export class CategoryService {
     if (user.role === Role.USER) {
       throw ApiError(StatusCodes.FORBIDDEN);
     }
-    const category = await CategoryRepository.findOne({
+    const category = await CategoryRepository.findOneOrFail({
       where: { id },
     });
 
-    if (!category) {
-      throw ApiError(StatusCodes.NOT_FOUND);
-    }
-
-    return CategoryRepository.delete({ id });
+    return CategoryRepository.delete({ id: category.id });
   }
 }

@@ -2,17 +2,18 @@ import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
 import { ApiError } from "../ultis/apiError";
 import { ResponseBuilder } from "../ultis/response-builder";
-import { verifyToken } from "@middleware/verifyToken";
 import Container from "typedi";
 import { DashboardService } from "@services/dashboard.service";
 import { Role } from "@enums/role.enum";
+import { verifyToken } from "@middleware/verify-token";
+import { verifyUser } from "@middleware/verify-user";
 const router = Router();
 
 const url = {
   get: "/init",
 };
 
-router.get(url.get, verifyToken, async (req, res) => {
+router.get(url.get, verifyToken, verifyUser, async (req, res) => {
   if (req["user"] && req["user"].role === Role.USER) {
     throw ApiError(
       StatusCodes.FORBIDDEN,

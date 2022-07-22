@@ -18,6 +18,7 @@ export class ImageService {
   }
 
   async delete(id: string) {
-    await ImageRepository.delete({ id });
+    const image = await ImageRepository.findOneOrFail({ where: { id } });
+    await ImageRepository.delete({ id: image.id });
   }
 }

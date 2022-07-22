@@ -1,30 +1,63 @@
 import { Router } from "express";
-import { verifyToken } from "@middleware/verifyToken";
-import { ApiError } from "../ultis/apiError";
-import { StatusCodes } from "http-status-codes";
-import { Role } from "@enums/role.enum";
+import { verifyToken } from "@middleware/verify-token";
 import Container from "typedi";
-import { BillImportService } from "@services/bill-import.service";
 import { ResponseBuilder } from "../ultis/response-builder";
 import { BillImportDetailService } from "@services/bill-import-detail.service";
+import { verifyUser } from "@middleware/verify-user";
+import { transformAndValidate } from "src/ultis/transformAndValidate";
+import { UpdateBillImportDetailRequest } from "@models/bill_import_detail/update-bill-import-detail.request";
+import { CreateBillImportDetailRequest } from "@models/bill_import_detail/add-bill-import-detail.request";
+
 const router = Router();
 
 const url = {
-  delete: "/:id",
+  delete: "/:book_id/:bill_import_id",
+  update: "/",
+  add: "/",
 };
 
-router.delete(url.delete, verifyToken, async (req, res) => {
-  if (req["user"] && req["user"].role === Role.USER) {
-    throw ApiError(
-      StatusCodes.FORBIDDEN,
-      `user name: ${req["user"].username} and email ${req["user"].email} dose not have permission!`
-    );
-  }
-
+router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
   const billImportDetailService = Container.get(BillImportDetailService);
   await billImportDetailService.delete(
-    req.params.book_id,
-    req.params.bill_import_id
+    req.params?.book_id,
+    req.params?.bill_import_id
   );
-  return res.json(new ResponseBuilder<any>().withSuccess().build());
+  return res.json(
+    new ResponseBuilder<any>()
+      .withSuccess()
+      .withMessage("delete bill import detail success !")
+      .build()
+  );
 });
+
+router.put(url.update, verifyToken, verifyUser, async (req, res) => {
+  const request = await transformAndValidate<UpdateBillImportDetailRequest>(
+    UpdateBillImportDetailRequest,
+    req.body
+  );
+  const billImportDetailService = Container.get(BillImportDetailService);
+  await billImportDetailService.update(request);
+  return res.json(
+    new ResponseBuilder<any>()
+      .withSuccess()
+      .withMessage("update bill import detail success !")
+      .build()
+  );
+});
+
+router.post(url.add, verifyToken, verifyUser, async (req, res) => {
+  const request = await transformAndValidate<CreateBillImportDetailRequest>(
+    CreateBillImportDetailRequest,
+    req.body
+  );
+  const billImportDetailService = Container.get(BillImportDetailService);
+  await billImportDetailService.create(request);
+  return res.json(
+    new ResponseBuilder<any>()
+      .withSuccess()
+      .withMessage("update bill import detail success !")
+      .build()
+  );
+});
+
+export default router;

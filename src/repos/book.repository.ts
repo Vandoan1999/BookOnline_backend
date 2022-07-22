@@ -15,7 +15,7 @@ export const BookRepository = AppDataSource.getRepository(BookEntity).extend({
     query.leftJoinAndSelect("book.images", "image");
     query.leftJoinAndSelect("book.categories", "categories");
     query.addSelect(
-      `(select avg(r.rating_number)from rating r  where r."bookIdId" = book.id)`,
+      `(select avg(r.rating_number)from rating r  where r."book_id" = book.id)`,
       "rating_number"
     );
     if (request.search) {
@@ -45,11 +45,10 @@ export const BookRepository = AppDataSource.getRepository(BookEntity).extend({
   findById(id: string) {
     return this.createQueryBuilder("book")
       .leftJoinAndSelect("book.images", "image")
-      .leftJoinAndSelect("book.supplier", "supplier")
       .leftJoinAndSelect("book.categories", "categories")
       .leftJoinAndSelect("book.ratings", "ratings")
       .addSelect(
-        `(select avg(r.rating_number)from rating r  where r."bookIdId" = book.id)`,
+        `(select avg(r.rating_number) from rating r  where r."book_id" = book.id)`,
         "rating_number"
       )
       .where("book.id = :id", { id })

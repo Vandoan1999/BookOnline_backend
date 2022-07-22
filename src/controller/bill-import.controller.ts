@@ -1,31 +1,25 @@
 import { Router } from "express";
-import { verifyToken } from "@middleware/verifyToken";
-import { ApiError } from "../ultis/apiError";
-import { StatusCodes } from "http-status-codes";
-import { Role } from "@enums/role.enum";
+import { verifyToken } from "@middleware/verify-token";
+import { verifyUser } from "@middleware/verify-user";
 import { transformAndValidate } from "../ultis/transformAndValidate";
 import { CreateBillImportRequest } from "@models/bill_import/create-bill-import.request";
 import Container from "typedi";
 import { BillImportService } from "@services/bill-import.service";
 import { ResponseBuilder } from "../ultis/response-builder";
 import { ListBillImportRequest } from "@models/bill_import/list-bill-import.request";
+import { UpdateBillImportRequest } from "@models/bill_import/update-bill-import.request";
 const router = Router();
 
 const url = {
   add: "/",
   update: "/",
   get: "/",
+  detail: "/",
   delete: "/:id",
   init: "/init",
 };
 
-router.get(url.get, verifyToken, async (req, res) => {
-  if (req["user"] && req["user"].role === Role.USER) {
-    throw ApiError(
-      StatusCodes.FORBIDDEN,
-      `user name: ${req["user"].username} and email ${req["user"].email} dose not have permission!`
-    );
-  }
+router.get(url.get, verifyToken, verifyUser, async (req, res) => {
   const request = await transformAndValidate<ListBillImportRequest>(
     ListBillImportRequest,
     req.query
@@ -37,45 +31,51 @@ router.get(url.get, verifyToken, async (req, res) => {
   );
 });
 
-router.delete(url.delete, verifyToken, async (req, res) => {
-  if (req["user"] && req["user"].role === Role.USER) {
-    throw ApiError(
-      StatusCodes.FORBIDDEN,
-      `user name: ${req["user"].username} and email ${req["user"].email} dose not have permission!`
-    );
-  }
-
+router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
   const billImportService = Container.get(BillImportService);
   await billImportService.delete(req.params.id);
-  return res.json(new ResponseBuilder<any>().withSuccess().build());
+  return res.json(
+    new ResponseBuilder<any>()
+      .withSuccess()
+      .withMessage("delete bill import success!")
+      .build()
+  );
 });
 
-router.get(url.init, verifyToken, async (req, res) => {
-  if (req["user"] && req["user"].role === Role.USER) {
-    throw ApiError(
-      StatusCodes.FORBIDDEN,
-      `user name: ${req["user"].username} and email ${req["user"].email} dose not have permission!`
-    );
-  }
+router.get(url.init, verifyToken, verifyUser, async (req, res) => {
   const billImportService = Container.get(BillImportService);
   const result = await billImportService.init();
   return res.json(new ResponseBuilder<any>(result).withSuccess().build());
 });
 
-router.post(url.add, verifyToken, async (req, res) => {
-  if (req["user"] && req["user"].role === Role.USER) {
-    throw ApiError(
-      StatusCodes.FORBIDDEN,
-      `user name: ${req["user"].username} and email ${req["user"].email} dose not have permission!`
-    );
-  }
+router.post(url.add, verifyToken, verifyUser, async (req, res) => {
   const request = await transformAndValidate<CreateBillImportRequest>(
     CreateBillImportRequest,
     req.body
   );
   const billImportService = Container.get(BillImportService);
   await billImportService.create(request);
-  return res.json(new ResponseBuilder<any>().withSuccess().build());
+  return res.json(
+    new ResponseBuilder<any>()
+      .withSuccess()
+      .withMessage("create bill import success!")
+      .build()
+  );
+});
+
+router.put(url.update, verifyToken, verifyUser, async (req, res) => {
+  const request = await transformAndValidate<UpdateBillImportRequest>(
+    UpdateBillImportRequest,
+    req.body
+  );
+  const billImportService = Container.get(BillImportService);
+  await billImportService.update(request);
+  return res.json(
+    new ResponseBuilder<any>()
+      .withSuccess()
+      .withMessage("update bill import success!")
+      .build()
+  );
 });
 
 // Export default

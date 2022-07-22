@@ -5,13 +5,4 @@ export class UpdateBillImportRequest {
 
   @IsOptional()
   supplier_id: string;
-
-  @IsOptional()
-  @IsArray()
-  books: book_import[];
-}
-
-interface book_import {
-  id: string;
-  quality: number;
 }
