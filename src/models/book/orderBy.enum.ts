@@ -3,5 +3,5 @@ export enum OrderByEnum {
   sold = "sold",
   views = "views",
   name = "name",
-  new = "new",
+  created_at = "created_at",
 }

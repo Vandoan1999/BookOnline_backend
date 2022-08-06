@@ -36,7 +36,7 @@ export const BookRepository = AppDataSource.getRepository(BookEntity).extend({
     if (request.orderBy === OrderByEnum.views) {
       query.orderBy("book.views", request.order);
     }
-    if (request.orderBy === OrderByEnum.new) {
+    if (request.orderBy === OrderByEnum.created_at) {
       query.orderBy("book.created_at", request.order);
     }
     if (request.orderBy === OrderByEnum.name) {
