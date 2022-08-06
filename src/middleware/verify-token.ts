@@ -41,7 +41,7 @@ export async function verifyToken(
     req["user"] = user[0];
   } catch (error) {
     logger.err("UNHANDLED ERROR: Verify token error ", error);
-    throw ApiError(StatusCodes.UNAUTHORIZED, "token expired!");
+    throw ApiError(StatusCodes.UNAUTHORIZED, "token expired!", error);
   }
   return next();
 }
