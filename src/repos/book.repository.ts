@@ -29,13 +29,17 @@ export const BookRepository = AppDataSource.getRepository(BookEntity).extend({
 
     if (request.orderBy === OrderByEnum.price) {
       query.orderBy("book.price_export", request.order);
-    } else if (request.orderBy === OrderByEnum.sold) {
+    }
+    if (request.orderBy === OrderByEnum.sold) {
       query.orderBy("book.sold", request.order);
-    } else if (request.orderBy === OrderByEnum.views) {
+    }
+    if (request.orderBy === OrderByEnum.views) {
       query.orderBy("book.views", request.order);
-    } else if (request.newest) {
-      query.orderBy("book.created_at", Sort.DESC);
-    } else {
+    }
+    if (request.orderBy === OrderByEnum.new) {
+      query.orderBy("book.created_at", request.order);
+    }
+    if (request.orderBy === OrderByEnum.name) {
       query.orderBy("book.name", Sort.ASC);
     }
 

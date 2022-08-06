@@ -9,9 +9,6 @@ export class ListBookRequest extends Pagination {
   @Allow()
   author: string;
 
-  @Allow()
-  newest: boolean;
-
   @IsOptional()
   @IsEnum(Sort)
   order: Sort;
