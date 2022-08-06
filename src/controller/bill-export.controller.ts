@@ -18,13 +18,13 @@ const url = {
   init: "/init",
 };
 
-router.get(url.get, verifyToken, verifyUser, async (req, res) => {
+router.get(url.get, verifyToken, async (req, res) => {
   const request = await transformAndValidate<ListBillExportRequest>(
     ListBillExportRequest,
     req.query
   );
   const billExportService = Container.get(BillExportService);
-  const [result, total] = await billExportService.list(request);
+  const [result, total] = await billExportService.list(request, req["user"]);
   return res.json(
     new ResponseBuilder<any>(result).withMeta({ total }).withSuccess().build()
   );

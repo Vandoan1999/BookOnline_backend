@@ -6,6 +6,7 @@ import { StatusCodes } from "http-status-codes";
 import { ResponseBuilder } from "../ultis/response-builder";
 import Container from "typedi";
 import { UserService } from "@services/user.service";
+import { Role } from "@enums/role.enum";
 require("dotenv").config();
 export async function verifyToken(
   req: Request,
@@ -27,6 +28,15 @@ export async function verifyToken(
     const decoded = jwt.verify(token, process.env.JWT_SECRET!);
     const userService = Container.get(UserService);
     const user = await userService.detail(decoded["id"]);
+    if (
+      user[0]?.is_pass_change &&
+      user[0]?.is_pass_change === true &&
+      user[0].role === Role.USER
+    )
+      throw ApiError(
+        StatusCodes.NOT_FOUND,
+        "your pasword reseted, you must change password to access!"
+      );
     if (!user) throw ApiError(StatusCodes.NOT_FOUND, "user not exits");
     req["user"] = user[0];
   } catch (error) {

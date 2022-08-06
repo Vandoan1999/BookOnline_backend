@@ -61,8 +61,8 @@ export class BillExportService {
     }
   }
 
-  list(request: ListBillExportRequest) {
-    return BillExportRepository.getList(request);
+  list(request: ListBillExportRequest, user: UserInfo) {
+    return BillExportRepository.getList(request, user);
   }
 
   async delete(id: string) {
