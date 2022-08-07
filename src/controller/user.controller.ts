@@ -11,6 +11,7 @@ import { UserEntity } from "@entity/user.entity";
 import { UpdateUserRequest } from "@models/user/update-user.request";
 import { Role } from "@enums/role.enum";
 import { verifyUser } from "@middleware/verify-user";
+import { upload } from "@common/multer";
 const router = Router();
 
 const url = {
@@ -33,40 +34,45 @@ router.get(url.get, verifyToken, verifyUser, async (req, res) => {
       `user name: ${req["user"].username} and email ${req["user"].email} not have permission!`
     );
   }
-  const [books, total] = await userService.getList(request);
+  const { users, total } = await userService.getList(request);
   return res.json(
-    new ResponseBuilder<UserEntity[]>(books)
+    new ResponseBuilder<UserEntity[]>(users)
       .withMeta({ total })
       .withSuccess()
       .build()
   );
 });
 
-router.put(url.update, verifyToken, verifyUser, async (req, res) => {
-  const request = await transformAndValidate<UpdateUserRequest>(
-    UpdateUserRequest,
-    req.body
-  );
+router.put(
+  url.update,
+  verifyToken,
+  verifyUser,
+  upload.single("image"),
+  async (req: any, res) => {
+    const request = await transformAndValidate<UpdateUserRequest>(
+      UpdateUserRequest,
+      req.body
+    );
 
-  const userService = Container.get(UserService);
+    const userService = Container.get(UserService);
+    if (req.file) {
+      request.image = req.file;
+    }
+    await userService.update(request, req["user"]);
 
-  await userService.update(request, req["user"]);
-
-  return res.json(
-    new ResponseBuilder()
-      .withSuccess()
-      .withMessage("update user success")
-      .build()
-  );
-});
+    return res.json(
+      new ResponseBuilder()
+        .withSuccess()
+        .withMessage("update user success")
+        .build()
+    );
+  }
+);
 
 router.get(url.detail, verifyToken, verifyUser, async (req, res) => {
   const userService = Container.get(UserService);
   const user = await userService.detail(req.params.id, req["user"]);
-
-  return res.json(
-    new ResponseBuilder<UserEntity>(user[0]).withSuccess().build()
-  );
+  return res.json(new ResponseBuilder<UserEntity>(user).withSuccess().build());
 });
 
 router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
@@ -78,9 +84,14 @@ router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
   }
   const userService = Container.get(UserService);
 
-  const result = await userService.delete(req.params.id);
+  await userService.delete(req.params.id);
 
-  return res.json(new ResponseBuilder<any>(result).withSuccess().build());
+  return res.json(
+    new ResponseBuilder<any>()
+      .withMessage("deleted user successfully")
+      .withSuccess()
+      .build()
+  );
 });
 
 // Export default

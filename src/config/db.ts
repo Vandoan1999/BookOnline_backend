@@ -2,13 +2,13 @@ import { DataSource } from "typeorm";
 import * as entiry from "@entity/index";
 export const AppDataSource = new DataSource({
   type: "postgres",
-  host: "localhost",
+  host: "13.213.57.126",
   port: 5432,
   username: "postgres",
   password: "12345678",
   database: "postgres",
   synchronize: true,
-  logging: false,
+  logging: true,
   entities: [...Object.values(entiry).map((item) => item)],
   subscribers: [],
   migrations: [],

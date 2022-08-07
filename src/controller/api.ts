@@ -4,6 +4,7 @@ import bookRouter from "./book.controller";
 import userRouter from "./user.controller";
 import ratingRouter from "./rating.controller";
 import testRouter from "./test.controller";
+import aws from "./aws.controller";
 import categorRouter from "./category.controller";
 import supplierRouter from "./supplier.controller";
 import billImportRouter from "./bill-import.controller";
@@ -28,6 +29,7 @@ baseRouter.use("/bill_export", billExportRouter);
 baseRouter.use("/bill_export_detail", billExportDetailRouter);
 baseRouter.use("/dashboard", dashboardRouter);
 baseRouter.use("/images", imageRouter);
+baseRouter.use("/aws", aws);
 baseRouter.use("/test", testRouter);
 
 // Export default.

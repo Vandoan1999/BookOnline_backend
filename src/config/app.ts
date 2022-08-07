@@ -11,4 +11,7 @@ export const config = {
     categories: "categories",
     suppliers: "suppliers",
   },
+  s3Bucket: "shopbook",
+  s3BucketForder: "images/",
+  s3Url: `https://shopbook.s3.ap-southeast-1.amazonaws.com/images/`,
 };

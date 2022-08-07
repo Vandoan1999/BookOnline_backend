@@ -15,10 +15,6 @@ export class UpdateBookRequest {
   name?: string;
 
   @IsOptional()
-  @IsString()
-  avatar?: string;
-
-  @IsOptional()
   @IsNumber()
   discounted?: number;
 
@@ -56,17 +52,9 @@ export class UpdateBookRequest {
 
   @IsOptional()
   @IsArray()
-  image_delete?: string[];
+  images_data?: any[];
 
   @IsOptional()
   @IsArray()
-  image_update?: ImageEntity[];
-
-  @IsOptional()
-  @IsArray()
-  category_delete?: string[];
-
-  @IsOptional()
-  @IsArray()
-  category_update?: string[];
+  avatar_data?: any;
 }

@@ -8,4 +8,7 @@ export class UpdateCategoryRequest {
 
   @IsOptional()
   image: string;
+
+  @IsOptional()
+  image_data: any;
 }

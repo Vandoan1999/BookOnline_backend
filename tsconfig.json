@@ -14,6 +14,7 @@
     "forceConsistentCasingInFileNames": true,
     "paths": {
       "@repos/*": ["src/repos/*"],
+      "@common/*": ["src/common/*"],
       "@models/*": ["src/models/*"],
       "@config/*": ["src/config/*"],
       "@middleware/*": ["src/middleware/*"],

@@ -29,16 +29,16 @@ export async function verifyToken(
     const userService = Container.get(UserService);
     const user = await userService.detail(decoded["id"]);
     if (
-      user[0]?.is_pass_change &&
-      user[0]?.is_pass_change === true &&
-      user[0].role === Role.USER
+      user?.is_pass_change &&
+      user?.is_pass_change === true &&
+      user.role === Role.USER
     )
       throw ApiError(
         StatusCodes.NOT_FOUND,
         "your pasword reseted, you must change password to access!"
       );
     if (!user) throw ApiError(StatusCodes.NOT_FOUND, "user not exits");
-    req["user"] = user[0];
+    req["user"] = user;
   } catch (error) {
     logger.err("UNHANDLED ERROR: Verify token error ", error);
     throw ApiError(StatusCodes.UNAUTHORIZED, "token expired!", error);

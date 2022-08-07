@@ -3,6 +3,9 @@ export class CreateCategoryRequest {
   @IsNotEmpty()
   name: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   image: string;
+
+  @IsOptional()
+  image_data: any;
 }

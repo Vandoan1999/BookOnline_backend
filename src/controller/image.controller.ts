@@ -7,12 +7,12 @@ import { verifyUser } from "@middleware/verify-user";
 const router = Router();
 
 const url = {
-  delete: "/:id",
+  delete: "/:ids",
 };
 
 router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
   const imageService = Container.get(ImageService);
-  await imageService.delete(req.params.id);
+  await imageService.delete(req.params.ids);
   res.json(
     new ResponseBuilder<any>()
       .withSuccess()

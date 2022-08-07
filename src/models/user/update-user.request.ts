@@ -5,18 +5,18 @@ export class UpdateUserRequest {
   @IsNotEmpty()
   id: string;
 
-  @Allow()
+  @IsOptional()
   email: string;
 
-  @Allow()
+  @IsOptional()
   fullName: string;
 
   @IsOptional()
   @IsEnum(Gender)
   sex: Gender;
 
-  @Allow()
-  image: string;
+  @IsOptional()
+  image: any;
 
   @IsOptional()
   address: string;
