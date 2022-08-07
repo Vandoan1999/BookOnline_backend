@@ -1,11 +1,7 @@
 import { config } from "@config/app";
 import { AppDataSource } from "@config/db";
-import Container, { Service } from "typedi";
+import { Service } from "typedi";
 import logger from "jet-logger";
-import { faker } from "@faker-js/faker";
-import { RegisterRequest } from "@models/auth/register.request";
-import { Role } from "@enums/role.enum";
-import { AuthService } from "./auth.service";
 @Service()
 export class TestingService {
   constructor() {}
