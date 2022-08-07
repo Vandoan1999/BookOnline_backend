@@ -1,431 +1,431 @@
-import { request } from "./helpers";
-import { faker } from "@faker-js/faker";
-import { AppDataSource } from "../src/config/db";
-import { get } from "../src/server";
-import { Server } from "http";
-import { CreateBookRequest } from "../src/models/book/create-book.request";
-import { UpdateBookRequest } from "../src/models/book/update-book.request";
-import { UpdateUserRequest } from "../src/models/user/update-user.request";
-import { CreateBillImportRequest } from "../src/models/bill_import/create-bill-import.request";
-import { CreateBillExportRequest } from "../src/models/bill_export/create-bill-export.request";
-import { differenceBy } from "lodash";
-import { RegisterRequest } from "../src/models/auth/register.request";
-describe("start test", () => {
-  let accessToken = "";
-  let list_user: any[] = [];
-  let list_supplier: any[] = [];
-  let list_category: any[] = [];
-  let list_book: any[] = [];
-  let server: Server;
+// import { request } from "./helpers";
+// import { faker } from "@faker-js/faker";
+// import { AppDataSource } from "../src/config/db";
+// import { get } from "../src/server";
+// import { Server } from "http";
+// import { CreateBookRequest } from "../src/models/book/create-book.request";
+// import { UpdateBookRequest } from "../src/models/book/update-book.request";
+// import { UpdateUserRequest } from "../src/models/user/update-user.request";
+// import { CreateBillImportRequest } from "../src/models/bill_import/create-bill-import.request";
+// import { CreateBillExportRequest } from "../src/models/bill_export/create-bill-export.request";
+// import { differenceBy } from "lodash";
+// import { RegisterRequest } from "../src/models/auth/register.request";
+// describe("start test", () => {
+//   let accessToken = "";
+//   let list_user: any[] = [];
+//   let list_supplier: any[] = [];
+//   let list_category: any[] = [];
+//   let list_book: any[] = [];
+//   let server: Server;
 
-  beforeAll(async () => {
-    server = get().listen(4000);
-    return await AppDataSource.initialize();
-  });
+//   beforeAll(async () => {
+//     server = get().listen(4000);
+//     return await AppDataSource.initialize();
+//   });
 
-  afterAll(() => {
-    // await request.get("/api/test");
-    server.close();
-  });
+//   afterAll(() => {
+//     // await request.get("/api/test");
+//     server.close();
+//   });
 
-  //auth controller
-  describe("auth controller", () => {
-    for (let i = 0; i < 25; i++) {
-      test("register users", async () => {
-        const fake_data: RegisterRequest = {
-          username: faker.name.findName() + Math.floor(Math.random() * 100),
-          email: faker.internet.email(),
-          password: "12345678",
-          fullName: faker.name.firstName() + " " + faker.name.lastName(),
-          address: faker.address.streetAddress(),
-          phone: faker.phone.number("'+84 91 ### ## ##'"),
-        };
+//   //auth controller
+//   describe("auth controller", () => {
+//     for (let i = 0; i < 25; i++) {
+//       test("register users", async () => {
+//         const fake_data: RegisterRequest = {
+//           username: faker.name.findName() + Math.floor(Math.random() * 100),
+//           email: faker.internet.email(),
+//           password: "12345678",
+//           fullName: faker.name.firstName() + " " + faker.name.lastName(),
+//           address: faker.address.streetAddress(),
+//           phone: faker.phone.number("'+84 91 ### ## ##'"),
+//         };
 
-        const { body: data } = await request
-          .post(`/api/auth/register`)
-          .send(fake_data);
-        expect(data.type).toBe("success");
-      });
-    }
+//         const { body: data } = await request
+//           .post(`/api/auth/register`)
+//           .send(fake_data);
+//         expect(data.type).toBe("success");
+//       });
+//     }
 
-    test("login admin", async () => {
-      const { body: data } = await request.post(`/api/auth/login`).send({
-        username: "admin",
-        password: "12345678",
-      });
-      accessToken = data.data.accessToken;
-      expect(data.type).toBe("success");
-    });
+//     test("login admin", async () => {
+//       const { body: data } = await request.post(`/api/auth/login`).send({
+//         username: "admin",
+//         password: "12345678",
+//       });
+//       accessToken = data.data.accessToken;
+//       expect(data.type).toBe("success");
+//     });
 
-    test("get profile user", async () => {
-      const { body: data } = await request
-        .get(`/api/auth/profile`)
-        .set("Authorization", `Bear ${accessToken}`);
-      expect(data.type).toBe("success");
-    });
-  });
+//     test("get profile user", async () => {
+//       const { body: data } = await request
+//         .get(`/api/auth/profile`)
+//         .set("Authorization", `Bear ${accessToken}`);
+//       expect(data.type).toBe("success");
+//     });
+//   });
 
-  //user controller
-  describe("user controller", () => {
-    let user_to_be_delete;
-    test("get list user", async () => {
-      const { body: data } = await request
-        .get(`/api/users`)
-        .set("Authorization", `Bear ${accessToken}`);
-      list_user = data.data;
+//   //user controller
+//   describe("user controller", () => {
+//     let user_to_be_delete;
+//     test("get list user", async () => {
+//       const { body: data } = await request
+//         .get(`/api/users`)
+//         .set("Authorization", `Bear ${accessToken}`);
+//       list_user = data.data;
 
-      expect(data.type).toBe("success");
-      expect(data.data.length).toBeGreaterThan(19);
-      user_to_be_delete = list_user.pop();
-    });
+//       expect(data.type).toBe("success");
+//       expect(data.data.length).toBeGreaterThan(19);
+//       user_to_be_delete = list_user.pop();
+//     });
 
-    test("get detail user", async () => {
-      const { body: data } = await request
-        .get(`/api/users/${user_to_be_delete.id}`)
-        .set("Authorization", `Bear ${accessToken}`);
-      expect(data.type).toBe("success");
-      expect(data.data.id).toBe(user_to_be_delete.id);
-    });
+//     test("get detail user", async () => {
+//       const { body: data } = await request
+//         .get(`/api/users/${user_to_be_delete.id}`)
+//         .set("Authorization", `Bear ${accessToken}`);
+//       expect(data.type).toBe("success");
+//       expect(data.data.id).toBe(user_to_be_delete.id);
+//     });
 
-    test("update user", async () => {
-      const fake_data: UpdateUserRequest = {
-        id: user_to_be_delete.id,
-        email: faker.internet.email(),
-        sex: Math.random() > 0.5 ? 1 : 0,
-        image: faker.image.avatar(),
-        address: faker.address.city(),
-        phone: faker.phone.number("+84 01 ### ## ##"),
-        bank: faker.finance.routingNumber(),
-        fullName: faker.name.firstName() + " " + faker.name.lastName(),
-      };
+//     test("update user", async () => {
+//       const fake_data: UpdateUserRequest = {
+//         id: user_to_be_delete.id,
+//         email: faker.internet.email(),
+//         sex: Math.random() > 0.5 ? 1 : 0,
+//         image: faker.image.avatar(),
+//         address: faker.address.city(),
+//         phone: faker.phone.number("+84 01 ### ## ##"),
+//         bank: faker.finance.routingNumber(),
+//         fullName: faker.name.firstName() + " " + faker.name.lastName(),
+//       };
 
-      const { body: data } = await request
-        .put(`/api/users`)
-        .send(fake_data)
-        .set("Authorization", `Bear ${accessToken}`);
+//       const { body: data } = await request
+//         .put(`/api/users`)
+//         .send(fake_data)
+//         .set("Authorization", `Bear ${accessToken}`);
 
-      expect(data.type).toBe("success");
-    });
+//       expect(data.type).toBe("success");
+//     });
 
-    test("delete user", async () => {
-      const { body: data } = await request
-        .delete(`/api/users/${user_to_be_delete.id}`)
-        .set("Authorization", `Bear ${accessToken}`);
-      expect(data.type).toBe("success");
-    });
-  });
+//     test("delete user", async () => {
+//       const { body: data } = await request
+//         .delete(`/api/users/${user_to_be_delete.id}`)
+//         .set("Authorization", `Bear ${accessToken}`);
+//       expect(data.type).toBe("success");
+//     });
+//   });
 
-  //supplier controller
-  describe("supplier controller", () => {
-    let supplier_to_be_delete;
-    let list_supplier_to_be_delete;
-    for (let i = 0; i < 25; i++) {
-      test("create supplier", async () => {
-        const fake_data = {
-          address: faker.address.city(),
-          phone: faker.phone.number("+84 01 ### ## ##"),
-          company:
-            faker.company.companyName() + Math.floor(Math.random() * 100),
-        };
-        const { body: data } = await request
-          .post(`/api/suppliers`)
-          .send(fake_data)
-          .set("Authorization", `Bear ${accessToken}`);
+//   //supplier controller
+//   describe("supplier controller", () => {
+//     let supplier_to_be_delete;
+//     let list_supplier_to_be_delete;
+//     for (let i = 0; i < 25; i++) {
+//       test("create supplier", async () => {
+//         const fake_data = {
+//           address: faker.address.city(),
+//           phone: faker.phone.number("+84 01 ### ## ##"),
+//           company:
+//             faker.company.companyName() + Math.floor(Math.random() * 100),
+//         };
+//         const { body: data } = await request
+//           .post(`/api/suppliers`)
+//           .send(fake_data)
+//           .set("Authorization", `Bear ${accessToken}`);
 
-        expect(data.type).toBe("success");
-      });
-    }
+//         expect(data.type).toBe("success");
+//       });
+//     }
 
-    test("list supplier greater than 19", async () => {
-      const { body: data } = await request
-        .get(`/api/suppliers`)
-        .set("Authorization", `Bear ${accessToken}`);
-      list_supplier = data.data;
+//     test("list supplier greater than 19", async () => {
+//       const { body: data } = await request
+//         .get(`/api/suppliers`)
+//         .set("Authorization", `Bear ${accessToken}`);
+//       list_supplier = data.data;
 
-      expect(data.type).toBe("success");
-      expect(data.data.length).toBeGreaterThan(19);
-      supplier_to_be_delete = list_supplier.pop();
-      list_supplier_to_be_delete = list_supplier
-        .splice(0, 5)
-        .map((item) => item.id);
-    });
+//       expect(data.type).toBe("success");
+//       expect(data.data.length).toBeGreaterThan(19);
+//       supplier_to_be_delete = list_supplier.pop();
+//       list_supplier_to_be_delete = list_supplier
+//         .splice(0, 5)
+//         .map((item) => item.id);
+//     });
 
-    test("update supplier", async () => {
-      const fake_data = {
-        id: supplier_to_be_delete.id,
-        address: faker.address.city(),
-        phone: faker.phone.number("+84 01 ### ## ##"),
-        company: faker.company.companyName() + Math.floor(Math.random() * 100),
-      };
-      const { body: data } = await request
-        .put(`/api/suppliers`)
-        .send(fake_data)
-        .set("Authorization", `Bear ${accessToken}`);
-      expect(data.type).toBe("success");
-    });
+//     test("update supplier", async () => {
+//       const fake_data = {
+//         id: supplier_to_be_delete.id,
+//         address: faker.address.city(),
+//         phone: faker.phone.number("+84 01 ### ## ##"),
+//         company: faker.company.companyName() + Math.floor(Math.random() * 100),
+//       };
+//       const { body: data } = await request
+//         .put(`/api/suppliers`)
+//         .send(fake_data)
+//         .set("Authorization", `Bear ${accessToken}`);
+//       expect(data.type).toBe("success");
+//     });
 
-    test("detail supplier", async () => {
-      const { body: data } = await request
-        .get(`/api/suppliers/${supplier_to_be_delete.id}`)
-        .set("Authorization", `Bear ${accessToken}`);
-      expect(data.type).toBe("success");
-      expect(data.data.id).toBe(supplier_to_be_delete.id);
-    });
+//     test("detail supplier", async () => {
+//       const { body: data } = await request
+//         .get(`/api/suppliers/${supplier_to_be_delete.id}`)
+//         .set("Authorization", `Bear ${accessToken}`);
+//       expect(data.type).toBe("success");
+//       expect(data.data.id).toBe(supplier_to_be_delete.id);
+//     });
 
-    test("delete supplier", async () => {
-      const { body: data } = await request
-        .delete(`/api/suppliers/${supplier_to_be_delete.id}`)
-        .set("Authorization", `Bear ${accessToken}`);
-      expect(data.type).toBe("success");
-      expect(data.data.affected).toBe(1);
-    });
+//     test("delete supplier", async () => {
+//       const { body: data } = await request
+//         .delete(`/api/suppliers/${supplier_to_be_delete.id}`)
+//         .set("Authorization", `Bear ${accessToken}`);
+//       expect(data.type).toBe("success");
+//       expect(data.data.affected).toBe(1);
+//     });
 
-    test("delete multiple supplier", async () => {
-      const { body: data } = await request
-        .delete(
-          `/api/suppliers/multiple?ids=${list_supplier_to_be_delete.toString()}`
-        )
-        .set("Authorization", `Bear ${accessToken}`);
-      expect(data.type).toBe("success");
-      expect(data.data.supplier_deleted.length).toBeGreaterThan(0);
-    });
-  });
+//     test("delete multiple supplier", async () => {
+//       const { body: data } = await request
+//         .delete(
+//           `/api/suppliers/multiple?ids=${list_supplier_to_be_delete.toString()}`
+//         )
+//         .set("Authorization", `Bear ${accessToken}`);
+//       expect(data.type).toBe("success");
+//       expect(data.data.supplier_deleted.length).toBeGreaterThan(0);
+//     });
+//   });
 
-  //category
-  describe("category controller", () => {
-    let category_to_be_delete;
-    for (let i = 0; i < 25; i++) {
-      test("create category", async () => {
-        const fake_data = {
-          name: faker.commerce.product() + Math.floor(Math.random() * 100),
-          image: faker.image.animals(),
-        };
-        const { body: data } = await request
-          .post(`/api/categories`)
-          .send(fake_data)
-          .set("Authorization", `Bear ${accessToken}`);
+//   //category
+//   describe("category controller", () => {
+//     let category_to_be_delete;
+//     for (let i = 0; i < 25; i++) {
+//       test("create category", async () => {
+//         const fake_data = {
+//           name: faker.commerce.product() + Math.floor(Math.random() * 100),
+//           image: faker.image.animals(),
+//         };
+//         const { body: data } = await request
+//           .post(`/api/categories`)
+//           .send(fake_data)
+//           .set("Authorization", `Bear ${accessToken}`);
 
-        expect(data.type).toBe("success");
-      });
-    }
+//         expect(data.type).toBe("success");
+//       });
+//     }
 
-    test("list category greater than 19", async () => {
-      const { body: data } = await request
-        .get(`/api/categories`)
-        .set("Authorization", `Bear ${accessToken}`);
-      list_category = data.data;
-      expect(data.type).toBe("success");
-      expect(data.data.length).toBeGreaterThan(19);
-      category_to_be_delete = list_category.pop();
-    });
+//     test("list category greater than 19", async () => {
+//       const { body: data } = await request
+//         .get(`/api/categories`)
+//         .set("Authorization", `Bear ${accessToken}`);
+//       list_category = data.data;
+//       expect(data.type).toBe("success");
+//       expect(data.data.length).toBeGreaterThan(19);
+//       category_to_be_delete = list_category.pop();
+//     });
 
-    test("update category", async () => {
-      const fake_data = {
-        id: category_to_be_delete.id,
-        name: faker.commerce.product() + Math.floor(Math.random() * 100),
-        image: faker.image.animals(),
-      };
-      const { body: data } = await request
-        .put(`/api/categories`)
-        .send(fake_data)
-        .set("Authorization", `Bear ${accessToken}`);
-      expect(data.type).toBe("success");
-    });
+//     test("update category", async () => {
+//       const fake_data = {
+//         id: category_to_be_delete.id,
+//         name: faker.commerce.product() + Math.floor(Math.random() * 100),
+//         image: faker.image.animals(),
+//       };
+//       const { body: data } = await request
+//         .put(`/api/categories`)
+//         .send(fake_data)
+//         .set("Authorization", `Bear ${accessToken}`);
+//       expect(data.type).toBe("success");
+//     });
 
-    test("detail category", async () => {
-      const { body: data } = await request
-        .get(`/api/categories/${category_to_be_delete.id}`)
-        .set("Authorization", `Bear ${accessToken}`);
-      expect(data.type).toBe("success");
-      expect(data.data.id).toBe(category_to_be_delete.id);
-    });
+//     test("detail category", async () => {
+//       const { body: data } = await request
+//         .get(`/api/categories/${category_to_be_delete.id}`)
+//         .set("Authorization", `Bear ${accessToken}`);
+//       expect(data.type).toBe("success");
+//       expect(data.data.id).toBe(category_to_be_delete.id);
+//     });
 
-    test("delete category", async () => {
-      const { body: data } = await request
-        .delete(`/api/categories/${category_to_be_delete.id}`)
-        .set("Authorization", `Bear ${accessToken}`);
-      expect(data.type).toBe("success");
-      expect(data.data.affected).toBe(1);
-    });
-  });
+//     test("delete category", async () => {
+//       const { body: data } = await request
+//         .delete(`/api/categories/${category_to_be_delete.id}`)
+//         .set("Authorization", `Bear ${accessToken}`);
+//       expect(data.type).toBe("success");
+//       expect(data.data.affected).toBe(1);
+//     });
+//   });
 
-  describe("book controller", () => {
-    let book_to_be_delete;
-    let list_book_to_be_delete;
-    for (let i = 0; i < 13; i++) {
-      test("create book", async () => {
-        const fake_data: CreateBookRequest = {
-          name: faker.internet.userName() + Math.floor(Math.random() * 100),
-          avatar: faker.image.avatar(),
-          discounted: Math.floor(Math.random() * 100),
-          price_import: Number(faker.commerce.price()),
-          price_export: Number(faker.commerce.price()),
-          views: Math.floor(Math.random() * 1000),
-          published_date: faker.date.past(10),
-          publisher: faker.internet.userName(),
-          author: faker.internet.userName(),
-          description: faker.commerce.productDescription(),
-          images_url: [
-            faker.image.imageUrl(),
-            faker.image.imageUrl(),
-            faker.image.imageUrl(),
-            faker.image.imageUrl(),
-            faker.image.imageUrl(),
-            faker.image.imageUrl(),
-          ],
-          category_id: [
-            list_category[i].id,
-            list_category[i + 1].id,
-            list_category[i + 2].id,
-            list_category[i + 3].id,
-            list_category[i + 4].id,
-          ],
-        };
-        const { body: data } = await request
-          .post(`/api/books`)
-          .send(fake_data)
-          .set("Authorization", `Bear ${accessToken}`);
-        expect(data.type).toBe("success");
-      });
-    }
+//   describe("book controller", () => {
+//     let book_to_be_delete;
+//     let list_book_to_be_delete;
+//     for (let i = 0; i < 13; i++) {
+//       test("create book", async () => {
+//         const fake_data: CreateBookRequest = {
+//           name: faker.internet.userName() + Math.floor(Math.random() * 100),
+//           avatar: faker.image.avatar(),
+//           discounted: Math.floor(Math.random() * 100),
+//           price_import: Number(faker.commerce.price()),
+//           price_export: Number(faker.commerce.price()),
+//           views: Math.floor(Math.random() * 1000),
+//           published_date: faker.date.past(10),
+//           publisher: faker.internet.userName(),
+//           author: faker.internet.userName(),
+//           description: faker.commerce.productDescription(),
+//           images_url: [
+//             faker.image.imageUrl(),
+//             faker.image.imageUrl(),
+//             faker.image.imageUrl(),
+//             faker.image.imageUrl(),
+//             faker.image.imageUrl(),
+//             faker.image.imageUrl(),
+//           ],
+//           category_id: [
+//             list_category[i].id,
+//             list_category[i + 1].id,
+//             list_category[i + 2].id,
+//             list_category[i + 3].id,
+//             list_category[i + 4].id,
+//           ],
+//         };
+//         const { body: data } = await request
+//           .post(`/api/books`)
+//           .send(fake_data)
+//           .set("Authorization", `Bear ${accessToken}`);
+//         expect(data.type).toBe("success");
+//       });
+//     }
 
-    test("get list book", async () => {
-      const { body: data } = await request.get(`/api/books`);
-      list_book = data.data;
-      expect(list_book.length).toBeGreaterThan(10);
-      expect(list_book[0].images.length).toBeGreaterThan(0);
-      expect(list_book[0].categories.length).toBeGreaterThan(0);
-      book_to_be_delete = list_book.pop();
-      list_book_to_be_delete = list_book.splice(0, 5).map((item) => item.id);
-    });
+//     test("get list book", async () => {
+//       const { body: data } = await request.get(`/api/books`);
+//       list_book = data.data;
+//       expect(list_book.length).toBeGreaterThan(10);
+//       expect(list_book[0].images.length).toBeGreaterThan(0);
+//       expect(list_book[0].categories.length).toBeGreaterThan(0);
+//       book_to_be_delete = list_book.pop();
+//       list_book_to_be_delete = list_book.splice(0, 5).map((item) => item.id);
+//     });
 
-    test("update book", async () => {
-      const categories_update = differenceBy(
-        list_category,
-        book_to_be_delete.categories,
-        "id"
-      );
+//     test("update book", async () => {
+//       const categories_update = differenceBy(
+//         list_category,
+//         book_to_be_delete.categories,
+//         "id"
+//       );
 
-      const fake_data: UpdateBookRequest = {
-        id: book_to_be_delete.id,
-        name: faker.internet.userName() + Math.floor(Math.random() * 100),
-        avatar: faker.image.avatar(),
-        discounted: Math.floor(Math.random() * 100),
-        price_import: Number(faker.commerce.price()),
-        price_export: Number(faker.commerce.price()),
-        sold: Math.floor(Math.random() * 1000),
-        views: Math.floor(Math.random() * 1000),
-        published_date: faker.date.past(10),
-        publisher: faker.internet.userName(),
-        author: faker.internet.userName(),
-        description: faker.commerce.productDescription(),
-        image_delete: [book_to_be_delete.images[0].id],
-        image_update: [
-          {
-            url: "https://newshop.vn/public/uploads/content/bach-khoa-cham-soc-con-tre-toan-dien-ndung.jpg",
-            order: 5,
-          },
-        ],
-        category_delete: [
-          book_to_be_delete.categories[0].id,
-          book_to_be_delete.categories[1].id,
-          book_to_be_delete.categories[2].id,
-          book_to_be_delete.categories[3].id,
-        ],
-        category_update: [...categories_update.map((item) => item.id)],
-      };
+//       const fake_data: UpdateBookRequest = {
+//         id: book_to_be_delete.id,
+//         name: faker.internet.userName() + Math.floor(Math.random() * 100),
+//         avatar: faker.image.avatar(),
+//         discounted: Math.floor(Math.random() * 100),
+//         price_import: Number(faker.commerce.price()),
+//         price_export: Number(faker.commerce.price()),
+//         sold: Math.floor(Math.random() * 1000),
+//         views: Math.floor(Math.random() * 1000),
+//         published_date: faker.date.past(10),
+//         publisher: faker.internet.userName(),
+//         author: faker.internet.userName(),
+//         description: faker.commerce.productDescription(),
+//         image_delete: [book_to_be_delete.images[0].id],
+//         image_update: [
+//           {
+//             url: "https://newshop.vn/public/uploads/content/bach-khoa-cham-soc-con-tre-toan-dien-ndung.jpg",
+//             order: 5,
+//           },
+//         ],
+//         category_delete: [
+//           book_to_be_delete.categories[0].id,
+//           book_to_be_delete.categories[1].id,
+//           book_to_be_delete.categories[2].id,
+//           book_to_be_delete.categories[3].id,
+//         ],
+//         category_update: [...categories_update.map((item) => item.id)],
+//       };
 
-      const { body: data } = await request
-        .put(`/api/books`)
-        .send(fake_data)
-        .set("Authorization", `Bear ${accessToken}`);
-      expect(data.type).toBe("success");
-      expect(true).toBe(true);
-    });
+//       const { body: data } = await request
+//         .put(`/api/books`)
+//         .send(fake_data)
+//         .set("Authorization", `Bear ${accessToken}`);
+//       expect(data.type).toBe("success");
+//       expect(true).toBe(true);
+//     });
 
-    test("delete book", async () => {
-      const { body: data } = await request
-        .delete(`/api/books/${book_to_be_delete.id}`)
-        .set("Authorization", `Bear ${accessToken}`);
-      expect(data.type).toBe("success");
-    });
+//     test("delete book", async () => {
+//       const { body: data } = await request
+//         .delete(`/api/books/${book_to_be_delete.id}`)
+//         .set("Authorization", `Bear ${accessToken}`);
+//       expect(data.type).toBe("success");
+//     });
 
-    test("delete muitiple book", async () => {
-      const { body: data } = await request
-        .delete(`/api/books/multiple?ids=${list_book_to_be_delete.toString()}`)
-        .set("Authorization", `Bear ${accessToken}`);
-      expect(data.type).toBe("success");
-      expect(data.data.book_deleted.length).toBeGreaterThan(0);
-    });
-  });
+//     test("delete muitiple book", async () => {
+//       const { body: data } = await request
+//         .delete(`/api/books/multiple?ids=${list_book_to_be_delete.toString()}`)
+//         .set("Authorization", `Bear ${accessToken}`);
+//       expect(data.type).toBe("success");
+//       expect(data.data.book_deleted.length).toBeGreaterThan(0);
+//     });
+//   });
 
-  describe("Import Bill controller", () => {
-    test("create Import Bill", async () => {
-      for (const supplier of list_supplier) {
-        const fake_data: CreateBillImportRequest = {
-          supplier_id: supplier.id,
-          books: list_book.map((item) => {
-            return {
-              id: item.id,
-              quantity: 100,
-            };
-          }),
-        };
+//   describe("Import Bill controller", () => {
+//     test("create Import Bill", async () => {
+//       for (const supplier of list_supplier) {
+//         const fake_data: CreateBillImportRequest = {
+//           supplier_id: supplier.id,
+//           books: list_book.map((item) => {
+//             return {
+//               id: item.id,
+//               quantity: 100,
+//             };
+//           }),
+//         };
 
-        const { body: data } = await request
-          .post(`/api/bill_import`)
-          .set("Authorization", `Bear ${accessToken}`)
-          .send(fake_data);
+//         const { body: data } = await request
+//           .post(`/api/bill_import`)
+//           .set("Authorization", `Bear ${accessToken}`)
+//           .send(fake_data);
 
-        expect(data.type).toBe("success");
-      }
-    });
-  });
+//         expect(data.type).toBe("success");
+//       }
+//     });
+//   });
 
-  describe("Import export controller", () => {
-    test("create export Bill", async () => {
-      for (const user of list_user) {
-        if (user.address && user.phone) {
-          const fake_data: CreateBillExportRequest = {
-            user_id: user.id,
-            books: list_book.map((item) => {
-              return {
-                id: item.id,
-                quantity: 10,
-              };
-            }),
-          };
+//   describe("Import export controller", () => {
+//     test("create export Bill", async () => {
+//       for (const user of list_user) {
+//         if (user.address && user.phone) {
+//           const fake_data: CreateBillExportRequest = {
+//             user_id: user.id,
+//             books: list_book.map((item) => {
+//               return {
+//                 id: item.id,
+//                 quantity: 10,
+//               };
+//             }),
+//           };
 
-          const { body: data } = await request
-            .post(`/api/bill_export`)
-            .set("Authorization", `Bear ${accessToken}`)
-            .send(fake_data);
+//           const { body: data } = await request
+//             .post(`/api/bill_export`)
+//             .set("Authorization", `Bear ${accessToken}`)
+//             .send(fake_data);
 
-          expect(data.type).toBe("success");
-        }
-      }
-    });
-  });
+//           expect(data.type).toBe("success");
+//         }
+//       }
+//     });
+//   });
 
-  describe("create rating controller", () => {
-    test("create rating", async () => {
-      for (const user of list_user) {
-        for (const book of list_book) {
-          const fake_data = {
-            user_id: user.id,
-            book_id: book.id,
-            rating_number: Math.floor(Math.random() * 6),
-            content: faker.lorem.paragraphs(),
-          };
+//   describe("create rating controller", () => {
+//     test("create rating", async () => {
+//       for (const user of list_user) {
+//         for (const book of list_book) {
+//           const fake_data = {
+//             user_id: user.id,
+//             book_id: book.id,
+//             rating_number: Math.floor(Math.random() * 6),
+//             content: faker.lorem.paragraphs(),
+//           };
 
-          const { body: data } = await request
-            .post(`/api/rating`)
-            .set("Authorization", `Bear ${accessToken}`)
-            .send(fake_data);
+//           const { body: data } = await request
+//             .post(`/api/rating`)
+//             .set("Authorization", `Bear ${accessToken}`)
+//             .send(fake_data);
 
-          expect(data.type).toBe("success");
-        }
-      }
-    });
-  });
-});
+//           expect(data.type).toBe("success");
+//         }
+//       }
+//     });
+//   });
+// });
