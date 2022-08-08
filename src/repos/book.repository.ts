@@ -51,6 +51,7 @@ export const BookRepository = AppDataSource.getRepository(BookEntity).extend({
       .leftJoinAndSelect("book.images", "image")
       .leftJoinAndSelect("book.categories", "categories")
       .leftJoinAndSelect("book.ratings", "ratings")
+      .leftJoinAndSelect("ratings.user", "user")
       .addSelect(
         `(select avg(r.rating_number) from rating r  where r."book_id" = book.id)`,
         "rating_number"
