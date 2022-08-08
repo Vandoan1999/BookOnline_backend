@@ -3,7 +3,7 @@ import { config } from "@config/app";
 import { UpdateImageRequest } from "@models/images/update-image.request";
 import { ImageRepository } from "@repos/image.repository";
 import { StatusCodes } from "http-status-codes";
-import { ApiError } from "src/ultis/apiError";
+import { ApiError } from "../ultis/apiError";
 import { Service } from "typedi";
 import { In } from "typeorm";
 
