@@ -1,19 +1,6 @@
 import { Pagination } from "@models/Pagination";
-import { Sort } from "@models/sort";
-import { Allow, IsEnum, IsOptional } from "class-validator";
-import { OrderByEnum } from "./orderBy.enum";
+import { Allow } from "class-validator";
 export class ListBookRequest extends Pagination {
   @Allow()
-  search: string;
-
-  @Allow()
-  author: string;
-
-  @IsOptional()
-  @IsEnum(Sort)
-  order: Sort;
-
-  @IsOptional()
-  @IsEnum(OrderByEnum)
-  orderBy: OrderByEnum;
+  fillter: string;
 }

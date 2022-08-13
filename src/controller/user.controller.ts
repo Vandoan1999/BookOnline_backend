@@ -43,36 +43,29 @@ router.get(url.get, verifyToken, verifyUser, async (req, res) => {
   );
 });
 
-router.put(
-  url.update,
-  verifyToken,
-  verifyUser,
-  upload.single("image"),
-  async (req: any, res) => {
-    const request = await transformAndValidate<UpdateUserRequest>(
-      UpdateUserRequest,
-      req.body
-    );
+router.put(url.update, verifyToken, verifyUser, async (req: any, res) => {
+  const request = await transformAndValidate<UpdateUserRequest>(
+    UpdateUserRequest,
+    req.body
+  );
 
-    const userService = Container.get(UserService);
-    if (req.file) {
-      request.image = req.file;
-    }
-    await userService.update(request, req["user"]);
+  const userService = Container.get(UserService);
+  await userService.update(request, req["user"]);
 
-    return res.json(
-      new ResponseBuilder()
-        .withSuccess()
-        .withMessage("update user success")
-        .build()
-    );
-  }
-);
+  return res.json(
+    new ResponseBuilder()
+      .withSuccess()
+      .withMessage("update user success")
+      .build()
+  );
+});
 
 router.get(url.detail, verifyToken, verifyUser, async (req, res) => {
   const userService = Container.get(UserService);
   const user = await userService.detail(req.params.id, req["user"]);
-  return res.json(new ResponseBuilder<UserEntity>(user).withSuccess().build());
+  return res.json(
+    new ResponseBuilder<UserEntity>(user[0]).withSuccess().build()
+  );
 });
 
 router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {

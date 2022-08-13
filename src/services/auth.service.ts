@@ -9,10 +9,11 @@ import { ApiError } from "../ultis/apiError";
 import jwt from "jsonwebtoken";
 import { UserInfo } from "@models/user/UserInfo";
 import { ChangePasswordRequest } from "@models/auth/change-password.request";
+import { ImageService } from "./image.service";
 require("dotenv").config();
 @Service()
 export class AuthService {
-  constructor() {}
+  constructor(private imageService: ImageService) {}
   async login(request: LoginRequest) {
     const user = await AuthRepository.getUserByName(request.username);
     if (!user || !compareSync(request.password, user.password)) {
@@ -40,12 +41,14 @@ export class AuthService {
     return AuthRepository.save(user);
   }
 
-  getProfile(userInfo: UserInfo) {
-    return AuthRepository.findOne({
+  async getProfile(userInfo: UserInfo) {
+    const user = await AuthRepository.findOne({
       where: {
         id: userInfo.id,
       },
     });
+    const userReturn = await this.imageService.getImageByObject([user]);
+    return userReturn[0];
   }
 
   async forgotPassword(email: string) {

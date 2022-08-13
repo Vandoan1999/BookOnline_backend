@@ -1,4 +1,6 @@
+import { BillExportStatus } from "@models/bill_export/bill-export-status.enum";
 import {
+  Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
@@ -23,6 +25,13 @@ export class BillExport {
 
   @CreateDateColumn({ type: "timestamptz" })
   created_at: Date;
+
+  @Column({
+    type: "enum",
+    enum: BillExportStatus,
+    default: BillExportStatus.Pending,
+  })
+  status: BillExportStatus;
 
   @OneToMany(() => BillExportDetail, (bid) => bid.bill_export)
   bill_export_detail: BillExportDetail[];

@@ -17,5 +17,5 @@ class ListBillExportRequest extends Pagination_1.Pagination {
 __decorate([
     (0, class_validator_1.Allow)(),
     __metadata("design:type", String)
-], ListBillExportRequest.prototype, "search", void 0);
+], ListBillExportRequest.prototype, "fillter", void 0);
 exports.ListBillExportRequest = ListBillExportRequest;

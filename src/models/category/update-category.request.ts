@@ -5,10 +5,4 @@ export class UpdateCategoryRequest {
 
   @IsOptional()
   name: string;
-
-  @IsOptional()
-  image: string;
-
-  @IsOptional()
-  image_data: any;
 }

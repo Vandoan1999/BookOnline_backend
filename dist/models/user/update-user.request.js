@@ -33,10 +33,6 @@ __decorate([
 ], UpdateUserRequest.prototype, "sex", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Object)
-], UpdateUserRequest.prototype, "image", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateUserRequest.prototype, "address", void 0);
 __decorate([

@@ -23,10 +23,6 @@ __decorate([
     __metadata("design:type", String)
 ], CategoryEntity.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], CategoryEntity.prototype, "image", void 0);
-__decorate([
     (0, typeorm_1.CreateDateColumn)({ type: "timestamptz" }),
     __metadata("design:type", Date)
 ], CategoryEntity.prototype, "created_at", void 0);

@@ -18,7 +18,7 @@ __decorate([
     __metadata("design:type", String)
 ], UpdateImageRequest.prototype, "id", void 0);
 __decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], UpdateImageRequest.prototype, "url", void 0);
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], UpdateImageRequest.prototype, "image", void 0);
 exports.UpdateImageRequest = UpdateImageRequest;

@@ -7,10 +7,25 @@ import { ApiError } from "../ultis/apiError";
 import { Service } from "typedi";
 import { StatusCodes } from "http-status-codes";
 import { RatingRepository } from "@repos/rating.repository";
+import { GetListRatingRequest } from "@models/rating/get-list-rating.request";
+import { ImageService } from "./image.service";
 
 @Service()
 export class RatingService {
-  constructor() {}
+  constructor(private imageService: ImageService) {}
+
+  async getListRating(request: GetListRatingRequest) {
+    const [rating, total] = await RatingRepository.getListRating(request);
+    for (const r of rating) {
+      const user = await this.imageService.getImageByObject([r.user]);
+      r.user = user[0];
+    }
+
+    return {
+      rating,
+      total,
+    };
+  }
 
   async createOrUpdate(request: CreateRatingRequest) {
     const user = await UserRepository.findOne({
@@ -38,19 +53,60 @@ export class RatingService {
       ratingToBeSaved.content = request.content;
       ratingToBeSaved.rating_number = request.rating_number;
       await RatingRepository.save(ratingToBeSaved);
-      return "create rating success!";
+
+      if (book.total_rating === 0) {
+        book.rating_number = request.rating_number;
+        book.total_rating += 1;
+      } else {
+        const newRatingNumber =
+          (book.rating_number * book.total_rating + request.rating_number) /
+          (book.total_rating + 1);
+        book.rating_number = newRatingNumber;
+        book.total_rating += 1;
+      }
+      await BookRepository.save(book);
+      return "Create a successful rating";
     } else {
+      let ratingNumberChanged = rating.rating_number - request.rating_number;
       rating.content = request.content;
       rating.rating_number = request.rating_number;
-      await RatingRepository.save(rating);
-      return "update rating success!";
+
+      if (ratingNumberChanged > 0) {
+        const newRatingNumber =
+          (book.rating_number * book.total_rating - ratingNumberChanged) /
+          book.total_rating;
+        book.rating_number = newRatingNumber;
+        await RatingRepository.save(rating);
+        await BookRepository.save(book);
+
+        return "Update a successful rating";
+      }
+
+      if (ratingNumberChanged < 0) {
+        const newRatingNumber =
+          (book.rating_number * book.total_rating - ratingNumberChanged) /
+          book.total_rating;
+        book.rating_number = newRatingNumber;
+        await RatingRepository.save(rating);
+        await BookRepository.save(book);
+        return "Update a successful rating";
+      }
+      return "has no change";
     }
   }
 
   async delete(book_id: string, user_id: string) {
+    const book = await BookRepository.findOneOrFail({
+      where: { id: book_id },
+    });
     const rating = await RatingRepository.findOneOrFail({
       where: { book_id: book_id, user_id: user_id },
     });
+    const newRatingNumber =
+      (book.rating_number * book.total_rating - rating.rating_number) /
+      (book.total_rating - 1);
+    book.rating_number = newRatingNumber;
+    book.total_rating -= 1;
     await RatingRepository.delete({
       book_id: rating.book_id,
       user_id: rating.user_id,

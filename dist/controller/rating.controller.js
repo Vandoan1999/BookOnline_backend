@@ -22,6 +22,7 @@ const rating_service_1 = require("@services/rating.service");
 const role_enum_1 = require("@enums/role.enum");
 const apiError_1 = require("../ultis/apiError");
 const http_status_codes_1 = require("http-status-codes");
+const get_list_rating_request_1 = require("@models/rating/get-list-rating.request");
 const router = (0, express_1.Router)();
 const url = {
     get: "/",
@@ -30,6 +31,12 @@ const url = {
     delete: "/:user_id/:book_id",
     update: "/:id",
 };
+router.get(url.get, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const request = yield (0, transformAndValidate_1.transformAndValidate)(get_list_rating_request_1.GetListRatingRequest, req.query);
+    const ratingService = typedi_1.default.get(rating_service_1.RatingService);
+    const { rating, total } = yield ratingService.getListRating(request);
+    return res.json(new response_builder_1.ResponseBuilder(rating).withMeta({ total }).withSuccess().build());
+}));
 //add | update
 router.post(url.add, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(create_rating_request_1.CreateRatingRequest, req.body);

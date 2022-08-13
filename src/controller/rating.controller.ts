@@ -8,6 +8,7 @@ import { RatingService } from "@services/rating.service";
 import { Role } from "@enums/role.enum";
 import { ApiError } from "../ultis/apiError";
 import { StatusCodes } from "http-status-codes";
+import { GetListRatingRequest } from "@models/rating/get-list-rating.request";
 const router = Router();
 
 const url = {
@@ -17,6 +18,19 @@ const url = {
   delete: "/:user_id/:book_id",
   update: "/:id",
 };
+
+router.get(url.get, async (req, res) => {
+  const request = await transformAndValidate<GetListRatingRequest>(
+    GetListRatingRequest,
+    req.query
+  );
+  const ratingService = Container.get(RatingService);
+  const { rating, total } = await ratingService.getListRating(request);
+
+  return res.json(
+    new ResponseBuilder(rating).withMeta({ total }).withSuccess().build()
+  );
+});
 
 //add | update
 router.post(url.add, verifyToken, async (req, res) => {

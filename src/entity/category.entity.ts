@@ -17,9 +17,6 @@ export class CategoryEntity {
   @Column({ nullable: true })
   name: string;
 
-  @Column()
-  image: string;
-
   @CreateDateColumn({ type: "timestamptz" })
   created_at: Date;
 

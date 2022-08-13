@@ -9,23 +9,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ShipperEntity = void 0;
-const typeorm_1 = require("typeorm");
-let ShipperEntity = class ShipperEntity {
-};
+exports.GetListRatingRequest = void 0;
+const Pagination_1 = require("@models/Pagination");
+const class_validator_1 = require("class-validator");
+class GetListRatingRequest extends Pagination_1.Pagination {
+}
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], ShipperEntity.prototype, "id", void 0);
+], GetListRatingRequest.prototype, "fillter", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], ShipperEntity.prototype, "company", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], ShipperEntity.prototype, "phone", void 0);
-ShipperEntity = __decorate([
-    (0, typeorm_1.Entity)("shippers")
-], ShipperEntity);
-exports.ShipperEntity = ShipperEntity;
+], GetListRatingRequest.prototype, "book_id", void 0);
+exports.GetListRatingRequest = GetListRatingRequest;

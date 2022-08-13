@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BillExport = void 0;
+const bill_export_status_enum_1 = require("@models/bill_export/bill-export-status.enum");
 const typeorm_1 = require("typeorm");
 const bill_export_detail_entity_1 = require("./bill-export-detail.entity");
 const user_entity_1 = require("./user.entity");
@@ -30,6 +31,14 @@ __decorate([
     (0, typeorm_1.CreateDateColumn)({ type: "timestamptz" }),
     __metadata("design:type", Date)
 ], BillExport.prototype, "created_at", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: "enum",
+        enum: bill_export_status_enum_1.BillExportStatus,
+        default: bill_export_status_enum_1.BillExportStatus.Pending,
+    }),
+    __metadata("design:type", Number)
+], BillExport.prototype, "status", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => bill_export_detail_entity_1.BillExportDetail, (bid) => bid.bill_export),
     __metadata("design:type", Array)

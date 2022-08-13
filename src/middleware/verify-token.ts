@@ -4,9 +4,8 @@ import logger from "jet-logger";
 import { ApiError } from "../ultis/apiError";
 import { StatusCodes } from "http-status-codes";
 import { ResponseBuilder } from "../ultis/response-builder";
-import Container from "typedi";
-import { UserService } from "@services/user.service";
 import { Role } from "@enums/role.enum";
+import { UserRepository } from "@repos/user.repository";
 require("dotenv").config();
 export async function verifyToken(
   req: Request,
@@ -26,8 +25,7 @@ export async function verifyToken(
   try {
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    const userService = Container.get(UserService);
-    const user = await userService.detail(decoded["id"]);
+    const user = await UserRepository.findOneByOrFail({ id: decoded["id"] });
     if (
       user?.is_pass_change &&
       user?.is_pass_change === true &&
@@ -41,7 +39,7 @@ export async function verifyToken(
     req["user"] = user;
   } catch (error) {
     logger.err("UNHANDLED ERROR: Verify token error ", error);
-    throw ApiError(StatusCodes.UNAUTHORIZED, "token expired!", error);
+    throw ApiError(StatusCodes.UNAUTHORIZED, "Verify token error!", error);
   }
   return next();
 }

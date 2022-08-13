@@ -25,8 +25,24 @@ const apiError_1 = require("../ultis/apiError");
 const typedi_1 = require("typedi");
 const http_status_codes_1 = require("http-status-codes");
 const rating_repository_1 = require("@repos/rating.repository");
+const image_service_1 = require("./image.service");
 let RatingService = class RatingService {
-    constructor() { }
+    constructor(imageService) {
+        this.imageService = imageService;
+    }
+    getListRating(request) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [rating, total] = yield rating_repository_1.RatingRepository.getListRating(request);
+            for (const r of rating) {
+                const user = yield this.imageService.getImageByObject([r.user]);
+                r.user = user[0];
+            }
+            return {
+                rating,
+                total,
+            };
+        });
+    }
     createOrUpdate(request) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield user_repository_1.UserRepository.findOne({
@@ -51,21 +67,55 @@ let RatingService = class RatingService {
                 ratingToBeSaved.content = request.content;
                 ratingToBeSaved.rating_number = request.rating_number;
                 yield rating_repository_1.RatingRepository.save(ratingToBeSaved);
-                return "create rating success!";
+                if (book.total_rating === 0) {
+                    book.rating_number = request.rating_number;
+                    book.total_rating += 1;
+                }
+                else {
+                    const newRatingNumber = (book.rating_number * book.total_rating + request.rating_number) /
+                        (book.total_rating + 1);
+                    book.rating_number = newRatingNumber;
+                    book.total_rating += 1;
+                }
+                yield book_repository_1.BookRepository.save(book);
+                return "Create a successful rating";
             }
             else {
+                let ratingNumberChanged = rating.rating_number - request.rating_number;
                 rating.content = request.content;
                 rating.rating_number = request.rating_number;
-                yield rating_repository_1.RatingRepository.save(rating);
-                return "update rating success!";
+                if (ratingNumberChanged > 0) {
+                    const newRatingNumber = (book.rating_number * book.total_rating - ratingNumberChanged) /
+                        book.total_rating;
+                    book.rating_number = newRatingNumber;
+                    yield rating_repository_1.RatingRepository.save(rating);
+                    yield book_repository_1.BookRepository.save(book);
+                    return "Update a successful rating";
+                }
+                if (ratingNumberChanged < 0) {
+                    const newRatingNumber = (book.rating_number * book.total_rating - ratingNumberChanged) /
+                        book.total_rating;
+                    book.rating_number = newRatingNumber;
+                    yield rating_repository_1.RatingRepository.save(rating);
+                    yield book_repository_1.BookRepository.save(book);
+                    return "Update a successful rating";
+                }
+                return "has no change";
             }
         });
     }
     delete(book_id, user_id) {
         return __awaiter(this, void 0, void 0, function* () {
+            const book = yield book_repository_1.BookRepository.findOneOrFail({
+                where: { id: book_id },
+            });
             const rating = yield rating_repository_1.RatingRepository.findOneOrFail({
                 where: { book_id: book_id, user_id: user_id },
             });
+            const newRatingNumber = (book.rating_number * book.total_rating - rating.rating_number) /
+                (book.total_rating - 1);
+            book.rating_number = newRatingNumber;
+            book.total_rating -= 1;
             yield rating_repository_1.RatingRepository.delete({
                 book_id: rating.book_id,
                 user_id: rating.user_id,
@@ -75,6 +125,6 @@ let RatingService = class RatingService {
 };
 RatingService = __decorate([
     (0, typedi_1.Service)(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [image_service_1.ImageService])
 ], RatingService);
 exports.RatingService = RatingService;

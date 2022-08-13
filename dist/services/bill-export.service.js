@@ -28,9 +28,13 @@ const bill_export_detail_repository_1 = require("@repos/bill-export-detail.repos
 const user_repository_1 = require("@repos/user.repository");
 const book_repository_1 = require("@repos/book.repository");
 const role_enum_1 = require("@enums/role.enum");
+const image_service_1 = require("./image.service");
+const bill_export_status_enum_1 = require("@models/bill_export/bill-export-status.enum");
 require("dotenv").config();
 let BillExportService = class BillExportService {
-    constructor() { }
+    constructor(imageService) {
+        this.imageService = imageService;
+    }
     create(request, userInfo) {
         return __awaiter(this, void 0, void 0, function* () {
             request.user_id = userInfo.id;
@@ -68,7 +72,17 @@ let BillExportService = class BillExportService {
         });
     }
     list(request, user) {
-        return bill_export_repository_1.BillExportRepository.getList(request, user);
+        return __awaiter(this, void 0, void 0, function* () {
+            const [billExport, total] = yield bill_export_repository_1.BillExportRepository.getList(request, user);
+            for (let bill of billExport) {
+                const user = yield this.imageService.getImageByObject([bill.user]);
+                bill.user = user[0];
+            }
+            return {
+                billExport,
+                total,
+            };
+        });
     }
     delete(id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -91,9 +105,21 @@ let BillExportService = class BillExportService {
             };
         });
     }
+    update(request, userinfo) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const billExport = yield bill_export_repository_1.BillExportRepository.findOneByOrFail({
+                id: request.id,
+            });
+            if (request.status &&
+                Object.values(bill_export_status_enum_1.BillExportStatus).includes(request.status)) {
+                billExport.status = request.status;
+            }
+            return bill_export_repository_1.BillExportRepository.save(billExport);
+        });
+    }
 };
 BillExportService = __decorate([
     (0, typedi_1.Service)(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [image_service_1.ImageService])
 ], BillExportService);
 exports.BillExportService = BillExportService;

@@ -4,13 +4,5 @@ export class UpdateBillExportRequest {
   id: string;
 
   @IsOptional()
-  user_id: string;
-  @IsOptional()
-  @IsArray()
-  books: book_import[];
-}
-
-interface book_import {
-  id: string;
-  quality: number;
+  status: number;
 }

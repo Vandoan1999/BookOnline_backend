@@ -4,50 +4,74 @@ exports.BookRepository = void 0;
 const app_1 = require("@config/app");
 const db_1 = require("@config/db");
 const book_entity_1 = require("@entity/book.entity");
-const orderBy_enum_1 = require("@models/book/orderBy.enum");
-const sort_1 = require("@models/sort");
+const order_1 = require("@enums/order");
 exports.BookRepository = db_1.AppDataSource.getRepository(book_entity_1.BookEntity).extend({
     getList(request) {
         const take = request.limit || app_1.config.page.default_limit;
         const page = request.page || 1;
         const skip = (page - 1) * take;
         const query = this.createQueryBuilder("book");
-        query.leftJoinAndSelect("book.images", "image");
-        query.leftJoinAndSelect("book.categories", "categories");
-        query.addSelect(`(select avg(r.rating_number)from rating r  where r."book_id" = book.id)`, "rating_number");
-        if (request.search) {
-            query.where("book.name LIKE :name", { name: `%${request.search}%` });
-        }
-        if (request.author) {
-            query.where("book.author LIKE :author", {
-                author: `%${request.author}%`,
+        if (request.fillter) {
+            const fillter = JSON.parse(request.fillter);
+            fillter.forEach((item) => {
+                switch (item.column) {
+                    case "name":
+                        query.andWhere("LOWER(book.name) LIKE LOWER(:name)", {
+                            name: `%${item.text}%`,
+                        });
+                        break;
+                    case "author":
+                        query.andWhere("book.author LIKE :author", {
+                            name: `%${item.text}%`,
+                        });
+                        break;
+                    case "price_export":
+                        if (item.text === order_1.Order.ASC || item.text === order_1.Order.DESC)
+                            query.orderBy("book.price_export", item.text);
+                        break;
+                    case "sold":
+                        if (item.text === order_1.Order.ASC || item.text === order_1.Order.DESC)
+                            query.orderBy("book.sold", item.text);
+                        break;
+                    case "views":
+                        if (item.text === order_1.Order.ASC || item.text === order_1.Order.DESC)
+                            query.orderBy("book.views", item.text);
+                        break;
+                    case "created_at":
+                        if (item.text === order_1.Order.ASC || item.text === order_1.Order.DESC)
+                            query.orderBy("book.created_at", item.text);
+                        break;
+                }
             });
         }
-        if (request.orderBy === orderBy_enum_1.OrderByEnum.price) {
-            query.orderBy("book.price_export", request.order);
-        }
-        if (request.orderBy === orderBy_enum_1.OrderByEnum.sold) {
-            query.orderBy("book.sold", request.order);
-        }
-        if (request.orderBy === orderBy_enum_1.OrderByEnum.views) {
-            query.orderBy("book.views", request.order);
-        }
-        if (request.orderBy === orderBy_enum_1.OrderByEnum.created_at) {
-            query.orderBy("book.created_at", request.order);
-        }
-        if (request.orderBy === orderBy_enum_1.OrderByEnum.name) {
-            query.orderBy("book.name", sort_1.Sort.ASC);
-        }
-        return query.take(take).skip(skip).getRawAndEntities();
+        return query.take(take).skip(skip).getManyAndCount();
     },
-    findById(id) {
-        return this.createQueryBuilder("book")
-            .leftJoinAndSelect("book.images", "image")
-            .leftJoinAndSelect("book.categories", "categories")
-            .leftJoinAndSelect("book.ratings", "ratings")
-            .leftJoinAndSelect("ratings.user", "user")
-            .addSelect(`(select avg(r.rating_number) from rating r  where r."book_id" = book.id)`, "rating_number")
-            .where("book.id = :id", { id })
-            .getRawAndEntities();
+    getDetail(id) {
+        const query = this.createQueryBuilder("b");
+        query.select([
+            "b.id AS id",
+            "b.name AS name",
+            "b.discounted AS discounted",
+            "b.price_import AS price_import",
+            "b.price_export AS price_export",
+            "b.sold AS sold",
+            "b.views AS views",
+            "b.published_date AS published_date",
+            "b.quantity AS quantity",
+            "b.publisher AS publisher",
+            "b.author AS author",
+            "b.description AS description",
+            "b.created_at AS created_at",
+            `CASE WHEN count("r") = 0 THEN '[]' 
+      ELSE JSON_AGG(JSONB_BUILD_OBJECT('book_id', r.book_id,
+       'user_id', r.user_id ,
+       'content',r.content ,
+      'rating_number', r.rating_number
+       )) END AS "commments"`,
+        ]);
+        query.innerJoin("rating", "r", "b.id = r.book_id");
+        query.where("b.id = :id", { id });
+        query.groupBy("b.id");
+        return query.getRawOne();
     },
 });

@@ -28,11 +28,11 @@ export class UpdateBookRequest {
 
   @IsOptional()
   @IsNumber()
-  sold?: number;
+  sold?: true;
 
   @IsOptional()
   @IsNumber()
-  views?: number;
+  views?: true;
 
   @IsOptional()
   @IsString()
@@ -49,12 +49,4 @@ export class UpdateBookRequest {
   @IsOptional()
   @IsString()
   description?: string;
-
-  @IsOptional()
-  @IsArray()
-  images_data?: any[];
-
-  @IsOptional()
-  @IsArray()
-  avatar_data?: any;
 }

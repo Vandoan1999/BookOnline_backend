@@ -1,8 +1,8 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsOptional } from "class-validator";
 export class UpdateImageRequest {
   @IsNotEmpty()
   id: string;
 
-  @IsNotEmpty()
-  url: string;
+  @IsOptional()
+  image: any;
 }

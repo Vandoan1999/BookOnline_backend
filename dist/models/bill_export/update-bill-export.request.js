@@ -19,11 +19,6 @@ __decorate([
 ], UpdateBillExportRequest.prototype, "id", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], UpdateBillExportRequest.prototype, "user_id", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsArray)(),
-    __metadata("design:type", Array)
-], UpdateBillExportRequest.prototype, "books", void 0);
+    __metadata("design:type", Number)
+], UpdateBillExportRequest.prototype, "status", void 0);
 exports.UpdateBillExportRequest = UpdateBillExportRequest;

@@ -14,7 +14,6 @@ const gender_enum_1 = require("@enums/gender.enum");
 const role_enum_1 = require("@enums/role.enum");
 const typeorm_1 = require("typeorm");
 const bill_export_entity_1 = require("./bill-export.entity");
-const comment_entity_1 = require("./comment.entity");
 const rating_entity_1 = require("./rating.entity");
 let UserEntity = class UserEntity {
 };
@@ -57,10 +56,6 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], UserEntity.prototype, "image", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
 ], UserEntity.prototype, "address", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
@@ -86,12 +81,6 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)({ type: "timestamptz" }),
     __metadata("design:type", Date)
 ], UserEntity.prototype, "updated_at", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => comment_entity_1.CommentEntity, (cmt) => cmt.user, {
-        onDelete: "CASCADE",
-    }),
-    __metadata("design:type", Array)
-], UserEntity.prototype, "comments", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => rating_entity_1.RatingEntity, (rating) => rating.user_id, {
         onDelete: "CASCADE",

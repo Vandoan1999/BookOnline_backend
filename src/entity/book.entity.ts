@@ -11,10 +11,7 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
 } from "typeorm";
-import { CommentEntity } from "./comment.entity";
 import { CategoryEntity } from "./category.entity";
-import { ImageEntity } from "./image.entity";
-import { OrderDetail as OrderDetailEntity } from "./order-detail.entity";
 import { RatingEntity } from "./rating.entity";
 import { BillImportDetail } from "./bill-import-detail.entity";
 import { BillExportDetail } from "./bill-export-detail.entity";
@@ -33,11 +30,14 @@ export class BookEntity {
   @Column({ nullable: true, type: "double precision", default: 0 })
   price_import: number;
 
-  @Column({ nullable: true })
-  avatar: string;
-
   @Column({ nullable: true, type: "double precision", default: 0 })
   price_export: number;
+
+  @Column({ nullable: true, type: "double precision", default: 0 })
+  rating_number: number;
+
+  @Column({ nullable: true, type: "int", default: 0 })
+  total_rating: number;
 
   @Column({ nullable: true, type: "int", default: 0 })
   sold: number;
@@ -66,28 +66,11 @@ export class BookEntity {
   @UpdateDateColumn({ type: "timestamptz" })
   updated_at: Date;
 
-  @OneToMany(() => CommentEntity, (comment) => comment.book, {
-    onDelete: "CASCADE",
-  })
-  @JoinTable()
-  comments: CommentEntity[];
-
-  @OneToMany(() => OrderDetailEntity, (order) => order.book, {
-    onDelete: "CASCADE",
-  })
-  order_detail: OrderDetailEntity[];
-
   @OneToMany(() => RatingEntity, (rating) => rating.book, {
     onDelete: "CASCADE",
     nullable: true,
   })
   ratings: [];
-
-  @OneToMany(() => ImageEntity, (rating) => rating.book_id, {
-    onDelete: "CASCADE",
-    nullable: true,
-  })
-  images: ImageEntity[];
 
   @ManyToMany(() => CategoryEntity, (category) => category.books, {
     nullable: true,

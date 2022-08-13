@@ -16,9 +16,6 @@ export class UpdateUserRequest {
   sex: Gender;
 
   @IsOptional()
-  image: any;
-
-  @IsOptional()
   address: string;
 
   @IsOptional()

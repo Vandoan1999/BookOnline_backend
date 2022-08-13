@@ -17,37 +17,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TestingService = void 0;
-const app_1 = require("@config/app");
-const db_1 = require("@config/db");
 const typedi_1 = require("typedi");
-const jet_logger_1 = __importDefault(require("jet-logger"));
 let TestingService = class TestingService {
-    constructor() {
-        this.list_user = [];
-        this.list_supplier = [];
-        this.list_category = [];
-        this.list_book = [];
-    }
+    constructor() { }
     clear() {
         return __awaiter(this, void 0, void 0, function* () {
-            jet_logger_1.default.info(`start clearing data !`);
-            yield db_1.AppDataSource.query(`DELETE FROM ${app_1.config.TablePostgres.user} WHERE role = 'user'`);
-            jet_logger_1.default.info(`clear data ${app_1.config.TablePostgres.user} done !`);
-            yield db_1.AppDataSource.query(`DELETE FROM ${app_1.config.TablePostgres.books}`);
-            jet_logger_1.default.info(`clear data ${app_1.config.TablePostgres.books} done !`);
-            yield db_1.AppDataSource.query(`DELETE FROM ${app_1.config.TablePostgres.ratings}`);
-            jet_logger_1.default.info(`clear data ${app_1.config.TablePostgres.ratings} done !`);
-            yield db_1.AppDataSource.query(`DELETE FROM ${app_1.config.TablePostgres.book_images}`);
-            jet_logger_1.default.info(`clear data ${app_1.config.TablePostgres.book_images} done !`);
-            yield db_1.AppDataSource.query(`DELETE FROM ${app_1.config.TablePostgres.categories}`);
-            jet_logger_1.default.info(`clear data ${app_1.config.TablePostgres.categories} done !`);
-            yield db_1.AppDataSource.query(`DELETE FROM ${app_1.config.TablePostgres.suppliers}`);
-            jet_logger_1.default.info(`clear data ${app_1.config.TablePostgres.suppliers} done !`);
+            // logger.info(`start clearing data !`);
+            // await AppDataSource.query(
+            //   `DELETE FROM ${config.TablePostgres.user} WHERE role = 'user'`
+            // );
+            // logger.info(`clear data ${config.TablePostgres.user} done !`);
+            // await AppDataSource.query(`DELETE FROM ${config.TablePostgres.books}`);
+            // logger.info(`clear data ${config.TablePostgres.books} done !`);
+            // await AppDataSource.query(`DELETE FROM ${config.TablePostgres.ratings}`);
+            // logger.info(`clear data ${config.TablePostgres.ratings} done !`);
+            // await AppDataSource.query(`DELETE FROM ${config.TablePostgres.categories}`);
+            // logger.info(`clear data ${config.TablePostgres.categories} done !`);
+            // await AppDataSource.query(`DELETE FROM ${config.TablePostgres.suppliers}`);
+            // logger.info(`clear data ${config.TablePostgres.suppliers} done !`);
         });
     }
 };

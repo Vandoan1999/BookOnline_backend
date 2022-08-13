@@ -19,10 +19,6 @@ __decorate([
 ], CreateBookRequest.prototype, "name", void 0);
 __decorate([
     (0, class_validator_1.Allow)(),
-    __metadata("design:type", Object)
-], CreateBookRequest.prototype, "avatar_data", void 0);
-__decorate([
-    (0, class_validator_1.Allow)(),
     __metadata("design:type", Number)
 ], CreateBookRequest.prototype, "discounted", void 0);
 __decorate([
@@ -57,10 +53,5 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsArray)(),
     __metadata("design:type", Array)
-], CreateBookRequest.prototype, "images_data", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsArray)(),
-    __metadata("design:type", Array)
-], CreateBookRequest.prototype, "category_id", void 0);
+], CreateBookRequest.prototype, "categories_id", void 0);
 exports.CreateBookRequest = CreateBookRequest;

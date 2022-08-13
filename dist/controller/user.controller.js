@@ -24,7 +24,6 @@ const user_service_1 = require("@services/user.service");
 const update_user_request_1 = require("@models/user/update-user.request");
 const role_enum_1 = require("@enums/role.enum");
 const verify_user_1 = require("@middleware/verify-user");
-const multer_1 = require("@common/multer");
 const router = (0, express_1.Router)();
 const url = {
     get: "/",
@@ -45,12 +44,9 @@ router.get(url.get, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, 
         .withSuccess()
         .build());
 }));
-router.put(url.update, verify_token_1.verifyToken, verify_user_1.verifyUser, multer_1.upload.single("image"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.put(url.update, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(update_user_request_1.UpdateUserRequest, req.body);
     const userService = typedi_1.default.get(user_service_1.UserService);
-    if (req.file) {
-        request.image = req.file;
-    }
     yield userService.update(request, req["user"]);
     return res.json(new response_builder_1.ResponseBuilder()
         .withSuccess()
@@ -60,7 +56,7 @@ router.put(url.update, verify_token_1.verifyToken, verify_user_1.verifyUser, mul
 router.get(url.detail, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userService = typedi_1.default.get(user_service_1.UserService);
     const user = yield userService.detail(req.params.id, req["user"]);
-    return res.json(new response_builder_1.ResponseBuilder(user).withSuccess().build());
+    return res.json(new response_builder_1.ResponseBuilder(user[0]).withSuccess().build());
 }));
 router.delete(url.delete, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (req["user"] && req["user"].role === role_enum_1.Role.USER) {

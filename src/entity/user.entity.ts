@@ -9,7 +9,6 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { BillExport } from "./bill-export.entity";
-import { CommentEntity } from "./comment.entity";
 import { RatingEntity } from "./rating.entity";
 
 @Entity("users")
@@ -44,9 +43,6 @@ export class UserEntity {
   sex: Sex;
 
   @Column({ nullable: true })
-  image: string;
-
-  @Column({ nullable: true })
   address: string;
 
   @Column({ nullable: true })
@@ -66,11 +62,6 @@ export class UserEntity {
 
   @UpdateDateColumn({ type: "timestamptz" })
   updated_at: Date;
-
-  @OneToMany(() => CommentEntity, (cmt) => cmt.user, {
-    onDelete: "CASCADE",
-  })
-  comments: CommentEntity[];
 
   @OneToMany(() => RatingEntity, (rating) => rating.user_id, {
     onDelete: "CASCADE",

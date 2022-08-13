@@ -8,7 +8,6 @@ import { verifyToken } from "@middleware/verify-token";
 import { CategoryEntity } from "@entity/category.entity";
 import { UpdateCategoryRequest } from "@models/category/update-category.request";
 import { verifyUser } from "@middleware/verify-user";
-import { upload } from "@common/multer";
 
 const router = Router();
 
@@ -43,41 +42,23 @@ router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
   res.json(new ResponseBuilder<any>(category).withSuccess().build());
 });
 
-router.post(
-  url.create,
-  verifyToken,
-  verifyUser,
-  upload.single("image"),
-  async (req: any, res) => {
-    const request = await transformAndValidate<CreateCategoryRequest>(
-      CreateCategoryRequest,
-      req.body
-    );
-    if (req.file) {
-      request.image_data = req.file;
-    }
-    const categoryService = Container.get(CategoryService);
-    await categoryService.create(request, req["user"]);
-    res.json(new ResponseBuilder<object>().withSuccess().build());
-  }
-);
+router.post(url.create, verifyToken, verifyUser, async (req: any, res) => {
+  const request = await transformAndValidate<CreateCategoryRequest>(
+    CreateCategoryRequest,
+    req.body
+  );
+  const categoryService = Container.get(CategoryService);
+  const result = await categoryService.create(request, req["user"]);
+  res.json(new ResponseBuilder<any>(result).withSuccess().build());
+});
 
-router.put(
-  url.update,
-  verifyToken,
-  verifyUser,
-  upload.single("image"),
-  async (req: any, res) => {
-    const request = await transformAndValidate<UpdateCategoryRequest>(
-      UpdateCategoryRequest,
-      req.body
-    );
-    const categoryService = Container.get(CategoryService);
-    if (req.file) {
-      request.image_data = req.file;
-    }
-    await categoryService.update(request, req["user"]);
-    res.json(new ResponseBuilder<object>().withSuccess().build());
-  }
-);
+router.put(url.update, verifyToken, verifyUser, async (req: any, res) => {
+  const request = await transformAndValidate<UpdateCategoryRequest>(
+    UpdateCategoryRequest,
+    req.body
+  );
+  const categoryService = Container.get(CategoryService);
+  await categoryService.update(request, req["user"]);
+  res.json(new ResponseBuilder<object>().withSuccess().build());
+});
 export default router;

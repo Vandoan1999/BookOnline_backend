@@ -4,9 +4,6 @@ export class CreateBookRequest {
   name: string;
 
   @Allow()
-  avatar_data: any;
-
-  @Allow()
   discounted: number;
 
   @Allow()
@@ -32,9 +29,5 @@ export class CreateBookRequest {
 
   @IsOptional()
   @IsArray()
-  images_data: any[];
-
-  @IsOptional()
-  @IsArray()
-  category_id: string[];
+  categories_id: string[];
 }

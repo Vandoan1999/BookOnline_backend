@@ -7,7 +7,7 @@ import { CreateBillExportRequest } from "@models/bill_export/create-bill-export.
 import { BillExportService } from "@services/bill-export.service";
 import { ListBillExportRequest } from "@models/bill_export/list-bill-export.request";
 import { verifyUser } from "@middleware/verify-user";
-
+import { UpdateBillExportRequest } from "@models/bill_export/update-bill-export.request";
 const router = Router();
 
 const url = {
@@ -24,9 +24,15 @@ router.get(url.get, verifyToken, async (req, res) => {
     req.query
   );
   const billExportService = Container.get(BillExportService);
-  const [result, total] = await billExportService.list(request, req["user"]);
+  const { billExport, total } = await billExportService.list(
+    request,
+    req["user"]
+  );
   return res.json(
-    new ResponseBuilder<any>(result).withMeta({ total }).withSuccess().build()
+    new ResponseBuilder<any>(billExport)
+      .withMeta({ total })
+      .withSuccess()
+      .build()
   );
 });
 
@@ -52,5 +58,14 @@ router.post(url.add, verifyToken, async (req, res) => {
   return res.json(new ResponseBuilder().withSuccess().build());
 });
 
+router.put(url.update, verifyToken, async (req, res) => {
+  const request = await transformAndValidate<UpdateBillExportRequest>(
+    UpdateBillExportRequest,
+    req.body
+  );
+  const billExportService = Container.get(BillExportService);
+  const result = await billExportService.update(request, req["user"]);
+  return res.json(new ResponseBuilder(result).withSuccess().build());
+});
 // Export default
 export default router;

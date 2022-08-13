@@ -10,7 +10,6 @@ exports.config = {
         user: "users",
         books: "books",
         ratings: "rating",
-        book_images: "book_images",
         categories: "categories",
         suppliers: "suppliers",
     },

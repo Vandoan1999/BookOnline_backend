@@ -28,9 +28,12 @@ const http_status_codes_1 = require("http-status-codes");
 const bcryptjs_1 = require("bcryptjs");
 const apiError_1 = require("../ultis/apiError");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const image_service_1 = require("./image.service");
 require("dotenv").config();
 let AuthService = class AuthService {
-    constructor() { }
+    constructor(imageService) {
+        this.imageService = imageService;
+    }
     login(request) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield auth_repository_1.AuthRepository.getUserByName(request.username);
@@ -52,10 +55,14 @@ let AuthService = class AuthService {
         return auth_repository_1.AuthRepository.save(user);
     }
     getProfile(userInfo) {
-        return auth_repository_1.AuthRepository.findOne({
-            where: {
-                id: userInfo.id,
-            },
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield auth_repository_1.AuthRepository.findOne({
+                where: {
+                    id: userInfo.id,
+                },
+            });
+            const userReturn = yield this.imageService.getImageByObject([user]);
+            return userReturn[0];
         });
     }
     forgotPassword(email) {
@@ -84,6 +91,6 @@ let AuthService = class AuthService {
 };
 AuthService = __decorate([
     (0, typedi_1.Service)(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [image_service_1.ImageService])
 ], AuthService);
 exports.AuthService = AuthService;

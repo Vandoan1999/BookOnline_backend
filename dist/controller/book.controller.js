@@ -24,78 +24,38 @@ const update_book_request_1 = require("@models/book/update-book.request");
 const apiError_1 = require("../ultis/apiError");
 const http_status_codes_1 = require("http-status-codes");
 const verify_user_1 = require("@middleware/verify-user");
-const multer_1 = require("@common/multer");
-const update_book_category_request_1 = require("@models/book/update-book-category.request");
 const router = (0, express_1.Router)();
 const url = {
     get: "/",
     add: "/",
-    category: "/category",
-    image: "/image",
     detail: "/:id",
-    delete: "/:id",
+    delete: "/:ids",
     update: "/",
-    delete_multiple: "/multiple",
 };
 //get list book
 router.get(url.get, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(list_book_request_1.ListBookRequest, req.query);
     const bookService = typedi_1.default.get(book_service_1.BookService);
-    const { data, total } = yield bookService.getList(request);
-    return res.json(new response_builder_1.ResponseBuilder(data)
-        .withMeta({ total })
+    const { books, total } = yield bookService.getList(request);
+    return res.json(new response_builder_1.ResponseBuilder(books)
+        .withMeta({
+        total,
+    })
         .withSuccess()
         .build());
 }));
-router.put(url.category, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const request = yield (0, transformAndValidate_1.transformAndValidate)(update_book_category_request_1.UpdateBookCategoryRequest, req.body);
-    const bookService = typedi_1.default.get(book_service_1.BookService);
-    yield bookService.updateCategory(request);
-    return res.json(new response_builder_1.ResponseBuilder().withSuccess().build());
-}));
-router.post(url.add, verify_token_1.verifyToken, verify_user_1.verifyUser, multer_1.upload.fields([
-    {
-        name: "avartar",
-        maxCount: 1,
-    },
-    {
-        name: "images",
-        maxCount: 5,
-    },
-]), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post(url.add, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(create_book_request_1.CreateBookRequest, req.body);
     const bookService = typedi_1.default.get(book_service_1.BookService);
-    if (req.files["images"]) {
-        request.images_data = req.files["images"];
-    }
-    if (req.files["avartar"]) {
-        request.avatar_data = req.files["avartar"];
-    }
-    yield bookService.create(request);
-    return res.json(new response_builder_1.ResponseBuilder()
+    const result = yield bookService.create(request);
+    return res.json(new response_builder_1.ResponseBuilder(result)
         .withSuccess()
-        .withMessage("create product success.")
+        .withMessage("create book success.")
         .build());
 }));
 //update book
-router.put(url.update, verify_token_1.verifyToken, verify_user_1.verifyUser, multer_1.upload.fields([
-    {
-        name: "avartar",
-        maxCount: 1,
-    },
-    {
-        name: "images",
-        maxCount: 5,
-    },
-]), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body);
+router.put(url.update, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(update_book_request_1.UpdateBookRequest, req.body);
-    if (req.files["images"]) {
-        request.images_data = req.files["images"];
-    }
-    if (req.files["avartar"]) {
-        request.avatar_data = req.files["avartar"];
-    }
     const bookService = typedi_1.default.get(book_service_1.BookService);
     yield bookService.update(request);
     return res.json(new response_builder_1.ResponseBuilder().withSuccess().withMessage("").build());
@@ -107,21 +67,15 @@ router.get(url.detail, (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
     const bookService = typedi_1.default.get(book_service_1.BookService);
     const book = yield bookService.detail(req.params.id);
-    return res.json(new response_builder_1.ResponseBuilder(book).withSuccess().build());
-}));
-//delete multiple
-router.delete(url.delete_multiple, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const bookService = typedi_1.default.get(book_service_1.BookService);
-    const result = yield bookService.delete_multiple(req);
-    return res.json(new response_builder_1.ResponseBuilder({ book_deleted: result }).withSuccess().build());
+    return res.json(new response_builder_1.ResponseBuilder(book[0]).withSuccess().build());
 }));
 //delete book
 router.delete(url.delete, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.params.id) {
-        throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.BAD_REQUEST, "id param empty");
+    if (!req.params.ids) {
+        throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.BAD_REQUEST, "ids param empty");
     }
     const bookService = typedi_1.default.get(book_service_1.BookService);
-    yield bookService.delete(req.params.id);
+    yield bookService.delete(req.params.ids);
     return res.json(new response_builder_1.ResponseBuilder()
         .withSuccess()
         .withMessage("delete book success ")

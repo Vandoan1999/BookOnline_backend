@@ -7,42 +7,24 @@ import { StatusCodes } from "http-status-codes";
 import { ApiError } from "../ultis/apiError";
 
 import { Service } from "typedi";
-import { deleteObject, GetObjectURl, uploadFile } from "@common/baseAWS";
+import { deleteObject, uploadFile } from "@common/baseAWS";
 import { config } from "@config/app";
-
+import { ImageService } from "./image.service";
 @Service()
 export class UserService {
-  constructor() {}
+  constructor(private imageService: ImageService) {}
 
   async getList(request: ListUserRequest) {
     const [users, total] = await UserRepository.getList(request);
-    users.forEach((user) => {
-      if (user.image) {
-        user.image = GetObjectURl(user.image);
-      }
-    });
-    return { users, total };
+
+    return { users: await this.imageService.getImageByObject(users), total };
   }
 
   async update(request: UpdateUserRequest, userInfo: UserInfo) {
     if (userInfo && userInfo.role === Role.USER) {
       request.id = userInfo.id;
     }
-    const user = await UserRepository.findOneByOrFail({ id: request.id });
-    if (request.image) {
-      const newImageName = Math.random() + request.image.originalname;
-      await Promise.all([
-        deleteObject(config.s3Bucket, config.s3BucketForder + user.image),
-        uploadFile(
-          request.image.buffer,
-          config.s3Bucket,
-          request.image.mimetype,
-          config.s3BucketForder + newImageName
-        ),
-      ]);
-
-      request.image = newImageName;
-    }
+    await UserRepository.findOneByOrFail({ id: request.id });
     return UserRepository.update(
       { id: request.id },
       {
@@ -55,11 +37,8 @@ export class UserService {
     if (user && user.role === Role.USER) {
       id = user && user?.id ? user?.id : id;
     }
-    const res = await UserRepository.findOneByOrFail({ id });
-    if (res.image) {
-      res.image = GetObjectURl(res.image);
-    }
-    return res;
+    const userResult = await UserRepository.findOneByOrFail({ id });
+    return await this.imageService.getImageByObject([userResult]);
   }
 
   async delete(id: string) {
@@ -67,9 +46,6 @@ export class UserService {
     if (res.role === Role.ADMIN) {
       throw ApiError(StatusCodes.BAD_REQUEST, `you cannot delete admin`);
     }
-    if (res.image) {
-      await deleteObject(config.s3Bucket, config.s3BucketForder + res.image);
-    }
-    return UserRepository.delete({ id });
+    await this.imageService.delete(null, res.id);
   }
 }

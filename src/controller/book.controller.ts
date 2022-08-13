@@ -11,21 +11,14 @@ import { UpdateBookRequest } from "@models/book/update-book.request";
 import { ApiError } from "../ultis/apiError";
 import { StatusCodes } from "http-status-codes";
 import { verifyUser } from "@middleware/verify-user";
-import { upload } from "@common/multer";
-import { UpdateBookCategoryRequest } from "@models/book/update-book-category.request";
-import { UpdateBookImageRequest } from "@models/book/update-book-image.request";
-
 const router = Router();
 
 const url = {
   get: "/",
   add: "/",
-  category: "/category",
-  image: "/image",
   detail: "/:id",
-  delete: "/:id",
+  delete: "/:ids",
   update: "/",
-  delete_multiple: "/multiple",
 };
 
 //get list book
@@ -35,101 +28,47 @@ router.get(url.get, async (req, res) => {
     req.query
   );
   const bookService = Container.get(BookService);
-  const { data, total } = await bookService.getList(request);
+  const { books, total } = await bookService.getList(request);
   return res.json(
-    new ResponseBuilder<BookEntity[]>(data)
-      .withMeta({ total })
+    new ResponseBuilder<any>(books)
+      .withMeta({
+        total,
+      })
       .withSuccess()
       .build()
   );
 });
 
-router.put(url.category, async (req: any, res) => {
-  const request = await transformAndValidate<UpdateBookCategoryRequest>(
-    UpdateBookCategoryRequest,
+router.post(url.add, verifyToken, verifyUser, async (req: any, res) => {
+  const request = await transformAndValidate<CreateBookRequest>(
+    CreateBookRequest,
+    req.body
+  );
+
+  const bookService = Container.get(BookService);
+
+  const result = await bookService.create(request);
+
+  return res.json(
+    new ResponseBuilder(result)
+      .withSuccess()
+      .withMessage("create book success.")
+      .build()
+  );
+});
+
+//update book
+router.put(url.update, verifyToken, verifyUser, async (req: any, res) => {
+  const request = await transformAndValidate<UpdateBookRequest>(
+    UpdateBookRequest,
     req.body
   );
   const bookService = Container.get(BookService);
-  await bookService.updateCategory(request);
-  return res.json(new ResponseBuilder().withSuccess().build());
+
+  await bookService.update(request);
+
+  return res.json(new ResponseBuilder().withSuccess().withMessage("").build());
 });
-
-router.post(
-  url.add,
-  verifyToken,
-  verifyUser,
-  upload.fields([
-    {
-      name: "avartar",
-      maxCount: 1,
-    },
-    {
-      name: "images",
-      maxCount: 5,
-    },
-  ]),
-  async (req: any, res) => {
-    const request = await transformAndValidate<CreateBookRequest>(
-      CreateBookRequest,
-      req.body
-    );
-
-    const bookService = Container.get(BookService);
-    if (req.files["images"]) {
-      request.images_data = req.files["images"];
-    }
-    if (req.files["avartar"]) {
-      request.avatar_data = req.files["avartar"];
-    }
-
-    await bookService.create(request);
-
-    return res.json(
-      new ResponseBuilder()
-        .withSuccess()
-        .withMessage("create product success.")
-        .build()
-    );
-  }
-);
-
-//update book
-router.put(
-  url.update,
-  verifyToken,
-  verifyUser,
-  upload.fields([
-    {
-      name: "avartar",
-      maxCount: 1,
-    },
-    {
-      name: "images",
-      maxCount: 5,
-    },
-  ]),
-  async (req: any, res) => {
-    console.log(req.body);
-    const request = await transformAndValidate<UpdateBookRequest>(
-      UpdateBookRequest,
-      req.body
-    );
-
-    if (req.files["images"]) {
-      request.images_data = req.files["images"];
-    }
-    if (req.files["avartar"]) {
-      request.avatar_data = req.files["avartar"];
-    }
-    const bookService = Container.get(BookService);
-
-    await bookService.update(request);
-
-    return res.json(
-      new ResponseBuilder().withSuccess().withMessage("").build()
-    );
-  }
-);
 
 //get detail book
 router.get(url.detail, async (req, res) => {
@@ -141,34 +80,20 @@ router.get(url.detail, async (req, res) => {
 
   const book = await bookService.detail(req.params.id);
 
-  return res.json(new ResponseBuilder<BookEntity>(book).withSuccess().build());
+  return res.json(
+    new ResponseBuilder<BookEntity>(book[0]).withSuccess().build()
+  );
 });
-
-//delete multiple
-router.delete(
-  url.delete_multiple,
-  verifyToken,
-  verifyUser,
-  async (req, res) => {
-    const bookService = Container.get(BookService);
-
-    const result = await bookService.delete_multiple(req);
-
-    return res.json(
-      new ResponseBuilder<any>({ book_deleted: result }).withSuccess().build()
-    );
-  }
-);
 
 //delete book
 router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
-  if (!req.params.id) {
-    throw ApiError(StatusCodes.BAD_REQUEST, "id param empty");
+  if (!req.params.ids) {
+    throw ApiError(StatusCodes.BAD_REQUEST, "ids param empty");
   }
 
   const bookService = Container.get(BookService);
 
-  await bookService.delete(req.params.id);
+  await bookService.delete(req.params.ids);
 
   return res.json(
     new ResponseBuilder<any>()

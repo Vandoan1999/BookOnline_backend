@@ -17,12 +17,4 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateCategoryRequest.prototype, "name", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateCategoryRequest.prototype, "image", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Object)
-], CreateCategoryRequest.prototype, "image_data", void 0);
 exports.CreateCategoryRequest = CreateCategoryRequest;

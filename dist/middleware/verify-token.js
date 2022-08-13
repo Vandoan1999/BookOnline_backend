@@ -18,9 +18,8 @@ const jet_logger_1 = __importDefault(require("jet-logger"));
 const apiError_1 = require("../ultis/apiError");
 const http_status_codes_1 = require("http-status-codes");
 const response_builder_1 = require("../ultis/response-builder");
-const typedi_1 = __importDefault(require("typedi"));
-const user_service_1 = require("@services/user.service");
 const role_enum_1 = require("@enums/role.enum");
+const user_repository_1 = require("@repos/user.repository");
 require("dotenv").config();
 function verifyToken(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -35,8 +34,7 @@ function verifyToken(req, res, next) {
         try {
             const token = req.headers.authorization.split(" ")[1];
             const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-            const userService = typedi_1.default.get(user_service_1.UserService);
-            const user = yield userService.detail(decoded["id"]);
+            const user = yield user_repository_1.UserRepository.findOneByOrFail({ id: decoded["id"] });
             if ((user === null || user === void 0 ? void 0 : user.is_pass_change) &&
                 (user === null || user === void 0 ? void 0 : user.is_pass_change) === true &&
                 user.role === role_enum_1.Role.USER)
@@ -47,7 +45,7 @@ function verifyToken(req, res, next) {
         }
         catch (error) {
             jet_logger_1.default.err("UNHANDLED ERROR: Verify token error ", error);
-            throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.UNAUTHORIZED, "token expired!", error);
+            throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.UNAUTHORIZED, "Verify token error!", error);
         }
         return next();
     });

@@ -13,11 +13,14 @@ import { ListBillExportRequest } from "@models/bill_export/list-bill-export.requ
 import { UserRepository } from "@repos/user.repository";
 import { BookRepository } from "@repos/book.repository";
 import { Role } from "@enums/role.enum";
+import { ImageService } from "./image.service";
+import { UpdateBillExportRequest } from "@models/bill_export/update-bill-export.request";
+import { BillExportStatus } from "@models/bill_export/bill-export-status.enum";
 
 require("dotenv").config();
 @Service()
 export class BillExportService {
-  constructor() {}
+  constructor(private imageService: ImageService) {}
   async create(request: CreateBillExportRequest, userInfo: UserInfo) {
     request.user_id = userInfo.id;
     const user = await UserRepository.findOneByOrFail({
@@ -61,8 +64,21 @@ export class BillExportService {
     }
   }
 
-  list(request: ListBillExportRequest, user: UserInfo) {
-    return BillExportRepository.getList(request, user);
+  async list(request: ListBillExportRequest, user: UserInfo) {
+    const [billExport, total] = await BillExportRepository.getList(
+      request,
+      user
+    );
+
+    for (let bill of billExport) {
+      const user = await this.imageService.getImageByObject([bill.user]);
+      bill.user = user[0];
+    }
+
+    return {
+      billExport,
+      total,
+    };
   }
 
   async delete(id: string) {
@@ -82,5 +98,18 @@ export class BillExportService {
       totalBill: res[0],
       totalBillInCurrentDate: res[1],
     };
+  }
+
+  async update(request: UpdateBillExportRequest, userinfo: UserInfo) {
+    const billExport = await BillExportRepository.findOneByOrFail({
+      id: request.id,
+    });
+    if (
+      request.status &&
+      Object.values(BillExportStatus).includes(request.status)
+    ) {
+      billExport.status = request.status;
+    }
+    return BillExportRepository.save(billExport);
   }
 }

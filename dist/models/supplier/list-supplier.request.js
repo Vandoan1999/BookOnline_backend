@@ -11,31 +11,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListSupplierRequest = void 0;
 const Pagination_1 = require("@models/Pagination");
-const sort_1 = require("@models/sort");
 const class_validator_1 = require("class-validator");
-const orderBy_enum_1 = require("./orderBy.enum");
 class ListSupplierRequest extends Pagination_1.Pagination {
 }
 __decorate([
     (0, class_validator_1.Allow)(),
     __metadata("design:type", String)
 ], ListSupplierRequest.prototype, "search", void 0);
-__decorate([
-    (0, class_validator_1.Allow)(),
-    __metadata("design:type", String)
-], ListSupplierRequest.prototype, "address", void 0);
-__decorate([
-    (0, class_validator_1.Allow)(),
-    __metadata("design:type", String)
-], ListSupplierRequest.prototype, "phone", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsEnum)(sort_1.Sort),
-    __metadata("design:type", String)
-], ListSupplierRequest.prototype, "order", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsEnum)(orderBy_enum_1.OrderBy),
-    __metadata("design:type", String)
-], ListSupplierRequest.prototype, "orderBy", void 0);
 exports.ListSupplierRequest = ListSupplierRequest;

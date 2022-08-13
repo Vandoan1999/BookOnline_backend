@@ -24,19 +24,15 @@ const user_repository_1 = require("@repos/user.repository");
 const http_status_codes_1 = require("http-status-codes");
 const apiError_1 = require("../ultis/apiError");
 const typedi_1 = require("typedi");
-const baseAWS_1 = require("@common/baseAWS");
-const app_1 = require("@config/app");
+const image_service_1 = require("./image.service");
 let UserService = class UserService {
-    constructor() { }
+    constructor(imageService) {
+        this.imageService = imageService;
+    }
     getList(request) {
         return __awaiter(this, void 0, void 0, function* () {
             const [users, total] = yield user_repository_1.UserRepository.getList(request);
-            users.forEach((user) => {
-                if (user.image) {
-                    user.image = (0, baseAWS_1.GetObjectURl)(user.image);
-                }
-            });
-            return { users, total };
+            return { users: yield this.imageService.getImageByObject(users), total };
         });
     }
     update(request, userInfo) {
@@ -44,15 +40,7 @@ let UserService = class UserService {
             if (userInfo && userInfo.role === role_enum_1.Role.USER) {
                 request.id = userInfo.id;
             }
-            const user = yield user_repository_1.UserRepository.findOneByOrFail({ id: request.id });
-            if (request.image) {
-                const newImageName = Math.random() + request.image.originalname;
-                yield Promise.all([
-                    (0, baseAWS_1.deleteObject)(app_1.config.s3Bucket, app_1.config.s3BucketForder + user.image),
-                    (0, baseAWS_1.uploadFile)(request.image.buffer, app_1.config.s3Bucket, request.image.mimetype, app_1.config.s3BucketForder + newImageName),
-                ]);
-                request.image = newImageName;
-            }
+            yield user_repository_1.UserRepository.findOneByOrFail({ id: request.id });
             return user_repository_1.UserRepository.update({ id: request.id }, Object.assign({}, request));
         });
     }
@@ -61,11 +49,8 @@ let UserService = class UserService {
             if (user && user.role === role_enum_1.Role.USER) {
                 id = user && (user === null || user === void 0 ? void 0 : user.id) ? user === null || user === void 0 ? void 0 : user.id : id;
             }
-            const res = yield user_repository_1.UserRepository.findOneByOrFail({ id });
-            if (res.image) {
-                res.image = (0, baseAWS_1.GetObjectURl)(res.image);
-            }
-            return res;
+            const userResult = yield user_repository_1.UserRepository.findOneByOrFail({ id });
+            return yield this.imageService.getImageByObject([userResult]);
         });
     }
     delete(id) {
@@ -74,15 +59,12 @@ let UserService = class UserService {
             if (res.role === role_enum_1.Role.ADMIN) {
                 throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.BAD_REQUEST, `you cannot delete admin`);
             }
-            if (res.image) {
-                yield (0, baseAWS_1.deleteObject)(app_1.config.s3Bucket, app_1.config.s3BucketForder + res.image);
-            }
-            return user_repository_1.UserRepository.delete({ id });
+            yield this.imageService.delete(null, res.id);
         });
     }
 };
 UserService = __decorate([
     (0, typedi_1.Service)(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [image_service_1.ImageService])
 ], UserService);
 exports.UserService = UserService;

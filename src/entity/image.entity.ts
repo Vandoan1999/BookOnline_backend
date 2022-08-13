@@ -1,7 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from "typeorm";
-import { BookEntity } from "./book.entity";
+import { ImageType } from "@enums/image-type.enum";
+import { Entity, Column, PrimaryGeneratedColumn, Index } from "typeorm";
 
-@Entity("book_images")
+@Entity("images")
 export class ImageEntity {
   @PrimaryGeneratedColumn("uuid")
   id?: string;
@@ -9,13 +9,13 @@ export class ImageEntity {
   @Column()
   url: string;
 
-  @Column({ nullable: true })
-  order: number;
-
-  @ManyToOne((type) => BookEntity, (book) => book.images, {
-    onDelete: "CASCADE",
-    nullable: true,
+  @Column({
+    type: "enum",
+    enum: ImageType,
   })
-  @JoinColumn({ name: "book_id" })
-  public book_id?: BookEntity;
+  type: ImageType;
+
+  @Column()
+  @Index()
+  item_id: string;
 }

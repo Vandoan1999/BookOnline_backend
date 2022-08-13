@@ -4,8 +4,9 @@ exports.BillExportRepository = void 0;
 const app_1 = require("@config/app");
 const db_1 = require("@config/db");
 const bill_export_entity_1 = require("@entity/bill-export.entity");
+const order_1 = require("@enums/order");
 const role_enum_1 = require("@enums/role.enum");
-const sort_1 = require("@models/sort");
+const bill_export_status_enum_1 = require("@models/bill_export/bill-export-status.enum");
 exports.BillExportRepository = db_1.AppDataSource.getRepository(bill_export_entity_1.BillExport).extend({
     getList(request, user) {
         const take = request.limit || app_1.config.page.default_limit;
@@ -15,18 +16,37 @@ exports.BillExportRepository = db_1.AppDataSource.getRepository(bill_export_enti
             .leftJoinAndSelect("bill_export.bill_export_detail", "bill_export_detail")
             .leftJoinAndSelect("bill_export.user", "user")
             .leftJoinAndSelect("bill_export_detail.book", "books");
-        if (request.search) {
-            query.where("books.name  LIKE :search ", {
-                search: `%${request.search}%`,
+        if (request.fillter) {
+            const fillter = JSON.parse(request.fillter);
+            fillter.forEach((item) => {
+                switch (item.column) {
+                    case "name":
+                        query.andWhere("LOWER(books.name) LIKE LOWER(:name)", {
+                            name: `%${item.text}%`,
+                        });
+                        break;
+                    case "status":
+                        item.text = Number(item.text);
+                        if (Object.values(bill_export_status_enum_1.BillExportStatus).includes(item.text)) {
+                            query.andWhere("bill_export.status = :status", {
+                                status: `%${item.text}%`,
+                            });
+                        }
+                        break;
+                    case "quantity":
+                        if (item.text === order_1.Order.ASC || item.text === order_1.Order.DESC)
+                            query.orderBy("bill_export.quantity", item.text);
+                        break;
+                    case "created_at":
+                        if (item.text === order_1.Order.ASC || item.text === order_1.Order.DESC)
+                            query.orderBy("bill_export.created_at", item.text);
+                        break;
+                }
             });
         }
         if (user.role === role_enum_1.Role.USER) {
             query.andWhere("bill_export.user_id = :user_id", { user_id: user.id });
         }
-        return query
-            .orderBy("bill_export.created_at", sort_1.Sort.DESC)
-            .take(take)
-            .skip(skip)
-            .getManyAndCount();
+        return query.take(take).skip(skip).getManyAndCount();
     },
 });

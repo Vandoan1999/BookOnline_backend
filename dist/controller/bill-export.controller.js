@@ -21,6 +21,7 @@ const create_bill_export_request_1 = require("@models/bill_export/create-bill-ex
 const bill_export_service_1 = require("@services/bill-export.service");
 const list_bill_export_request_1 = require("@models/bill_export/list-bill-export.request");
 const verify_user_1 = require("@middleware/verify-user");
+const update_bill_export_request_1 = require("@models/bill_export/update-bill-export.request");
 const router = (0, express_1.Router)();
 const url = {
     add: "/",
@@ -32,8 +33,11 @@ const url = {
 router.get(url.get, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(list_bill_export_request_1.ListBillExportRequest, req.query);
     const billExportService = typedi_1.default.get(bill_export_service_1.BillExportService);
-    const [result, total] = yield billExportService.list(request, req["user"]);
-    return res.json(new response_builder_1.ResponseBuilder(result).withMeta({ total }).withSuccess().build());
+    const { billExport, total } = yield billExportService.list(request, req["user"]);
+    return res.json(new response_builder_1.ResponseBuilder(billExport)
+        .withMeta({ total })
+        .withSuccess()
+        .build());
 }));
 router.delete(url.delete, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const billExportService = typedi_1.default.get(bill_export_service_1.BillExportService);
@@ -50,6 +54,12 @@ router.post(url.add, verify_token_1.verifyToken, (req, res) => __awaiter(void 0,
     const billExportService = typedi_1.default.get(bill_export_service_1.BillExportService);
     yield billExportService.create(request, req["user"]);
     return res.json(new response_builder_1.ResponseBuilder().withSuccess().build());
+}));
+router.put(url.update, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const request = yield (0, transformAndValidate_1.transformAndValidate)(update_bill_export_request_1.UpdateBillExportRequest, req.body);
+    const billExportService = typedi_1.default.get(bill_export_service_1.BillExportService);
+    const result = yield billExportService.update(request, req["user"]);
+    return res.json(new response_builder_1.ResponseBuilder(result).withSuccess().build());
 }));
 // Export default
 exports.default = router;
