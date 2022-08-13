@@ -7,7 +7,7 @@ import { verifyUser } from "@middleware/verify-user";
 import { upload } from "@common/multer";
 import { transformAndValidate } from "../ultis/transformAndValidate";
 import { CreateImageRequest } from "@models/images/create-image.request";
-import { ApiError } from "src/ultis/apiError";
+import { ApiError } from "../ultis/apiError";
 import { StatusCodes } from "http-status-codes";
 import { UpdateImageRequest } from "@models/images/update-image.request";
 const router = Router();
