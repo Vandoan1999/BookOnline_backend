@@ -124,6 +124,6 @@ export class BillExportService {
       }
       billExport.status = request.status;
     }
-    return billExport;
+    return BillExportRepository.save(billExport);
   }
 }

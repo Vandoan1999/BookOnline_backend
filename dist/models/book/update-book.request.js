@@ -31,6 +31,11 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
+], UpdateBookRequest.prototype, "quantity", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
 ], UpdateBookRequest.prototype, "price_import", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),

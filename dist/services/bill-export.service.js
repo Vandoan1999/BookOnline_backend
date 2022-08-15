@@ -129,7 +129,7 @@ let BillExportService = class BillExportService {
                 }
                 billExport.status = request.status;
             }
-            return billExport;
+            return bill_export_repository_1.BillExportRepository.save(billExport);
         });
     }
 };
