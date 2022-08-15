@@ -36,7 +36,7 @@ router.get(url.get, verifyToken, async (req, res) => {
   );
 });
 
-router.delete(url.delete, verifyToken, async (req, res) => {
+router.delete(url.delete, async (req, res) => {
   const billExportService = Container.get(BillExportService);
   await billExportService.delete(req.params.id);
   return res.json(new ResponseBuilder<any>().withSuccess().build());
@@ -54,8 +54,8 @@ router.post(url.add, verifyToken, async (req, res) => {
     req.body
   );
   const billExportService = Container.get(BillExportService);
-  await billExportService.create(request, req["user"]);
-  return res.json(new ResponseBuilder().withSuccess().build());
+  const result = await billExportService.create(request, req["user"]);
+  return res.json(new ResponseBuilder(result).withSuccess().build());
 });
 
 router.put(url.update, verifyToken, async (req, res) => {

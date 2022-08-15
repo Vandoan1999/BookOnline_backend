@@ -49,4 +49,15 @@ exports.BillExportRepository = db_1.AppDataSource.getRepository(bill_export_enti
         }
         return query.take(take).skip(skip).getManyAndCount();
     },
+    fileOne(id, user) {
+        const query = this.createQueryBuilder("bill_export")
+            .leftJoinAndSelect("bill_export.bill_export_detail", "bill_export_detail")
+            .leftJoinAndSelect("bill_export.user", "user")
+            .leftJoinAndSelect("bill_export_detail.book", "books")
+            .andWhere("bill_export.id = :id", { id });
+        if (user.role === role_enum_1.Role.USER) {
+            query.andWhere("bill_export.user_id = :user_id", { user_id: user.id });
+        }
+        return query.getOne();
+    },
 });

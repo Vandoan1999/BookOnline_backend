@@ -59,10 +59,10 @@ let BillExportService = class BillExportService {
                 bill_export_detail.book_id = book.id;
                 bill_export_detail.quantity = bookRequest.quantity;
                 bill_export_detail.bill_export_id = bill_export.id;
-                book.quantity -= bookRequest.quantity;
-                book.sold += bookRequest.quantity;
-                yield bill_export_detail_repository_1.BillExportDetailRepository.insert(bill_export_detail);
-                yield book_repository_1.BookRepository.save(book);
+                // book.quantity -= bookRequest.quantity;
+                // book.sold += bookRequest.quantity;
+                // await BookRepository.save(book);
+                return bill_export_detail_repository_1.BillExportDetailRepository.insert(bill_export_detail);
             }
         });
     }
@@ -102,14 +102,34 @@ let BillExportService = class BillExportService {
     }
     update(request, userinfo) {
         return __awaiter(this, void 0, void 0, function* () {
-            const billExport = yield bill_export_repository_1.BillExportRepository.findOneByOrFail({
-                id: request.id,
+            const billExport = yield bill_export_repository_1.BillExportRepository.findOneOrFail({
+                where: { id: request.id },
+                relations: ["bill_export_detail"],
             });
             if (request.status &&
                 Object.values(bill_export_status_enum_1.BillExportStatus).includes(request.status)) {
+                if (billExport.bill_export_detail.length > 0) {
+                    if (billExport.status === bill_export_status_enum_1.BillExportStatus.Pending) {
+                        const books = yield book_repository_1.BookRepository.find({
+                            where: {
+                                id: (0, typeorm_1.In)([...billExport.bill_export_detail.map((i) => i.book_id)]),
+                            },
+                        });
+                        const booksToBeUpdated = [];
+                        for (const { book_id, quantity } of billExport.bill_export_detail) {
+                            const book = books.find((i) => i.id === book_id);
+                            if (book) {
+                                book.quantity -= quantity;
+                                book.sold += quantity;
+                                booksToBeUpdated.push(book);
+                            }
+                        }
+                        yield book_repository_1.BookRepository.save(booksToBeUpdated);
+                    }
+                }
                 billExport.status = request.status;
             }
-            return bill_export_repository_1.BillExportRepository.save(billExport);
+            return billExport;
         });
     }
 };

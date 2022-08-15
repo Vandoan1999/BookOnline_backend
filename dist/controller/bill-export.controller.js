@@ -39,7 +39,7 @@ router.get(url.get, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, 
         .withSuccess()
         .build());
 }));
-router.delete(url.delete, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.delete(url.delete, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const billExportService = typedi_1.default.get(bill_export_service_1.BillExportService);
     yield billExportService.delete(req.params.id);
     return res.json(new response_builder_1.ResponseBuilder().withSuccess().build());
@@ -52,8 +52,8 @@ router.get(url.init, verify_token_1.verifyToken, verify_user_1.verifyUser, (req,
 router.post(url.add, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(create_bill_export_request_1.CreateBillExportRequest, req.body);
     const billExportService = typedi_1.default.get(bill_export_service_1.BillExportService);
-    yield billExportService.create(request, req["user"]);
-    return res.json(new response_builder_1.ResponseBuilder().withSuccess().build());
+    const result = yield billExportService.create(request, req["user"]);
+    return res.json(new response_builder_1.ResponseBuilder(result).withSuccess().build());
 }));
 router.put(url.update, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(update_bill_export_request_1.UpdateBillExportRequest, req.body);
