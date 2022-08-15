@@ -16,6 +16,9 @@ export class CreateBookRequest {
   views: number;
 
   @Allow()
+  quantity: number;
+
+  @Allow()
   published_date: Date;
 
   @Allow()

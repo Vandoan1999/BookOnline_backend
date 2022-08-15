@@ -60,7 +60,7 @@ let BillExportService = class BillExportService {
                 bill_export_detail.quantity = bookRequest.quantity;
                 bill_export_detail.bill_export_id = bill_export.id;
                 book.quantity -= bookRequest.quantity;
-                book.sold -= bookRequest.quantity;
+                book.sold += bookRequest.quantity;
                 yield bill_export_detail_repository_1.BillExportDetailRepository.insert(bill_export_detail);
                 yield book_repository_1.BookRepository.save(book);
             }

@@ -40,7 +40,7 @@ export class BillImportService {
         bill_import_detail.quantity = book.quantity;
         bill_import_detail.bill_import = bill_import;
         await queryRunner.manager.save(bill_import_detail);
-        bookInstance.quantity = bookInstance.quantity + book.quantity;
+        bookInstance.quantity += book.quantity;
         await queryRunner.manager.save(bookInstance);
       }
       await queryRunner.commitTransaction();

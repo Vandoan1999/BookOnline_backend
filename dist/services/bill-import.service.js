@@ -53,7 +53,7 @@ let BillImportService = class BillImportService {
                     bill_import_detail.quantity = book.quantity;
                     bill_import_detail.bill_import = bill_import;
                     yield queryRunner.manager.save(bill_import_detail);
-                    bookInstance.quantity = bookInstance.quantity + book.quantity;
+                    bookInstance.quantity += book.quantity;
                     yield queryRunner.manager.save(bookInstance);
                 }
                 yield queryRunner.commitTransaction();

@@ -35,6 +35,10 @@ __decorate([
 ], CreateBookRequest.prototype, "views", void 0);
 __decorate([
     (0, class_validator_1.Allow)(),
+    __metadata("design:type", Number)
+], CreateBookRequest.prototype, "quantity", void 0);
+__decorate([
+    (0, class_validator_1.Allow)(),
     __metadata("design:type", Date)
 ], CreateBookRequest.prototype, "published_date", void 0);
 __decorate([

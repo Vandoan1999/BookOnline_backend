@@ -51,7 +51,7 @@ export class BillExportService {
       bill_export_detail.quantity = bookRequest.quantity;
       bill_export_detail.bill_export_id = bill_export.id;
       book.quantity -= bookRequest.quantity;
-      book.sold -= bookRequest.quantity;
+      book.sold += bookRequest.quantity;
       await BillExportDetailRepository.insert(bill_export_detail);
       await BookRepository.save(book);
     }
