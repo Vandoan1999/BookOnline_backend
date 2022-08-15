@@ -14,13 +14,6 @@ const url = {
 };
 
 router.get(url.get, verifyToken, verifyUser, async (req, res) => {
-  if (req["user"] && req["user"].role === Role.USER) {
-    throw ApiError(
-      StatusCodes.FORBIDDEN,
-      `user name: ${req["user"].username} and email ${req["user"].email} dose not have permission!`
-    );
-  }
-
   const dashboardService = Container.get(DashboardService);
   const result = await dashboardService.initData();
   return res.json(new ResponseBuilder<any>(result).withSuccess().build());

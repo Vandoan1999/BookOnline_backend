@@ -35,16 +35,13 @@ const url = {
 router.get(url.get, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(list_user_request_1.ListUserRequest, req.query);
     const userService = typedi_1.default.get(user_service_1.UserService);
-    if (req["user"] && req["user"].role === role_enum_1.Role.USER) {
-        throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.FORBIDDEN, `user name: ${req["user"].username} and email ${req["user"].email} not have permission!`);
-    }
     const { users, total } = yield userService.getList(request);
     return res.json(new response_builder_1.ResponseBuilder(users)
         .withMeta({ total })
         .withSuccess()
         .build());
 }));
-router.put(url.update, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.put(url.update, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(update_user_request_1.UpdateUserRequest, req.body);
     const userService = typedi_1.default.get(user_service_1.UserService);
     yield userService.update(request, req["user"]);
@@ -53,7 +50,7 @@ router.put(url.update, verify_token_1.verifyToken, verify_user_1.verifyUser, (re
         .withMessage("update user success")
         .build());
 }));
-router.get(url.detail, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get(url.detail, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userService = typedi_1.default.get(user_service_1.UserService);
     const user = yield userService.detail(req.params.id, req["user"]);
     return res.json(new response_builder_1.ResponseBuilder(user[0]).withSuccess().build());
