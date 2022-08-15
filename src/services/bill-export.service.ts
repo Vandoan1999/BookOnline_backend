@@ -35,13 +35,6 @@ export class BillExportService {
       );
     }
     const books = await Promise.all(booksPromise);
-    if (!user.address || !user.phone) {
-      if (userInfo.role === Role.USER)
-        throw ApiError(
-          StatusCodes.BAD_REQUEST,
-          `address and phone must of user ${user.username} is empty, you must update address and phone to buying book `
-        );
-    }
     const bill_export_instance = BillExportRepository.create();
     bill_export_instance.user = user;
     const bill_export = await BillExportRepository.save(bill_export_instance);

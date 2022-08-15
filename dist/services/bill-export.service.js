@@ -27,7 +27,6 @@ const bill_export_repository_1 = require("@repos/bill-export.repository");
 const bill_export_detail_repository_1 = require("@repos/bill-export-detail.repository");
 const user_repository_1 = require("@repos/user.repository");
 const book_repository_1 = require("@repos/book.repository");
-const role_enum_1 = require("@enums/role.enum");
 const image_service_1 = require("./image.service");
 const bill_export_status_enum_1 = require("@models/bill_export/bill-export-status.enum");
 require("dotenv").config();
@@ -48,10 +47,6 @@ let BillExportService = class BillExportService {
                 }));
             }
             const books = yield Promise.all(booksPromise);
-            if (!user.address || !user.phone) {
-                if (userInfo.role === role_enum_1.Role.USER)
-                    throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.BAD_REQUEST, `address and phone must of user ${user.username} is empty, you must update address and phone to buying book `);
-            }
             const bill_export_instance = bill_export_repository_1.BillExportRepository.create();
             bill_export_instance.user = user;
             const bill_export = yield bill_export_repository_1.BillExportRepository.save(bill_export_instance);
