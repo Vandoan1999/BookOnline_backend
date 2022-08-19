@@ -7,6 +7,7 @@ import { Service } from "typedi";
 export class DashboardService {
   async initData() {
     const promiseAll: any[] = [];
+
     promiseAll.push(BillExportDetailRepository.total_revenue());
     promiseAll.push(BillImportDetailRepository.total_spending());
     promiseAll.push(UserRepository.totalCustomer());
