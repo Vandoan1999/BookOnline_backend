@@ -29,6 +29,10 @@ const user_repository_1 = require("@repos/user.repository");
 const book_repository_1 = require("@repos/book.repository");
 const image_service_1 = require("./image.service");
 const bill_export_status_enum_1 = require("@models/bill_export/bill-export-status.enum");
+const baseAWS_1 = require("@common/baseAWS");
+const app_1 = require("@config/app");
+const PDFDocument = require("pdfkit-table");
+const fs = require("fs");
 require("dotenv").config();
 let BillExportService = class BillExportService {
     constructor(imageService) {
@@ -69,6 +73,14 @@ let BillExportService = class BillExportService {
     list(request, user) {
         return __awaiter(this, void 0, void 0, function* () {
             const [billExport, total] = yield bill_export_repository_1.BillExportRepository.getList(request, user);
+            if (request.isReport) {
+                this.getReport(billExport);
+                return {
+                    billExport: null,
+                    total: null,
+                    link: "https://shopbook.s3.ap-southeast-1.amazonaws.com/images/TestDocument.pdf",
+                };
+            }
             for (let bill of billExport) {
                 const user = yield this.imageService.getImageByObject([bill.user]);
                 bill.user = user[0];
@@ -76,6 +88,7 @@ let BillExportService = class BillExportService {
             return {
                 billExport,
                 total,
+                link: "",
             };
         });
     }
@@ -131,6 +144,97 @@ let BillExportService = class BillExportService {
             }
             return bill_export_repository_1.BillExportRepository.save(billExport);
         });
+    }
+    getReport(billExport) {
+        const data = [];
+        for (const bx of billExport) {
+            for (const bxd of bx.bill_export_detail) {
+                data.push({
+                    id: bx.id.substring(1, 5),
+                    username: bx.user.username,
+                    bookname: bxd.book.name,
+                    quantity: bxd.quantity,
+                    price: bxd.quantity * bxd.book.price_export,
+                });
+            }
+        }
+        let doc = new PDFDocument({ margin: 30, size: "A4" });
+        if (data.length > 0) {
+            data.push({
+                id: "Tổng",
+                quantity: data.reduce((pre, cur) => pre + cur.quantity, 0),
+                price: data.reduce((pre, cur) => pre + cur.price, 0),
+            });
+        }
+        doc.pipe(fs.createWriteStream("file-report/TestDocument.pdf"));
+        (function () {
+            return __awaiter(this, void 0, void 0, function* () {
+                // table
+                const table = {
+                    title: {
+                        label: "BÁO CÁO HÓA ĐƠN XUẤT",
+                        fontSize: 30,
+                        fontFamily: "fonts/AlegreyaSansSC-Black.otf",
+                        valign: "center",
+                    },
+                    headers: [
+                        {
+                            label: "id HD",
+                            property: "id",
+                            width: 60,
+                            fontFamily: "fonts/AlegreyaSans-Light.otf",
+                            renderer: null,
+                        },
+                        {
+                            label: "Tên KH",
+                            property: "username",
+                            width: 100,
+                            fontFamily: "fonts/AlegreyaSans-Light.otf",
+                            renderer: null,
+                        },
+                        {
+                            label: "Tên Sách",
+                            property: "bookname",
+                            width: 150,
+                            fontFamily: "fonts/AlegreyaSans-Light.otf",
+                            renderer: null,
+                        },
+                        {
+                            label: "Số Lượng",
+                            property: "quantity",
+                            width: 150,
+                            fontFamily: "fonts/AlegreyaSans-Light.otf",
+                            renderer: null,
+                        },
+                        {
+                            label: "Giá",
+                            property: "price",
+                            width: 100,
+                            fontFamily: "fonts/AlegreyaSans-Light.otf",
+                            renderer: null,
+                        },
+                    ],
+                    // complex data
+                    datas: data,
+                };
+                // the magic
+                doc.table(table, {
+                    prepareHeader: () => doc.font("fonts/AlegreyaSans-Light.otf").fontSize(12),
+                    prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
+                        doc.font("fonts/AlegreyaSans-Light.otf").fontSize(10);
+                    },
+                });
+                // done!
+                doc.end();
+            });
+        })();
+        fs.readFile("file-report/TestDocument.pdf", (err, data) => __awaiter(this, void 0, void 0, function* () {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            yield (0, baseAWS_1.uploadFile)(data, app_1.config.s3Bucket, "application/pdf", "images/TestDocument.pdf");
+        }));
     }
 };
 BillExportService = __decorate([

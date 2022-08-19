@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListBillExportRequest = void 0;
 const Pagination_1 = require("@models/Pagination");
+const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 class ListBillExportRequest extends Pagination_1.Pagination {
 }
@@ -18,4 +19,16 @@ __decorate([
     (0, class_validator_1.Allow)(),
     __metadata("design:type", String)
 ], ListBillExportRequest.prototype, "fillter", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_transformer_1.Transform)((value) => {
+        if (value === "true")
+            return true;
+        if (value === "false")
+            return false;
+        return value;
+    }),
+    __metadata("design:type", Boolean)
+], ListBillExportRequest.prototype, "isReport", void 0);
 exports.ListBillExportRequest = ListBillExportRequest;

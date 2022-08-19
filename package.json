@@ -83,6 +83,7 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "node-fetch": "^3.2.6",
+    "pdfkit-table": "^0.1.99",
     "pg": "^8.7.3",
     "reflect-metadata": "^0.1.13",
     "serverless": "^3.19.0",

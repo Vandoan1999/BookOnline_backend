@@ -24,13 +24,13 @@ router.get(url.get, verifyToken, async (req, res) => {
     req.query
   );
   const billExportService = Container.get(BillExportService);
-  const { billExport, total } = await billExportService.list(
+  const { billExport, total, link } = await billExportService.list(
     request,
     req["user"]
   );
   return res.json(
     new ResponseBuilder<any>(billExport)
-      .withMeta({ total })
+      .withMeta({ total, link })
       .withSuccess()
       .build()
   );
@@ -67,5 +67,6 @@ router.put(url.update, verifyToken, async (req, res) => {
   const result = await billExportService.update(request, req["user"]);
   return res.json(new ResponseBuilder(result).withSuccess().build());
 });
+
 // Export default
 export default router;
