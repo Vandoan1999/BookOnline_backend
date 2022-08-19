@@ -33,6 +33,7 @@ const baseAWS_1 = require("@common/baseAWS");
 const app_1 = require("@config/app");
 const PDFDocument = require("pdfkit-table");
 const fs = require("fs");
+const path = require("path");
 require("dotenv").config();
 let BillImportService = class BillImportService {
     constructor() { }
@@ -126,6 +127,8 @@ let BillImportService = class BillImportService {
         });
     }
     getReport(billImport) {
+        const pathFile = path.join(process.cwd(), "file-report");
+        const pathFont = path.join(process.cwd(), "fonts");
         const data = [];
         for (const bi of billImport) {
             for (const bid of bi.bill_import_details) {
@@ -146,7 +149,7 @@ let BillImportService = class BillImportService {
             });
         }
         let doc = new PDFDocument({ margin: 30, size: "A4" });
-        doc.pipe(fs.createWriteStream("file-report/TestDocument.pdf"));
+        doc.pipe(fs.createWriteStream(`${pathFile}/TestDocument.pdf`));
         (function () {
             return __awaiter(this, void 0, void 0, function* () {
                 // table
@@ -154,7 +157,7 @@ let BillImportService = class BillImportService {
                     title: {
                         label: "BÁO CÁO HÓA ĐƠN NHẬP",
                         fontSize: 30,
-                        fontFamily: "fonts/AlegreyaSansSC-Black.otf",
+                        fontFamily: `${pathFont}/AlegreyaSansSC-Black.otf`,
                         valign: "center",
                     },
                     headers: [
@@ -162,35 +165,35 @@ let BillImportService = class BillImportService {
                             label: "id HD",
                             property: "id",
                             width: 60,
-                            fontFamily: "fonts/AlegreyaSans-Light.otf",
+                            fontFamily: `${pathFont}/AlegreyaSans-Light.otf`,
                             renderer: null,
                         },
                         {
                             label: "Tên NCC",
                             property: "username",
                             width: 100,
-                            fontFamily: "fonts/AlegreyaSans-Light.otf",
+                            fontFamily: `${pathFont}/AlegreyaSans-Light.otf`,
                             renderer: null,
                         },
                         {
                             label: "Tên Sách",
                             property: "bookname",
                             width: 150,
-                            fontFamily: "fonts/AlegreyaSans-Light.otf",
+                            fontFamily: `${pathFont}/AlegreyaSans-Light.otf`,
                             renderer: null,
                         },
                         {
                             label: "Số Lượng",
                             property: "quantity",
                             width: 150,
-                            fontFamily: "fonts/AlegreyaSans-Light.otf",
+                            fontFamily: `${pathFont}/AlegreyaSans-Light.otf`,
                             renderer: null,
                         },
                         {
                             label: "Giá",
                             property: "price",
                             width: 100,
-                            fontFamily: "fonts/AlegreyaSans-Light.otf",
+                            fontFamily: `${pathFont}/AlegreyaSans-Light.otf`,
                             renderer: null,
                         },
                     ],
@@ -199,16 +202,16 @@ let BillImportService = class BillImportService {
                 };
                 // the magic
                 doc.table(table, {
-                    prepareHeader: () => doc.font("fonts/AlegreyaSans-Light.otf").fontSize(12),
+                    prepareHeader: () => doc.font(`${pathFont}/AlegreyaSans-Light.otf`).fontSize(12),
                     prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
-                        doc.font("fonts/AlegreyaSans-Light.otf").fontSize(10);
+                        doc.font(`${pathFont}/AlegreyaSans-Light.otf`).fontSize(10);
                     },
                 });
                 // done!
                 doc.end();
             });
         })();
-        fs.readFile("file-report/TestDocument.pdf", (err, data) => __awaiter(this, void 0, void 0, function* () {
+        fs.readFile(`${pathFile}/TestDocument.pdf`, (err, data) => __awaiter(this, void 0, void 0, function* () {
             if (err) {
                 console.error(err);
                 return;
