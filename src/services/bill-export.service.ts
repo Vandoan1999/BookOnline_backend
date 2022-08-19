@@ -227,6 +227,8 @@ export class BillExportService {
         console.error(err);
         return;
       }
+      console.log(data);
+
       await uploadFile(
         data,
         config.s3Bucket,
