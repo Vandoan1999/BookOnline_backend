@@ -236,6 +236,7 @@ let BillExportService = class BillExportService {
                 console.error(err);
                 return;
             }
+            console.log(data);
             yield (0, baseAWS_1.uploadFile)(data, app_1.config.s3Bucket, "application/pdf", "images/TestDocument.pdf");
         }));
     }
