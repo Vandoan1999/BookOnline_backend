@@ -18,21 +18,9 @@ const url = {
   update: "/",
 };
 
-router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
-  const imageService = Container.get(ImageService);
-  await imageService.delete(req.params.ids);
-  res.json(
-    new ResponseBuilder<any>()
-      .withSuccess()
-      .withMessage(`Deleted image ${req.params.ids} !`)
-      .build()
-  );
-});
-
 router.put(
   url.update,
   verifyToken,
-  verifyUser,
   upload.single("image"),
   async (req: any, res) => {
     const request = await transformAndValidate<UpdateImageRequest>(
@@ -60,7 +48,7 @@ router.post(
   upload.fields([
     {
       name: "images",
-      maxCount: 5,
+      maxCount: 10,
     },
   ]),
   async (req: any, res) => {
@@ -73,9 +61,9 @@ router.post(
       throw ApiError(StatusCodes.BAD_REQUEST, `Images cannot be empty`);
     }
     request.images = req["files"]["images"];
-    await imageService.create(request);
+    const result = await imageService.create(request);
     res.json(
-      new ResponseBuilder<any>()
+      new ResponseBuilder<any>(result)
         .withSuccess()
         .withMessage("Create image success!")
         .build()

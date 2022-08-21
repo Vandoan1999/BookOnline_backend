@@ -30,37 +30,72 @@ const category_repository_1 = require("@repos/category.repository");
 const typeorm_1 = require("typeorm");
 const jet_logger_1 = __importDefault(require("jet-logger"));
 const image_service_1 = require("./image.service");
+const image_repository_1 = require("@repos/image.repository");
 let BookService = class BookService {
     constructor(imageService) {
         this.imageService = imageService;
     }
     create(request) {
         return __awaiter(this, void 0, void 0, function* () {
-            const bookExist = yield book_repository_1.BookRepository.findOneBy({ name: request.name });
-            if (bookExist) {
-                throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.BAD_REQUEST, `name: ${request.name} book existed!`);
-            }
             const book = book_repository_1.BookRepository.create(request);
             if (request.categories_id && request.categories_id.length > 0) {
-                const categories = [];
-                for (let i = 0; i < request.categories_id.length; i++) {
-                    const data = yield category_repository_1.CategoryRepository.findOne({
-                        where: { id: request.categories_id[i] },
-                    });
-                    if (data) {
-                        categories.push(data);
+                const categories = yield category_repository_1.CategoryRepository.find({
+                    where: { id: (0, typeorm_1.In)([request.categories_id]) },
+                });
+                const invalidCategory = [];
+                for (const cate of categories) {
+                    const category = request.categories_id.findIndex((i) => i === cate.id);
+                    if (category === -1) {
+                        invalidCategory.push(cate.id);
+                    }
+                }
+                if (invalidCategory.length > 0) {
+                    if (invalidCategory.length > 0) {
+                        throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.NOT_FOUND, `categories invalid`, {
+                            invalidCategory,
+                        });
                     }
                 }
                 book.categories = categories;
             }
-            return book_repository_1.BookRepository.save(book);
+            if (request.images && request.images.length > 0) {
+                const image = yield image_repository_1.ImageRepository.find({
+                    where: { id: (0, typeorm_1.In)(request.images.map((i) => i.id)) },
+                });
+                if (image.length !== request.images.length) {
+                    throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.NOT_FOUND, `Image not exits`, {});
+                }
+                book.images = JSON.stringify(image);
+            }
+            if (request.avartar) {
+                const image = yield image_repository_1.ImageRepository.findOneOrFail({
+                    where: { id: request.avartar.id },
+                });
+                book.avartar = JSON.stringify(image);
+            }
+            const bookAfterSave = yield book_repository_1.BookRepository.save(book);
+            if (bookAfterSave.avartar) {
+                bookAfterSave.avartar = JSON.parse(bookAfterSave.avartar);
+            }
+            if (bookAfterSave.images) {
+                bookAfterSave.images = JSON.parse(bookAfterSave.images);
+            }
+            return bookAfterSave;
         });
     }
     getList(request) {
         return __awaiter(this, void 0, void 0, function* () {
             const [books, total] = yield book_repository_1.BookRepository.getList(request);
+            books.forEach((book) => {
+                if (book.avartar) {
+                    book.avartar = JSON.parse(book.avartar);
+                }
+                if (book.images) {
+                    book.images = JSON.parse(book.images);
+                }
+            });
             return {
-                books: yield this.imageService.getImageByObject(books),
+                books,
                 total,
             };
         });
@@ -99,10 +134,38 @@ let BookService = class BookService {
                         book[key] += 1;
                         continue;
                     }
+                    if (key === "images") {
+                        continue;
+                    }
+                    if (key === "avartar") {
+                        continue;
+                    }
                     book[key] = request[key];
                 }
             }
-            return book_repository_1.BookRepository.save(book);
+            if (request.images && request.images.length > 0) {
+                const image = yield image_repository_1.ImageRepository.find({
+                    where: { id: (0, typeorm_1.In)(request.images.map((i) => i.id)) },
+                });
+                if (image.length !== request.images.length) {
+                    throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.NOT_FOUND, `Image not exits`, {});
+                }
+                book.images = JSON.stringify(image);
+            }
+            if (request.avartar) {
+                const image = yield image_repository_1.ImageRepository.findOneOrFail({
+                    where: { id: request.avartar.id },
+                });
+                book.avartar = JSON.stringify(image);
+            }
+            const bookAfterSave = yield book_repository_1.BookRepository.save(book);
+            if (bookAfterSave.avartar) {
+                bookAfterSave.avartar = JSON.parse(bookAfterSave.avartar);
+            }
+            if (bookAfterSave.images) {
+                bookAfterSave.images = JSON.parse(bookAfterSave.images);
+            }
+            return bookAfterSave;
         });
     }
     detail(id) {
@@ -111,17 +174,20 @@ let BookService = class BookService {
                 where: { id },
                 relations: ["categories"],
             });
-            for (let ct of book.categories) {
-                const category = yield this.imageService.getImageByObject([ct]);
-                ct = category[0];
+            if (book.avartar) {
+                book.avartar = JSON.parse(book.avartar);
             }
-            return this.imageService.getImageByObject([book]);
+            if (book.images) {
+                book.images = JSON.parse(book.images);
+            }
+            return book;
         });
     }
     delete(idsRequest) {
         return __awaiter(this, void 0, void 0, function* () {
             let ids = idsRequest.split(",");
             const books = yield book_repository_1.BookRepository.find({ where: { id: (0, typeorm_1.In)(ids) } });
+            const imageTobeDelete = [];
             if (books.length === 0) {
                 throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.NOT_FOUND, `book width ids ${ids.toString()} not found`);
             }
@@ -131,17 +197,22 @@ let BookService = class BookService {
                 if (!id) {
                     invalidBook.push(book.id);
                 }
+                if (book.avartar) {
+                    imageTobeDelete.push(JSON.parse(book.avartar).id);
+                }
+                if (book.images) {
+                    imageTobeDelete.push(...JSON.parse(book.images).map((i) => i.id));
+                }
             }
             if (invalidBook.length > 0) {
                 throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.NOT_FOUND, `book id not valid`, {
                     invalidBook,
                 });
             }
-            const idBook = books.map((item) => item.id);
             jet_logger_1.default.info(`Start delete book from db! `);
             yield book_repository_1.BookRepository.remove(books);
             jet_logger_1.default.info(`Deleted book from db done! `);
-            yield this.imageService.delete(null, idBook.toString());
+            yield this.imageService.delete(imageTobeDelete);
         });
     }
 };

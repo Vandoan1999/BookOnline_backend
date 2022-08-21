@@ -1,6 +1,20 @@
 import { Gender } from "@enums/gender.enum";
-import { Allow, IsEnum, IsNotEmpty, IsOptional } from "class-validator";
+import { Type } from "class-transformer";
+import {
+  Allow,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from "class-validator";
 
+export class Image {
+  @IsString()
+  id: string;
+
+  @IsString()
+  link: string;
+}
 export class UpdateUserRequest {
   @IsNotEmpty()
   id: string;
@@ -23,4 +37,8 @@ export class UpdateUserRequest {
 
   @IsOptional()
   bank: string;
+
+  @IsOptional()
+  @Type(() => Image)
+  image: Image;
 }

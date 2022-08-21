@@ -34,7 +34,7 @@ let CategoryService = class CategoryService {
         return __awaiter(this, void 0, void 0, function* () {
             const [category, total] = yield category_repository_1.CategoryRepository.findAndCount();
             return {
-                category: yield this.imageService.getImageByObject(category),
+                category,
                 total,
             };
         });

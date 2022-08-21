@@ -69,15 +69,16 @@ let BillExportService = class BillExportService {
     list(request, user) {
         return __awaiter(this, void 0, void 0, function* () {
             const [billExport, total] = yield bill_export_repository_1.BillExportRepository.getList(request, user);
-            if (!request.all) {
-                for (let bill of billExport) {
-                    const user = yield this.imageService.getImageByObject([bill.user]);
-                    bill.user = user[0];
-                    for (const bxd of bill.bill_export_detail) {
-                        const bookAttachImage = yield this.imageService.getImageByObject([
-                            bxd.book,
-                        ]);
-                        bxd.book = bookAttachImage[0];
+            for (let bill of billExport) {
+                if (bill.user.avartar) {
+                    bill.user.avartar = JSON.parse(bill.user.avartar);
+                }
+                for (const bxd of bill.bill_export_detail) {
+                    if (bxd.book.images) {
+                        bxd.book.images = JSON.parse(bxd.book.images);
+                    }
+                    if (bxd.book.avartar) {
+                        bxd.book.avartar = JSON.parse(bxd.book.avartar);
                     }
                 }
             }

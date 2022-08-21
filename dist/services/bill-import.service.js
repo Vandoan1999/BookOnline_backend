@@ -74,13 +74,13 @@ let BillImportService = class BillImportService {
     list(request) {
         return __awaiter(this, void 0, void 0, function* () {
             const [billImport, total] = yield bill_import_repository_1.BillImportRepository.getList(request);
-            if (!request.all) {
-                for (let bill of billImport) {
-                    for (const bid of bill.bill_import_details) {
-                        const bookAttachImage = yield this.imageService.getImageByObject([
-                            bid.book,
-                        ]);
-                        bid.book = bookAttachImage[0];
+            for (let bill of billImport) {
+                for (const bid of bill.bill_import_details) {
+                    if (bid.book.avartar) {
+                        bid.book.avartar = JSON.parse(bid.book.avartar);
+                    }
+                    if (bid.book.images) {
+                        bid.book.images = JSON.parse(bid.book.images);
                     }
                 }
             }

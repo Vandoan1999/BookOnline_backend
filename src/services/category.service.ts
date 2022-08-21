@@ -16,7 +16,7 @@ export class CategoryService {
   async getList() {
     const [category, total] = await CategoryRepository.findAndCount();
     return {
-      category: await this.imageService.getImageByObject(category),
+      category,
       total,
     };
   }

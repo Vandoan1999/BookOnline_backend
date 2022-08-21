@@ -9,9 +9,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateUserRequest = void 0;
+exports.UpdateUserRequest = exports.Image = void 0;
 const gender_enum_1 = require("@enums/gender.enum");
+const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
+class Image {
+}
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], Image.prototype, "id", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], Image.prototype, "link", void 0);
+exports.Image = Image;
 class UpdateUserRequest {
 }
 __decorate([
@@ -43,4 +55,9 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateUserRequest.prototype, "bank", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Image),
+    __metadata("design:type", Image)
+], UpdateUserRequest.prototype, "image", void 0);
 exports.UpdateUserRequest = UpdateUserRequest;

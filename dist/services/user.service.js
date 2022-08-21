@@ -21,10 +21,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const role_enum_1 = require("@enums/role.enum");
 const user_repository_1 = require("@repos/user.repository");
-const http_status_codes_1 = require("http-status-codes");
-const apiError_1 = require("../ultis/apiError");
 const typedi_1 = require("typedi");
 const image_service_1 = require("./image.service");
+const image_repository_1 = require("@repos/image.repository");
 let UserService = class UserService {
     constructor(imageService) {
         this.imageService = imageService;
@@ -32,7 +31,12 @@ let UserService = class UserService {
     getList(request) {
         return __awaiter(this, void 0, void 0, function* () {
             const [users, total] = yield user_repository_1.UserRepository.getList(request);
-            return { users: yield this.imageService.getImageByObject(users), total };
+            users.forEach((user) => {
+                if (user.avartar) {
+                    user.avartar = JSON.parse(user.avartar);
+                }
+            });
+            return { users, total };
         });
     }
     update(request, userInfo) {
@@ -40,8 +44,19 @@ let UserService = class UserService {
             if (userInfo && userInfo.role === role_enum_1.Role.USER) {
                 request.id = userInfo.id;
             }
-            yield user_repository_1.UserRepository.findOneByOrFail({ id: request.id });
-            return user_repository_1.UserRepository.update({ id: request.id }, Object.assign({}, request));
+            const user = yield user_repository_1.UserRepository.findOneByOrFail({ id: request.id });
+            if (request.image) {
+                const image = yield image_repository_1.ImageRepository.findOneByOrFail({
+                    id: request.image.id,
+                });
+                user.avartar = JSON.stringify(image);
+            }
+            for (const key in request) {
+                if (user[key]) {
+                    user[key] = request[key];
+                }
+            }
+            return user_repository_1.UserRepository.save(user);
         });
     }
     detail(id, user = null) {
@@ -50,16 +65,10 @@ let UserService = class UserService {
                 id = user && (user === null || user === void 0 ? void 0 : user.id) ? user === null || user === void 0 ? void 0 : user.id : id;
             }
             const userResult = yield user_repository_1.UserRepository.findOneByOrFail({ id });
-            return yield this.imageService.getImageByObject([userResult]);
-        });
-    }
-    delete(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const res = yield user_repository_1.UserRepository.findOneByOrFail({ id });
-            if (res.role === role_enum_1.Role.ADMIN) {
-                throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.BAD_REQUEST, `you cannot delete admin`);
+            if (userResult.avartar) {
+                userResult.avartar = JSON.parse(userResult.avartar);
             }
-            yield this.imageService.delete(null, res.id);
+            return userResult;
         });
     }
 };

@@ -56,13 +56,15 @@ let AuthService = class AuthService {
     }
     getProfile(userInfo) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield auth_repository_1.AuthRepository.findOne({
+            const user = yield auth_repository_1.AuthRepository.findOneOrFail({
                 where: {
                     id: userInfo.id,
                 },
             });
-            const userReturn = yield this.imageService.getImageByObject([user]);
-            return userReturn[0];
+            if (user.avartar) {
+                user.avartar = JSON.parse(user.avartar);
+            }
+            return user;
         });
     }
     forgotPassword(email) {

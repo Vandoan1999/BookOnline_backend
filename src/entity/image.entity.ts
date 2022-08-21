@@ -7,15 +7,5 @@ export class ImageEntity {
   id?: string;
 
   @Column()
-  url: string;
-
-  @Column({
-    type: "enum",
-    enum: ImageType,
-  })
-  type: ImageType;
-
-  @Column()
-  @Index()
-  item_id: string;
+  link: string;
 }

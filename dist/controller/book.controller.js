@@ -57,8 +57,11 @@ router.post(url.add, verify_token_1.verifyToken, verify_user_1.verifyUser, (req,
 router.put(url.update, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(update_book_request_1.UpdateBookRequest, req.body);
     const bookService = typedi_1.default.get(book_service_1.BookService);
-    yield bookService.update(request);
-    return res.json(new response_builder_1.ResponseBuilder().withSuccess().withMessage("").build());
+    const result = yield bookService.update(request);
+    return res.json(new response_builder_1.ResponseBuilder(result)
+        .withSuccess()
+        .withMessage("update book success")
+        .build());
 }));
 //get detail book
 router.get(url.detail, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -67,7 +70,7 @@ router.get(url.detail, (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
     const bookService = typedi_1.default.get(book_service_1.BookService);
     const book = yield bookService.detail(req.params.id);
-    return res.json(new response_builder_1.ResponseBuilder(book[0]).withSuccess().build());
+    return res.json(new response_builder_1.ResponseBuilder(book).withSuccess().build());
 }));
 //delete book
 router.delete(url.delete, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

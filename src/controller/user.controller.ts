@@ -57,28 +57,7 @@ router.put(url.update, verifyToken, async (req: any, res) => {
 router.get(url.detail, verifyToken, async (req, res) => {
   const userService = Container.get(UserService);
   const user = await userService.detail(req.params.id, req["user"]);
-  return res.json(
-    new ResponseBuilder<UserEntity>(user[0]).withSuccess().build()
-  );
-});
-
-router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
-  if (req["user"] && req["user"].role === Role.USER) {
-    throw ApiError(
-      StatusCodes.FORBIDDEN,
-      `user name: ${req["user"].username} and email ${req["user"].email} not have permission delete user!`
-    );
-  }
-  const userService = Container.get(UserService);
-
-  await userService.delete(req.params.id);
-
-  return res.json(
-    new ResponseBuilder<any>()
-      .withMessage("deleted user successfully")
-      .withSuccess()
-      .build()
-  );
+  return res.json(new ResponseBuilder<UserEntity>(user).withSuccess().build());
 });
 
 // Export default

@@ -1,4 +1,6 @@
+import { Transform, Type } from "class-transformer";
 import { Allow, IsArray, IsNotEmpty, IsOptional } from "class-validator";
+import { Image } from "@models/user/update-user.request";
 export class CreateBookRequest {
   @IsNotEmpty()
   name: string;
@@ -33,4 +35,13 @@ export class CreateBookRequest {
   @IsOptional()
   @IsArray()
   categories_id: string[];
+
+  @IsOptional()
+  @IsArray()
+  @Type(() => Image)
+  images: any;
+
+  @IsOptional()
+  @Type(() => Image)
+  avartar: any;
 }

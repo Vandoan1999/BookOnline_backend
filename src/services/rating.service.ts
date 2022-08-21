@@ -17,8 +17,9 @@ export class RatingService {
   async getListRating(request: GetListRatingRequest) {
     const [rating, total] = await RatingRepository.getListRating(request);
     for (const r of rating) {
-      const user = await this.imageService.getImageByObject([r.user]);
-      r.user = user[0];
+      if (r.user.avartar) {
+        r.user.avartar = JSON.parse(r.user.avartar);
+      }
     }
 
     return {

@@ -26,6 +26,14 @@ __decorate([
     __metadata("design:type", String)
 ], BookEntity.prototype, "name", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], BookEntity.prototype, "avartar", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], BookEntity.prototype, "images", void 0);
+__decorate([
     (0, typeorm_1.Column)({ nullable: true, type: "int", default: 0 }),
     __metadata("design:type", Number)
 ], BookEntity.prototype, "discounted", void 0);

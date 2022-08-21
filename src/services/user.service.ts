@@ -10,27 +10,39 @@ import { Service } from "typedi";
 import { deleteObject, uploadFile } from "@common/baseAWS";
 import { config } from "@config/app";
 import { ImageService } from "./image.service";
+import { ImageRepository } from "@repos/image.repository";
 @Service()
 export class UserService {
   constructor(private imageService: ImageService) {}
 
   async getList(request: ListUserRequest) {
     const [users, total] = await UserRepository.getList(request);
-
-    return { users: await this.imageService.getImageByObject(users), total };
+    users.forEach((user) => {
+      if (user.avartar) {
+        user.avartar = JSON.parse(user.avartar);
+      }
+    });
+    return { users, total };
   }
 
   async update(request: UpdateUserRequest, userInfo: UserInfo) {
     if (userInfo && userInfo.role === Role.USER) {
       request.id = userInfo.id;
     }
-    await UserRepository.findOneByOrFail({ id: request.id });
-    return UserRepository.update(
-      { id: request.id },
-      {
-        ...request,
+    const user = await UserRepository.findOneByOrFail({ id: request.id });
+    if (request.image) {
+      const image = await ImageRepository.findOneByOrFail({
+        id: request.image.id,
+      });
+      user.avartar = JSON.stringify(image);
+    }
+
+    for (const key in request) {
+      if (user[key]) {
+        user[key] = request[key];
       }
-    );
+    }
+    return UserRepository.save(user);
   }
 
   async detail(id: string, user: UserInfo | null = null) {
@@ -38,14 +50,9 @@ export class UserService {
       id = user && user?.id ? user?.id : id;
     }
     const userResult = await UserRepository.findOneByOrFail({ id });
-    return await this.imageService.getImageByObject([userResult]);
-  }
-
-  async delete(id: string) {
-    const res = await UserRepository.findOneByOrFail({ id });
-    if (res.role === Role.ADMIN) {
-      throw ApiError(StatusCodes.BAD_REQUEST, `you cannot delete admin`);
+    if (userResult.avartar) {
+      userResult.avartar = JSON.parse(userResult.avartar);
     }
-    await this.imageService.delete(null, res.id);
+    return userResult;
   }
 }

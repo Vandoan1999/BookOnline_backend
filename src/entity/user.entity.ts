@@ -20,6 +20,9 @@ export class UserEntity {
   username: string;
 
   @Column({ nullable: true })
+  avartar: string;
+
+  @Column({ nullable: true })
   fullName: string;
 
   @Column({ unique: true })

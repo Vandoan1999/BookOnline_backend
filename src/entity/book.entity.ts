@@ -24,6 +24,12 @@ export class BookEntity {
   @Column({ unique: true })
   name: string;
 
+  @Column({ nullable: true })
+  avartar: string;
+
+  @Column({ nullable: true })
+  images: string;
+
   @Column({ nullable: true, type: "int", default: 0 })
   discounted: number;
 

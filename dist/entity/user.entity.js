@@ -28,6 +28,10 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
+], UserEntity.prototype, "avartar", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
 ], UserEntity.prototype, "fullName", void 0);
 __decorate([
     (0, typeorm_1.Column)({ unique: true }),

@@ -1,4 +1,5 @@
 import { ImageEntity } from "@entity/image.entity";
+import { Type } from "class-transformer";
 import {
   IsArray,
   IsNotEmpty,
@@ -57,4 +58,13 @@ export class UpdateBookRequest {
   @IsOptional()
   @IsArray()
   categories_id: [];
+
+  @IsOptional()
+  @IsArray()
+  @Type(() => ImageEntity)
+  images: any;
+
+  @IsOptional()
+  @Type(() => ImageEntity)
+  avartar: any;
 }

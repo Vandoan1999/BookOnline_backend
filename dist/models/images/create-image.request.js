@@ -10,8 +10,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateImageRequest = void 0;
-const image_table_name_enum_1 = require("@enums/image-table-name.enum");
-const image_type_enum_1 = require("@enums/image-type.enum");
 const class_validator_1 = require("class-validator");
 class CreateImageRequest {
 }
@@ -19,18 +17,4 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Object)
 ], CreateImageRequest.prototype, "images", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], CreateImageRequest.prototype, "item_id", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsEnum)(image_type_enum_1.ImageType),
-    __metadata("design:type", String)
-], CreateImageRequest.prototype, "type", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsEnum)(image_table_name_enum_1.ImageTableName),
-    __metadata("design:type", String)
-], CreateImageRequest.prototype, "tableName", void 0);
 exports.CreateImageRequest = CreateImageRequest;

@@ -34,8 +34,9 @@ let RatingService = class RatingService {
         return __awaiter(this, void 0, void 0, function* () {
             const [rating, total] = yield rating_repository_1.RatingRepository.getListRating(request);
             for (const r of rating) {
-                const user = yield this.imageService.getImageByObject([r.user]);
-                r.user = user[0];
+                if (r.user.avartar) {
+                    r.user.avartar = JSON.parse(r.user.avartar);
+                }
             }
             return {
                 rating,

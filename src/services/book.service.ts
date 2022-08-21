@@ -10,41 +10,78 @@ import { In } from "typeorm";
 
 import logger from "jet-logger";
 import { ImageService } from "./image.service";
+import { ImageRepository } from "@repos/image.repository";
 
 @Service()
 export class BookService {
   constructor(private imageService: ImageService) {}
   async create(request: CreateBookRequest) {
-    const bookExist = await BookRepository.findOneBy({ name: request.name });
-    if (bookExist) {
-      throw ApiError(
-        StatusCodes.BAD_REQUEST,
-        `name: ${request.name} book existed!`
-      );
-    }
     const book = BookRepository.create(request);
 
     if (request.categories_id && request.categories_id.length > 0) {
-      const categories: any[] = [];
-      for (let i = 0; i < request.categories_id.length; i++) {
-        const data = await CategoryRepository.findOne({
-          where: { id: request.categories_id[i] },
-        });
-        if (data) {
-          categories.push(data);
+      const categories = await CategoryRepository.find({
+        where: { id: In([request.categories_id]) },
+      });
+      const invalidCategory: any[] = [];
+      for (const cate of categories) {
+        const category = request.categories_id.findIndex((i) => i === cate.id);
+        if (category === -1) {
+          invalidCategory.push(cate.id);
         }
       }
-
+      if (invalidCategory.length > 0) {
+        if (invalidCategory.length > 0) {
+          throw ApiError(StatusCodes.NOT_FOUND, `categories invalid`, {
+            invalidCategory,
+          });
+        }
+      }
       book.categories = categories;
     }
 
-    return BookRepository.save(book);
+    if (request.images && request.images.length > 0) {
+      const image = await ImageRepository.find({
+        where: { id: In(request.images.map((i) => i.id)) },
+      });
+
+      if (image.length !== request.images.length) {
+        throw ApiError(StatusCodes.NOT_FOUND, `Image not exits`, {});
+      }
+      book.images = JSON.stringify(image);
+    }
+
+    if (request.avartar) {
+      const image = await ImageRepository.findOneOrFail({
+        where: { id: request.avartar.id },
+      });
+      book.avartar = JSON.stringify(image);
+    }
+
+    const bookAfterSave = await BookRepository.save(book);
+    if (bookAfterSave.avartar) {
+      bookAfterSave.avartar = JSON.parse(bookAfterSave.avartar);
+    }
+
+    if (bookAfterSave.images) {
+      bookAfterSave.images = JSON.parse(bookAfterSave.images);
+    }
+
+    return bookAfterSave;
   }
 
   async getList(request: ListBookRequest) {
     const [books, total] = await BookRepository.getList(request);
+    books.forEach((book) => {
+      if (book.avartar) {
+        book.avartar = JSON.parse(book.avartar);
+      }
+
+      if (book.images) {
+        book.images = JSON.parse(book.images);
+      }
+    });
     return {
-      books: await this.imageService.getImageByObject(books),
+      books,
       total,
     };
   }
@@ -73,6 +110,7 @@ export class BookService {
       }
       book.categories = categories;
     }
+
     for (const key in request) {
       if (book.hasOwnProperty(key)) {
         if (key === "sold") {
@@ -83,10 +121,46 @@ export class BookService {
           book[key] += 1;
           continue;
         }
+
+        if (key === "images") {
+          continue;
+        }
+
+        if (key === "avartar") {
+          continue;
+        }
         book[key] = request[key];
       }
     }
-    return BookRepository.save(book);
+
+    if (request.images && request.images.length > 0) {
+      const image = await ImageRepository.find({
+        where: { id: In(request.images.map((i) => i.id)) },
+      });
+
+      if (image.length !== request.images.length) {
+        throw ApiError(StatusCodes.NOT_FOUND, `Image not exits`, {});
+      }
+      book.images = JSON.stringify(image);
+    }
+
+    if (request.avartar) {
+      const image = await ImageRepository.findOneOrFail({
+        where: { id: request.avartar.id },
+      });
+      book.avartar = JSON.stringify(image);
+    }
+
+    const bookAfterSave = await BookRepository.save(book);
+    if (bookAfterSave.avartar) {
+      bookAfterSave.avartar = JSON.parse(bookAfterSave.avartar);
+    }
+
+    if (bookAfterSave.images) {
+      bookAfterSave.images = JSON.parse(bookAfterSave.images);
+    }
+
+    return bookAfterSave;
   }
 
   async detail(id: string) {
@@ -94,16 +168,21 @@ export class BookService {
       where: { id },
       relations: ["categories"],
     });
-    for (let ct of book.categories) {
-      const category = await this.imageService.getImageByObject([ct]);
-      ct = category[0];
+
+    if (book.avartar) {
+      book.avartar = JSON.parse(book.avartar);
     }
-    return this.imageService.getImageByObject([book]);
+
+    if (book.images) {
+      book.images = JSON.parse(book.images);
+    }
+    return book;
   }
 
   async delete(idsRequest: string) {
     let ids: any[] = idsRequest.split(",");
     const books = await BookRepository.find({ where: { id: In(ids) } });
+    const imageTobeDelete: any[] = [];
     if (books.length === 0) {
       throw ApiError(
         StatusCodes.NOT_FOUND,
@@ -116,6 +195,13 @@ export class BookService {
       if (!id) {
         invalidBook.push(book.id);
       }
+
+      if (book.avartar) {
+        imageTobeDelete.push(JSON.parse(book.avartar).id);
+      }
+      if (book.images) {
+        imageTobeDelete.push(...JSON.parse(book.images).map((i) => i.id));
+      }
     }
 
     if (invalidBook.length > 0) {
@@ -123,11 +209,9 @@ export class BookService {
         invalidBook,
       });
     }
-    const idBook = books.map((item) => item.id);
     logger.info(`Start delete book from db! `);
     await BookRepository.remove(books);
     logger.info(`Deleted book from db done! `);
-
-    await this.imageService.delete(null, idBook.toString());
+    await this.imageService.delete(imageTobeDelete);
   }
 }

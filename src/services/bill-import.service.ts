@@ -54,13 +54,14 @@ export class BillImportService {
 
   async list(request: ListBillImportRequest) {
     const [billImport, total] = await BillImportRepository.getList(request);
-    if (!request.all) {
-      for (let bill of billImport) {
-        for (const bid of bill.bill_import_details) {
-          const bookAttachImage = await this.imageService.getImageByObject([
-            bid.book,
-          ]);
-          bid.book = bookAttachImage[0];
+    for (let bill of billImport) {
+      for (const bid of bill.bill_import_details) {
+        if (bid.book.avartar) {
+          bid.book.avartar = JSON.parse(bid.book.avartar);
+        }
+
+        if (bid.book.images) {
+          bid.book.images = JSON.parse(bid.book.images);
         }
       }
     }

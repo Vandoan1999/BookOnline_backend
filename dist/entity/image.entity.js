@@ -10,7 +10,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImageEntity = void 0;
-const image_type_enum_1 = require("@enums/image-type.enum");
 const typeorm_1 = require("typeorm");
 let ImageEntity = class ImageEntity {
 };
@@ -21,19 +20,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], ImageEntity.prototype, "url", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
-        type: "enum",
-        enum: image_type_enum_1.ImageType,
-    }),
-    __metadata("design:type", String)
-], ImageEntity.prototype, "type", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    (0, typeorm_1.Index)(),
-    __metadata("design:type", String)
-], ImageEntity.prototype, "item_id", void 0);
+], ImageEntity.prototype, "link", void 0);
 ImageEntity = __decorate([
     (0, typeorm_1.Entity)("images")
 ], ImageEntity);

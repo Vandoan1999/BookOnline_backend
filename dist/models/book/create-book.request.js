@@ -10,7 +10,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateBookRequest = void 0;
+const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
+const update_user_request_1 = require("@models/user/update-user.request");
 class CreateBookRequest {
 }
 __decorate([
@@ -58,4 +60,15 @@ __decorate([
     (0, class_validator_1.IsArray)(),
     __metadata("design:type", Array)
 ], CreateBookRequest.prototype, "categories_id", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsArray)(),
+    (0, class_transformer_1.Type)(() => update_user_request_1.Image),
+    __metadata("design:type", Object)
+], CreateBookRequest.prototype, "images", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => update_user_request_1.Image),
+    __metadata("design:type", Object)
+], CreateBookRequest.prototype, "avartar", void 0);
 exports.CreateBookRequest = CreateBookRequest;

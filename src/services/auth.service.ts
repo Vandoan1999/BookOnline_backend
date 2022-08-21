@@ -42,13 +42,15 @@ export class AuthService {
   }
 
   async getProfile(userInfo: UserInfo) {
-    const user = await AuthRepository.findOne({
+    const user = await AuthRepository.findOneOrFail({
       where: {
         id: userInfo.id,
       },
     });
-    const userReturn = await this.imageService.getImageByObject([user]);
-    return userReturn[0];
+    if (user.avartar) {
+      user.avartar = JSON.parse(user.avartar);
+    }
+    return user;
   }
 
   async forgotPassword(email: string) {

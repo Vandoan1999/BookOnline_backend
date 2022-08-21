@@ -65,9 +65,14 @@ router.put(url.update, verifyToken, verifyUser, async (req: any, res) => {
   );
   const bookService = Container.get(BookService);
 
-  await bookService.update(request);
+  const result = await bookService.update(request);
 
-  return res.json(new ResponseBuilder().withSuccess().withMessage("").build());
+  return res.json(
+    new ResponseBuilder(result)
+      .withSuccess()
+      .withMessage("update book success")
+      .build()
+  );
 });
 
 //get detail book
@@ -80,9 +85,7 @@ router.get(url.detail, async (req, res) => {
 
   const book = await bookService.detail(req.params.id);
 
-  return res.json(
-    new ResponseBuilder<BookEntity>(book[0]).withSuccess().build()
-  );
+  return res.json(new ResponseBuilder<BookEntity>(book).withSuccess().build());
 });
 
 //delete book
