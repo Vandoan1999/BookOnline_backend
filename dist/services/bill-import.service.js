@@ -81,7 +81,6 @@ let BillImportService = class BillImportService {
                             bid.book,
                         ]);
                         bid.book = bookAttachImage[0];
-                        console.log(bookAttachImage[0]);
                     }
                 }
             }
