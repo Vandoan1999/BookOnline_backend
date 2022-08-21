@@ -29,14 +29,12 @@ const bill_import_detail_repository_1 = require("@repos/bill-import-detail.repos
 const bill_import_repository_1 = require("@repos/bill-import.repository");
 const typeorm_1 = require("typeorm");
 const supplier_repository_1 = require("@repos/supplier.repository");
-const baseAWS_1 = require("@common/baseAWS");
-const app_1 = require("@config/app");
-const PDFDocument = require("pdfkit-table");
-const fs = require("fs");
-const path = require("path");
+const image_service_1 = require("./image.service");
 require("dotenv").config();
 let BillImportService = class BillImportService {
-    constructor() { }
+    constructor(imageService) {
+        this.imageService = imageService;
+    }
     create(request) {
         return __awaiter(this, void 0, void 0, function* () {
             const queryRunner = db_1.AppDataSource.createQueryRunner();
@@ -76,18 +74,20 @@ let BillImportService = class BillImportService {
     list(request) {
         return __awaiter(this, void 0, void 0, function* () {
             const [billImport, total] = yield bill_import_repository_1.BillImportRepository.getList(request);
-            if (request.isReport) {
-                this.getReport(billImport);
-                return {
-                    billImport: null,
-                    total: null,
-                    link: "https://shopbook.s3.ap-southeast-1.amazonaws.com/images/TestDocument.pdf",
-                };
+            if (!request.all) {
+                for (let bill of billImport) {
+                    for (const bid of bill.bill_import_details) {
+                        const bookAttachImage = yield this.imageService.getImageByObject([
+                            bid.book,
+                        ]);
+                        bid.book = bookAttachImage[0];
+                        console.log(bookAttachImage[0]);
+                    }
+                }
             }
             return {
                 billImport,
                 total,
-                link: "",
             };
         });
     }
@@ -126,102 +126,9 @@ let BillImportService = class BillImportService {
             }
         });
     }
-    getReport(billImport) {
-        const pathFile = path.join(process.cwd(), "file-report");
-        const pathFont = path.join(process.cwd(), "fonts");
-        const data = [];
-        for (const bi of billImport) {
-            for (const bid of bi.bill_import_details) {
-                data.push({
-                    id: bi.id.substring(1, 5),
-                    username: bi.supplier.company,
-                    bookname: bid.book.name,
-                    quantity: bid.quantity,
-                    price: bid.quantity * bid.book.price_import,
-                });
-            }
-        }
-        if (data.length > 0) {
-            data.push({
-                id: "Tổng",
-                quantity: data.reduce((pre, cur) => pre + cur.quantity, 0),
-                price: data.reduce((pre, cur) => pre + cur.price, 0),
-            });
-        }
-        let doc = new PDFDocument({ margin: 30, size: "A4" });
-        doc.pipe(fs.createWriteStream(`${pathFile}/TestDocument.pdf`));
-        (function () {
-            return __awaiter(this, void 0, void 0, function* () {
-                // table
-                const table = {
-                    title: {
-                        label: "BÁO CÁO HÓA ĐƠN NHẬP",
-                        fontSize: 30,
-                        fontFamily: `${pathFont}/AlegreyaSansSC-Black.otf`,
-                        valign: "center",
-                    },
-                    headers: [
-                        {
-                            label: "id HD",
-                            property: "id",
-                            width: 60,
-                            fontFamily: `${pathFont}/AlegreyaSans-Light.otf`,
-                            renderer: null,
-                        },
-                        {
-                            label: "Tên NCC",
-                            property: "username",
-                            width: 100,
-                            fontFamily: `${pathFont}/AlegreyaSans-Light.otf`,
-                            renderer: null,
-                        },
-                        {
-                            label: "Tên Sách",
-                            property: "bookname",
-                            width: 150,
-                            fontFamily: `${pathFont}/AlegreyaSans-Light.otf`,
-                            renderer: null,
-                        },
-                        {
-                            label: "Số Lượng",
-                            property: "quantity",
-                            width: 150,
-                            fontFamily: `${pathFont}/AlegreyaSans-Light.otf`,
-                            renderer: null,
-                        },
-                        {
-                            label: "Giá",
-                            property: "price",
-                            width: 100,
-                            fontFamily: `${pathFont}/AlegreyaSans-Light.otf`,
-                            renderer: null,
-                        },
-                    ],
-                    // complex data
-                    datas: data,
-                };
-                // the magic
-                doc.table(table, {
-                    prepareHeader: () => doc.font(`${pathFont}/AlegreyaSans-Light.otf`).fontSize(12),
-                    prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
-                        doc.font(`${pathFont}/AlegreyaSans-Light.otf`).fontSize(10);
-                    },
-                });
-                // done!
-                doc.end();
-            });
-        })();
-        fs.readFile(`${pathFile}/TestDocument.pdf`, (err, data) => __awaiter(this, void 0, void 0, function* () {
-            if (err) {
-                console.error(err);
-                return;
-            }
-            yield (0, baseAWS_1.uploadFile)(data, app_1.config.s3Bucket, "application/pdf", "images/TestDocument.pdf");
-        }));
-    }
 };
 BillImportService = __decorate([
     (0, typedi_1.Service)(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [image_service_1.ImageService])
 ], BillImportService);
 exports.BillImportService = BillImportService;

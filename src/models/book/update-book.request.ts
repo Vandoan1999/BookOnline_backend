@@ -17,9 +17,11 @@ export class UpdateBookRequest {
   @IsOptional()
   @IsNumber()
   discounted?: number;
+
   @IsOptional()
   @IsNumber()
   quantity: number;
+
   @IsOptional()
   @IsNumber()
   price_import?: number;
@@ -51,4 +53,8 @@ export class UpdateBookRequest {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsArray()
+  categories_id: [];
 }

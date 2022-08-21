@@ -39,7 +39,7 @@ exports.BillImportRepository = db_1.AppDataSource.getRepository(bill_import_enti
                 }
             });
         }
-        if (request.isReport) {
+        if (request.all) {
             return query.getManyAndCount();
         }
         return query.take(take).skip(skip).getManyAndCount();

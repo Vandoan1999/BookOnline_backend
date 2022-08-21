@@ -48,7 +48,7 @@ export const BillImportRepository = AppDataSource.getRepository(
       });
     }
 
-    if (request.isReport) {
+    if (request.all) {
       return query.getManyAndCount();
     }
     return query.take(take).skip(skip).getManyAndCount();

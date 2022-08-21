@@ -30,5 +30,5 @@ __decorate([
         return value;
     }),
     __metadata("design:type", Boolean)
-], ListBillExportRequest.prototype, "isReport", void 0);
+], ListBillExportRequest.prototype, "all", void 0);
 exports.ListBillExportRequest = ListBillExportRequest;

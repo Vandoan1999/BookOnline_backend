@@ -12,5 +12,5 @@ export class ListBillExportRequest extends Pagination {
     if (value === "false") return false;
     return value;
   })
-  isReport: boolean;
+  all: boolean;
 }

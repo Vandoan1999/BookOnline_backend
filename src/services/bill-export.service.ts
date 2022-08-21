@@ -13,12 +13,6 @@ import { BookRepository } from "@repos/book.repository";
 import { ImageService } from "./image.service";
 import { UpdateBillExportRequest } from "@models/bill_export/update-bill-export.request";
 import { BillExportStatus } from "@models/bill_export/bill-export-status.enum";
-import { BillExport } from "@entity/bill-export.entity";
-import { uploadFile } from "@common/baseAWS";
-import { config } from "@config/app";
-const PDFDocument = require("pdfkit-table");
-const fs = require("fs");
-const path = require("path");
 require("dotenv").config();
 @Service()
 export class BillExportService {
@@ -64,24 +58,23 @@ export class BillExportService {
       request,
       user
     );
-    if (request.isReport) {
-      this.getReport(billExport);
-      return {
-        billExport: null,
-        total: null,
-        link: "https://shopbook.s3.ap-southeast-1.amazonaws.com/images/TestDocument.pdf",
-      };
-    }
 
-    for (let bill of billExport) {
-      const user = await this.imageService.getImageByObject([bill.user]);
-      bill.user = user[0];
+    if (!request.all) {
+      for (let bill of billExport) {
+        const user = await this.imageService.getImageByObject([bill.user]);
+        bill.user = user[0];
+        for (const bxd of bill.bill_export_detail) {
+          const bookAttachImage = await this.imageService.getImageByObject([
+            bxd.book,
+          ]);
+          bxd.book = bookAttachImage[0];
+        }
+      }
     }
 
     return {
       billExport,
       total,
-      link: "",
     };
   }
 
@@ -136,105 +129,5 @@ export class BillExportService {
       billExport.status = request.status;
     }
     return BillExportRepository.save(billExport);
-  }
-
-  private getReport(billExport: BillExport[]) {
-    const pathFile = path.join(process.cwd(), "file-report");
-    const pathFont = path.join(process.cwd(), "fonts");
-    const data: any[] = [];
-    for (const bx of billExport) {
-      for (const bxd of bx.bill_export_detail) {
-        data.push({
-          id: bx.id.substring(1, 5),
-          username: bx.user.username,
-          bookname: bxd.book.name,
-          quantity: bxd.quantity,
-          price: bxd.quantity * bxd.book.price_export,
-        });
-      }
-    }
-    let doc = new PDFDocument({ margin: 30, size: "A4" });
-    if (data.length > 0) {
-      data.push({
-        id: "Tổng",
-        quantity: data.reduce((pre, cur) => pre + cur.quantity, 0),
-        price: data.reduce((pre, cur) => pre + cur.price, 0),
-      });
-    }
-    doc.pipe(fs.createWriteStream(`${pathFile}/TestDocument.pdf`));
-    (async function () {
-      // table
-      const table = {
-        title: {
-          label: "BÁO CÁO HÓA ĐƠN XUẤT",
-          fontSize: 30,
-          fontFamily: `${pathFont}/AlegreyaSansSC-Black.otf`,
-          valign: "center",
-        },
-        headers: [
-          {
-            label: "id HD",
-            property: "id",
-            width: 60,
-            fontFamily: `${pathFont}/AlegreyaSans-Light.otf`,
-            renderer: null,
-          },
-          {
-            label: "Tên KH",
-            property: "username",
-            width: 100,
-            fontFamily: `${pathFont}/AlegreyaSans-Light.otf`,
-            renderer: null,
-          },
-          {
-            label: "Tên Sách",
-            property: "bookname",
-            width: 150,
-            fontFamily: `${pathFont}/AlegreyaSans-Light.otf`,
-            renderer: null,
-          },
-          {
-            label: "Số Lượng",
-            property: "quantity",
-            width: 150,
-            fontFamily: `${pathFont}/AlegreyaSans-Light.otf`,
-            renderer: null,
-          },
-          {
-            label: "Giá",
-            property: "price",
-            width: 100,
-            fontFamily: `${pathFont}/AlegreyaSans-Light.otf`,
-            renderer: null,
-          },
-        ],
-        // complex data
-        datas: data,
-      };
-      // the magic
-      doc.table(table, {
-        prepareHeader: () =>
-          doc.font(`${pathFont}/AlegreyaSans-Light.otf`).fontSize(12),
-        prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
-          doc.font(`${pathFont}/AlegreyaSans-Light.otf`).fontSize(10);
-        },
-      });
-      // done!
-      doc.end();
-    })();
-    fs.readFile(`${pathFile}/TestDocument.pdf`, async (err, data) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      console.log(data);
-
-      await uploadFile(
-        data,
-        config.s3Bucket,
-        "application/pdf",
-        "images/TestDocument.pdf"
-      );
-    });
   }
 }

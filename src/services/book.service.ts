@@ -52,8 +52,27 @@ export class BookService {
   async update(request: UpdateBookRequest) {
     const book = await BookRepository.findOneOrFail({
       where: { id: request.id },
+      relations: ["categories"],
     });
 
+    if (request.categories_id) {
+      const categories = await CategoryRepository.find({
+        where: { id: In(request.categories_id) },
+      });
+      const invalidCategory: any[] = [];
+      for (const ct of categories) {
+        const category = request.categories_id.find((i) => i == ct.id);
+        if (!category) {
+          invalidCategory.push(category);
+        }
+      }
+      if (invalidCategory.length > 0) {
+        throw ApiError(StatusCodes.NOT_FOUND, `categories invalid`, {
+          invalidCategory,
+        });
+      }
+      book.categories = categories;
+    }
     for (const key in request) {
       if (book.hasOwnProperty(key)) {
         if (key === "sold") {

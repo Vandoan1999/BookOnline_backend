@@ -51,7 +51,7 @@ export const BillExportRepository = AppDataSource.getRepository(
     if (user.role === Role.USER) {
       query.andWhere("bill_export.user_id = :user_id", { user_id: user.id });
     }
-    if (request.isReport) {
+    if (request.all) {
       return query.getManyAndCount();
     }
     return query.take(take).skip(skip).getManyAndCount();

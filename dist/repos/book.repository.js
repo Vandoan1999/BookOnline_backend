@@ -11,6 +11,7 @@ exports.BookRepository = db_1.AppDataSource.getRepository(book_entity_1.BookEnti
         const page = request.page || 1;
         const skip = (page - 1) * take;
         const query = this.createQueryBuilder("book");
+        query.innerJoinAndSelect("book.categories", "ct");
         if (request.fillter) {
             const fillter = JSON.parse(request.fillter);
             fillter.forEach((item) => {
@@ -23,6 +24,11 @@ exports.BookRepository = db_1.AppDataSource.getRepository(book_entity_1.BookEnti
                     case "author":
                         query.andWhere("book.author LIKE :author", {
                             name: `%${item.text}%`,
+                        });
+                        break;
+                    case "category_id":
+                        query.andWhere("ct.id = :category_id", {
+                            category_id: `${item.text}`,
                         });
                         break;
                     case "price_export":

@@ -1,6 +1,7 @@
 import { config } from "@config/app";
 import { AppDataSource } from "@config/db";
 import { BookEntity as BookEntity } from "@entity/book.entity";
+import { CategoryEntity } from "@entity/category.entity";
 import { Order } from "@enums/order";
 import { ListBookRequest } from "@models/book/list-book.request";
 
@@ -11,6 +12,7 @@ export const BookRepository = AppDataSource.getRepository(BookEntity).extend({
     const skip = (page - 1) * take;
 
     const query = this.createQueryBuilder("book");
+    query.innerJoinAndSelect("book.categories", "ct");
     if (request.fillter) {
       const fillter = JSON.parse(request.fillter);
       fillter.forEach((item) => {
@@ -24,6 +26,11 @@ export const BookRepository = AppDataSource.getRepository(BookEntity).extend({
           case "author":
             query.andWhere("book.author LIKE :author", {
               name: `%${item.text}%`,
+            });
+            break;
+          case "category_id":
+            query.andWhere("ct.id = :category_id", {
+              category_id: `${item.text}`,
             });
             break;
 

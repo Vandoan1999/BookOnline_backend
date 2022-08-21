@@ -69,7 +69,26 @@ let BookService = class BookService {
         return __awaiter(this, void 0, void 0, function* () {
             const book = yield book_repository_1.BookRepository.findOneOrFail({
                 where: { id: request.id },
+                relations: ["categories"],
             });
+            if (request.categories_id) {
+                const categories = yield category_repository_1.CategoryRepository.find({
+                    where: { id: (0, typeorm_1.In)(request.categories_id) },
+                });
+                const invalidCategory = [];
+                for (const ct of categories) {
+                    const category = request.categories_id.find((i) => i == ct.id);
+                    if (!category) {
+                        invalidCategory.push(category);
+                    }
+                }
+                if (invalidCategory.length > 0) {
+                    throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.NOT_FOUND, `categories invalid`, {
+                        invalidCategory,
+                    });
+                }
+                book.categories = categories;
+            }
             for (const key in request) {
                 if (book.hasOwnProperty(key)) {
                     if (key === "sold") {

@@ -25,10 +25,10 @@ router.get(url.get, verifyToken, verifyUser, async (req, res) => {
     req.query
   );
   const billImportService = Container.get(BillImportService);
-  const { billImport, total, link } = await billImportService.list(request);
+  const { billImport, total } = await billImportService.list(request);
   return res.json(
     new ResponseBuilder<any>(billImport)
-      .withMeta({ total, link })
+      .withMeta({ total })
       .withSuccess()
       .build()
   );

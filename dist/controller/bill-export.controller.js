@@ -33,9 +33,9 @@ const url = {
 router.get(url.get, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(list_bill_export_request_1.ListBillExportRequest, req.query);
     const billExportService = typedi_1.default.get(bill_export_service_1.BillExportService);
-    const { billExport, total, link } = yield billExportService.list(request, req["user"]);
+    const { billExport, total } = yield billExportService.list(request, req["user"]);
     return res.json(new response_builder_1.ResponseBuilder(billExport)
-        .withMeta({ total, link })
+        .withMeta({ total })
         .withSuccess()
         .build());
 }));
