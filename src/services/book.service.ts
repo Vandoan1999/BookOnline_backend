@@ -20,7 +20,7 @@ export class BookService {
 
     if (request.categories_id && request.categories_id.length > 0) {
       const categories = await CategoryRepository.find({
-        where: { id: In([request.categories_id]) },
+        where: { id: In([...request.categories_id]) },
       });
       const invalidCategory: any[] = [];
       for (const cate of categories) {
