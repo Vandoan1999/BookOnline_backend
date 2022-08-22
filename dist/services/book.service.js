@@ -40,7 +40,7 @@ let BookService = class BookService {
             const book = book_repository_1.BookRepository.create(request);
             if (request.categories_id && request.categories_id.length > 0) {
                 const categories = yield category_repository_1.CategoryRepository.find({
-                    where: { id: (0, typeorm_1.In)([request.categories_id]) },
+                    where: { id: (0, typeorm_1.In)([...request.categories_id]) },
                 });
                 const invalidCategory = [];
                 for (const cate of categories) {
