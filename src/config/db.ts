@@ -2,7 +2,7 @@ import { DataSource } from "typeorm";
 import * as entiry from "@entity/index";
 export const AppDataSource = new DataSource({
   type: "postgres",
-  host: "13.212.33.6",
+  host: "13.214.209.124",
   port: 5432,
   username: "postgres",
   password: "12345678",
