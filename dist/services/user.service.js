@@ -45,7 +45,13 @@ let UserService = class UserService {
                 user.avartar = JSON.stringify(image);
             }
             for (const key in request) {
-                if (user[key]) {
+                if (user.hasOwnProperty(key)) {
+                    if (key === "images") {
+                        continue;
+                    }
+                    if (key === "avartar") {
+                        continue;
+                    }
                     user[key] = request[key];
                 }
             }
