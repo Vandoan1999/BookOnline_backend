@@ -28,7 +28,7 @@ const typeorm_1 = require("typeorm");
 const entiry = __importStar(require("@entity/index"));
 exports.AppDataSource = new typeorm_1.DataSource({
     type: "postgres",
-    host: "13.214.209.124",
+    host: "54.255.129.181",
     port: 5432,
     username: "postgres",
     password: "12345678",

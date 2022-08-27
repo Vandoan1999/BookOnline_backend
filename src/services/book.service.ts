@@ -113,15 +113,6 @@ export class BookService {
 
     for (const key in request) {
       if (book.hasOwnProperty(key)) {
-        if (key === "sold") {
-          book[key] += 1;
-          continue;
-        }
-        if (key === "views") {
-          book[key] += 1;
-          continue;
-        }
-
         if (key === "images") {
           continue;
         }
