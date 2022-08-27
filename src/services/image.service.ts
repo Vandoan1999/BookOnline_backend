@@ -18,7 +18,9 @@ export class ImageService {
       id: request.id,
     });
     const nameImageOld = imageToBeSaved.link.replace(config.s3Url, "");
-    const nameImageNew = this.generateNameImage(request.image["originalname"]);
+    const nameImageNew = this.generateNameImage(
+      `image-${new Date().toLocaleTimeString()}`
+    );
     imageToBeSaved.link = config.s3Url + nameImageNew;
     await ImageRepository.save(imageToBeSaved);
     await deleteObject(config.s3Bucket, config.s3BucketForder + nameImageOld);
@@ -36,7 +38,9 @@ export class ImageService {
     const promiseAllUploadFileToS3: any[] = [];
     const imageToBeSave: ImageEntity[] = [];
     for (const image of request.images) {
-      const imageName = this.generateNameImage(image.originalname);
+      const imageName = this.generateNameImage(
+        `image-${new Date().toLocaleTimeString()}`
+      );
       promiseAllUploadFileToS3.push(
         uploadFile(
           image.buffer,
