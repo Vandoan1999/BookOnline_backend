@@ -56,7 +56,11 @@ let UserService = class UserService {
                     user[key] = request[key];
                 }
             }
-            return user_repository_1.UserRepository.save(user);
+            const result = yield user_repository_1.UserRepository.save(user);
+            if (result.avartar) {
+                result.avartar = JSON.parse(result.avartar);
+            }
+            return result;
         });
     }
     detail(id, user = null) {

@@ -40,8 +40,8 @@ router.get(url.get, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, 
 router.put(url.update, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(update_user_request_1.UpdateUserRequest, req.body);
     const userService = typedi_1.default.get(user_service_1.UserService);
-    yield userService.update(request, req["user"]);
-    return res.json(new response_builder_1.ResponseBuilder()
+    const user = yield userService.update(request, req["user"]);
+    return res.json(new response_builder_1.ResponseBuilder(user)
         .withSuccess()
         .withMessage("update user success")
         .build());

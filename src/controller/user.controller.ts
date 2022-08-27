@@ -43,10 +43,10 @@ router.put(url.update, verifyToken, async (req: any, res) => {
   );
 
   const userService = Container.get(UserService);
-  await userService.update(request, req["user"]);
+  const user = await userService.update(request, req["user"]);
 
   return res.json(
-    new ResponseBuilder()
+    new ResponseBuilder(user)
       .withSuccess()
       .withMessage("update user success")
       .build()

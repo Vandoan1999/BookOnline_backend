@@ -42,7 +42,12 @@ export class UserService {
         user[key] = request[key];
       }
     }
-    return UserRepository.save(user);
+    const result = await UserRepository.save(user);
+    if (result.avartar) {
+      result.avartar = JSON.parse(result.avartar);
+    }
+
+    return result;
   }
 
   async detail(id: string, user: UserInfo | null = null) {
