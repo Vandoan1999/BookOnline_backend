@@ -17,7 +17,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DashboardService = void 0;
 const db_1 = require("@config/db");
-const bill_export_detail_repository_1 = require("@repos/bill-export-detail.repository");
 const bill_export_repository_1 = require("@repos/bill-export.repository");
 const bill_import_detail_repository_1 = require("@repos/bill-import-detail.repository");
 const user_repository_1 = require("@repos/user.repository");
@@ -29,8 +28,11 @@ let DashboardService = class DashboardService {
             promiseAll.push(bill_export_repository_1.BillExportRepository.total_revenue());
             promiseAll.push(bill_import_detail_repository_1.BillImportDetailRepository.total_spending());
             promiseAll.push(user_repository_1.UserRepository.totalCustomer());
-            promiseAll.push(bill_export_detail_repository_1.BillExportDetailRepository.count());
-            const [total_revenue, total_spending, total_customer, total_bill_export] = yield Promise.all(promiseAll);
+            promiseAll.push(bill_export_repository_1.BillExportRepository.total_bill_delivered());
+            promiseAll.push(bill_export_repository_1.BillExportRepository.total_bill_confirmed());
+            promiseAll.push(bill_export_repository_1.BillExportRepository.total_bill_pending());
+            promiseAll.push(bill_export_repository_1.BillExportRepository.total_bill_rejected());
+            const [total_revenue, total_spending, total_customer, total_bill_delivered, total_bill_confirmed, total_bill_pending, total_bill_rejected,] = yield Promise.all(promiseAll);
             const userBroupByMonth = yield db_1.AppDataSource.query(`
       SELECT
       date_trunc('month', u.created_at ) AS "date",
@@ -52,7 +54,10 @@ let DashboardService = class DashboardService {
                 total_spending: total_spending.sum_price_import || 0,
                 total_profit: total_revenue.sum_profit,
                 total_customer: Number(total_customer.total_user),
-                total_bill_export,
+                total_bill_export: Number(total_bill_delivered.total),
+                total_bill_pending: Number(total_bill_pending.total),
+                total_bill_confirmed: Number(total_bill_confirmed.total),
+                total_bill_rejected: Number(total_bill_rejected.total),
                 userBroupByMonth,
                 totalRevenueBroupByMonth,
             };

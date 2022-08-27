@@ -3,18 +3,10 @@ import { ListUserRequest } from "@models/user/list-user.request";
 import { UpdateUserRequest } from "@models/user/update-user.request";
 import { UserInfo } from "@models/user/UserInfo";
 import { UserRepository } from "@repos/user.repository";
-import { StatusCodes } from "http-status-codes";
-import { ApiError } from "../ultis/apiError";
-
 import { Service } from "typedi";
-import { deleteObject, uploadFile } from "@common/baseAWS";
-import { config } from "@config/app";
-import { ImageService } from "./image.service";
 import { ImageRepository } from "@repos/image.repository";
 @Service()
 export class UserService {
-  constructor(private imageService: ImageService) {}
-
   async getList(request: ListUserRequest) {
     const [users, total] = await UserRepository.getList(request);
     users.forEach((user) => {

@@ -84,4 +84,40 @@ export const BillExportRepository = AppDataSource.getRepository(
       })
       .getRawOne();
   },
+
+  total_bill_pending() {
+    return this.createQueryBuilder("bill_exportx")
+      .select("Count(bill_exportx.id) as total")
+      .where("bill_exportx.status = :status", {
+        status: BillExportStatus.Pending,
+      })
+      .getRawOne();
+  },
+
+  total_bill_confirmed() {
+    return this.createQueryBuilder("bill_exportx")
+      .select("Count(bill_exportx.id) as total")
+      .where("bill_exportx.status = :status", {
+        status: BillExportStatus.Confirmed,
+      })
+      .getRawOne();
+  },
+
+  total_bill_rejected() {
+    return this.createQueryBuilder("bill_exportx")
+      .select("Count(bill_exportx.id) as total")
+      .where("bill_exportx.status = :status", {
+        status: BillExportStatus.Reject,
+      })
+      .getRawOne();
+  },
+
+  total_bill_delivered() {
+    return this.createQueryBuilder("bill_exportx")
+      .select("Count(bill_exportx.id) as total")
+      .where("bill_exportx.status = :status", {
+        status: BillExportStatus.delivered,
+      })
+      .getRawOne();
+  },
 });

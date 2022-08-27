@@ -76,4 +76,36 @@ exports.BillExportRepository = db_1.AppDataSource.getRepository(bill_export_enti
         })
             .getRawOne();
     },
+    total_bill_pending() {
+        return this.createQueryBuilder("bill_exportx")
+            .select("Count(bill_exportx.id) as total")
+            .where("bill_exportx.status = :status", {
+            status: bill_export_status_enum_1.BillExportStatus.Pending,
+        })
+            .getRawOne();
+    },
+    total_bill_confirmed() {
+        return this.createQueryBuilder("bill_exportx")
+            .select("Count(bill_exportx.id) as total")
+            .where("bill_exportx.status = :status", {
+            status: bill_export_status_enum_1.BillExportStatus.Confirmed,
+        })
+            .getRawOne();
+    },
+    total_bill_rejected() {
+        return this.createQueryBuilder("bill_exportx")
+            .select("Count(bill_exportx.id) as total")
+            .where("bill_exportx.status = :status", {
+            status: bill_export_status_enum_1.BillExportStatus.Reject,
+        })
+            .getRawOne();
+    },
+    total_bill_delivered() {
+        return this.createQueryBuilder("bill_exportx")
+            .select("Count(bill_exportx.id) as total")
+            .where("bill_exportx.status = :status", {
+            status: bill_export_status_enum_1.BillExportStatus.delivered,
+        })
+            .getRawOne();
+    },
 });

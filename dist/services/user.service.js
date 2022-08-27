@@ -5,9 +5,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -22,12 +19,8 @@ exports.UserService = void 0;
 const role_enum_1 = require("@enums/role.enum");
 const user_repository_1 = require("@repos/user.repository");
 const typedi_1 = require("typedi");
-const image_service_1 = require("./image.service");
 const image_repository_1 = require("@repos/image.repository");
 let UserService = class UserService {
-    constructor(imageService) {
-        this.imageService = imageService;
-    }
     getList(request) {
         return __awaiter(this, void 0, void 0, function* () {
             const [users, total] = yield user_repository_1.UserRepository.getList(request);
@@ -77,7 +70,6 @@ let UserService = class UserService {
     }
 };
 UserService = __decorate([
-    (0, typedi_1.Service)(),
-    __metadata("design:paramtypes", [image_service_1.ImageService])
+    (0, typedi_1.Service)()
 ], UserService);
 exports.UserService = UserService;

@@ -12,9 +12,19 @@ export class DashboardService {
     promiseAll.push(BillExportRepository.total_revenue());
     promiseAll.push(BillImportDetailRepository.total_spending());
     promiseAll.push(UserRepository.totalCustomer());
-    promiseAll.push(BillExportDetailRepository.count());
-    const [total_revenue, total_spending, total_customer, total_bill_export] =
-      await Promise.all(promiseAll);
+    promiseAll.push(BillExportRepository.total_bill_delivered());
+    promiseAll.push(BillExportRepository.total_bill_confirmed());
+    promiseAll.push(BillExportRepository.total_bill_pending());
+    promiseAll.push(BillExportRepository.total_bill_rejected());
+    const [
+      total_revenue,
+      total_spending,
+      total_customer,
+      total_bill_delivered,
+      total_bill_confirmed,
+      total_bill_pending,
+      total_bill_rejected,
+    ] = await Promise.all(promiseAll);
     const userBroupByMonth = await AppDataSource.query(`
       SELECT
       date_trunc('month', u.created_at ) AS "date",
@@ -39,7 +49,10 @@ export class DashboardService {
       total_spending: total_spending.sum_price_import || 0,
       total_profit: total_revenue.sum_profit,
       total_customer: Number(total_customer.total_user),
-      total_bill_export,
+      total_bill_export: Number(total_bill_delivered.total),
+      total_bill_pending: Number(total_bill_pending.total),
+      total_bill_confirmed: Number(total_bill_confirmed.total),
+      total_bill_rejected: Number(total_bill_rejected.total),
       userBroupByMonth,
       totalRevenueBroupByMonth,
     };

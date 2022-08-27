@@ -3,14 +3,10 @@ import { ResponseBuilder } from "../ultis/response-builder";
 import { transformAndValidate } from "../ultis/transformAndValidate";
 import Container from "typedi";
 import { verifyToken } from "@middleware/verify-token";
-import { ApiError } from "../ultis/apiError";
-import { StatusCodes } from "http-status-codes";
 import { ListUserRequest } from "@models/user/list-user.request";
 import { UserService } from "@services/user.service";
 import { UserEntity } from "@entity/user.entity";
 import { UpdateUserRequest } from "@models/user/update-user.request";
-import { Role } from "@enums/role.enum";
-import { upload } from "@common/multer";
 const router = Router();
 
 const url = {
