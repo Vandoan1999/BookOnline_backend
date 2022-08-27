@@ -3,7 +3,6 @@ import { verifyToken } from "@middleware/verify-token";
 import Container from "typedi";
 import { ResponseBuilder } from "../ultis/response-builder";
 import { BillImportDetailService } from "@services/bill-import-detail.service";
-import { verifyUser } from "@middleware/verify-user";
 
 const router = Router();
 
@@ -11,7 +10,7 @@ const url = {
   delete: "/:book_id/:bill_export_id",
 };
 
-router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
+router.delete(url.delete, verifyToken, async (req, res) => {
   const billExportDetailService = Container.get(BillImportDetailService);
   await billExportDetailService.delete(
     req.params?.book_id,

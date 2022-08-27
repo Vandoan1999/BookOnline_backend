@@ -17,7 +17,6 @@ const transformAndValidate_1 = require("../ultis/transformAndValidate");
 const typedi_1 = require("typedi");
 const verify_token_1 = require("@middleware/verify-token");
 const update_category_request_1 = require("@models/category/update-category.request");
-const verify_user_1 = require("@middleware/verify-user");
 const router = (0, express_1.Router)();
 const url = {
     get: "/",
@@ -39,18 +38,18 @@ router.get(url.detail, (req, res) => __awaiter(void 0, void 0, void 0, function*
     const category = yield categoryService.detail(req.params.id);
     res.json(new response_builder_1.ResponseBuilder(category).withSuccess().build());
 }));
-router.delete(url.delete, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.delete(url.delete, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const categoryService = typedi_1.Container.get(category_service_1.CategoryService);
     const category = yield categoryService.delete(req.params.id, req["user"]);
     res.json(new response_builder_1.ResponseBuilder(category).withSuccess().build());
 }));
-router.post(url.create, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post(url.create, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(create_category_request_1.CreateCategoryRequest, req.body);
     const categoryService = typedi_1.Container.get(category_service_1.CategoryService);
     const result = yield categoryService.create(request, req["user"]);
     res.json(new response_builder_1.ResponseBuilder(result).withSuccess().build());
 }));
-router.put(url.update, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.put(url.update, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(update_category_request_1.UpdateCategoryRequest, req.body);
     const categoryService = typedi_1.Container.get(category_service_1.CategoryService);
     yield categoryService.update(request, req["user"]);

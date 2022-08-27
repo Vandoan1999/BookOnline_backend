@@ -1,7 +1,6 @@
 import { config } from "@config/app";
 import { AppDataSource } from "@config/db";
 import { BookEntity as BookEntity } from "@entity/book.entity";
-import { CategoryEntity } from "@entity/category.entity";
 import { Order } from "@enums/order";
 import { ListBookRequest } from "@models/book/list-book.request";
 

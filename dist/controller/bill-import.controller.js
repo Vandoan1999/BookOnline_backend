@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const verify_token_1 = require("@middleware/verify-token");
-const verify_user_1 = require("@middleware/verify-user");
 const transformAndValidate_1 = require("../ultis/transformAndValidate");
 const create_bill_import_request_1 = require("@models/bill_import/create-bill-import.request");
 const typedi_1 = __importDefault(require("typedi"));
@@ -31,7 +30,7 @@ const url = {
     delete: "/:id",
     init: "/init",
 };
-router.get(url.get, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get(url.get, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(list_bill_import_request_1.ListBillImportRequest, req.query);
     const billImportService = typedi_1.default.get(bill_import_service_1.BillImportService);
     const { billImport, total, link } = yield billImportService.list(request);
@@ -40,7 +39,7 @@ router.get(url.get, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, 
         .withSuccess()
         .build());
 }));
-router.delete(url.delete, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.delete(url.delete, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const billImportService = typedi_1.default.get(bill_import_service_1.BillImportService);
     yield billImportService.delete(req.params.id);
     return res.json(new response_builder_1.ResponseBuilder()
@@ -48,12 +47,12 @@ router.delete(url.delete, verify_token_1.verifyToken, verify_user_1.verifyUser, 
         .withMessage("delete bill import success!")
         .build());
 }));
-router.get(url.init, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get(url.init, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const billImportService = typedi_1.default.get(bill_import_service_1.BillImportService);
     const result = yield billImportService.init();
     return res.json(new response_builder_1.ResponseBuilder(result).withSuccess().build());
 }));
-router.post(url.add, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post(url.add, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(create_bill_import_request_1.CreateBillImportRequest, req.body);
     const billImportService = typedi_1.default.get(bill_import_service_1.BillImportService);
     yield billImportService.create(request);
@@ -62,7 +61,7 @@ router.post(url.add, verify_token_1.verifyToken, verify_user_1.verifyUser, (req,
         .withMessage("create bill import success!")
         .build());
 }));
-router.put(url.update, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.put(url.update, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(update_bill_import_request_1.UpdateBillImportRequest, req.body);
     const billImportService = typedi_1.default.get(bill_import_service_1.BillImportService);
     yield billImportService.update(request);

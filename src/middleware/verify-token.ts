@@ -26,11 +26,7 @@ export async function verifyToken(
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET!);
     const user = await UserRepository.findOneByOrFail({ id: decoded["id"] });
-    if (
-      user?.is_pass_change &&
-      user?.is_pass_change === true &&
-      user.role === Role.USER
-    )
+    if (user.role === Role.USER)
       throw ApiError(
         StatusCodes.NOT_FOUND,
         "your pasword reseted, you must change password to access!"

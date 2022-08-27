@@ -10,7 +10,6 @@ import { BookEntity } from "@entity/book.entity";
 import { UpdateBookRequest } from "@models/book/update-book.request";
 import { ApiError } from "../ultis/apiError";
 import { StatusCodes } from "http-status-codes";
-import { verifyUser } from "@middleware/verify-user";
 const router = Router();
 
 const url = {
@@ -39,7 +38,7 @@ router.get(url.get, async (req, res) => {
   );
 });
 
-router.post(url.add, verifyToken, verifyUser, async (req: any, res) => {
+router.post(url.add, verifyToken, async (req: any, res) => {
   const request = await transformAndValidate<CreateBookRequest>(
     CreateBookRequest,
     req.body
@@ -58,7 +57,7 @@ router.post(url.add, verifyToken, verifyUser, async (req: any, res) => {
 });
 
 //update book
-router.put(url.update, verifyToken, verifyUser, async (req: any, res) => {
+router.put(url.update, verifyToken, async (req: any, res) => {
   const request = await transformAndValidate<UpdateBookRequest>(
     UpdateBookRequest,
     req.body
@@ -89,7 +88,7 @@ router.get(url.detail, async (req, res) => {
 });
 
 //delete book
-router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
+router.delete(url.delete, verifyToken, async (req, res) => {
   if (!req.params.ids) {
     throw ApiError(StatusCodes.BAD_REQUEST, "ids param empty");
   }

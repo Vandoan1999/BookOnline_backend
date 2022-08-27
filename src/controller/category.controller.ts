@@ -7,7 +7,6 @@ import { Container } from "typedi";
 import { verifyToken } from "@middleware/verify-token";
 import { CategoryEntity } from "@entity/category.entity";
 import { UpdateCategoryRequest } from "@models/category/update-category.request";
-import { verifyUser } from "@middleware/verify-user";
 
 const router = Router();
 
@@ -36,13 +35,13 @@ router.get(url.detail, async (req, res) => {
   res.json(new ResponseBuilder<CategoryEntity>(category).withSuccess().build());
 });
 
-router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
+router.delete(url.delete, verifyToken, async (req, res) => {
   const categoryService = Container.get(CategoryService);
   const category = await categoryService.delete(req.params.id, req["user"]);
   res.json(new ResponseBuilder<any>(category).withSuccess().build());
 });
 
-router.post(url.create, verifyToken, verifyUser, async (req: any, res) => {
+router.post(url.create, verifyToken, async (req: any, res) => {
   const request = await transformAndValidate<CreateCategoryRequest>(
     CreateCategoryRequest,
     req.body
@@ -52,7 +51,7 @@ router.post(url.create, verifyToken, verifyUser, async (req: any, res) => {
   res.json(new ResponseBuilder<any>(result).withSuccess().build());
 });
 
-router.put(url.update, verifyToken, verifyUser, async (req: any, res) => {
+router.put(url.update, verifyToken, async (req: any, res) => {
   const request = await transformAndValidate<UpdateCategoryRequest>(
     UpdateCategoryRequest,
     req.body

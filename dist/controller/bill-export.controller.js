@@ -20,7 +20,6 @@ const response_builder_1 = require("../ultis/response-builder");
 const create_bill_export_request_1 = require("@models/bill_export/create-bill-export.request");
 const bill_export_service_1 = require("@services/bill-export.service");
 const list_bill_export_request_1 = require("@models/bill_export/list-bill-export.request");
-const verify_user_1 = require("@middleware/verify-user");
 const update_bill_export_request_1 = require("@models/bill_export/update-bill-export.request");
 const router = (0, express_1.Router)();
 const url = {
@@ -44,7 +43,7 @@ router.delete(url.delete, (req, res) => __awaiter(void 0, void 0, void 0, functi
     yield billExportService.delete(req.params.id);
     return res.json(new response_builder_1.ResponseBuilder().withSuccess().build());
 }));
-router.get(url.init, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get(url.init, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const billExportService = typedi_1.default.get(bill_export_service_1.BillExportService);
     const result = yield billExportService.init();
     return res.json(new response_builder_1.ResponseBuilder(result).withSuccess().build());

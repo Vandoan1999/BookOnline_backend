@@ -6,7 +6,6 @@ import { ResponseBuilder } from "../ultis/response-builder";
 import { CreateBillExportRequest } from "@models/bill_export/create-bill-export.request";
 import { BillExportService } from "@services/bill-export.service";
 import { ListBillExportRequest } from "@models/bill_export/list-bill-export.request";
-import { verifyUser } from "@middleware/verify-user";
 import { UpdateBillExportRequest } from "@models/bill_export/update-bill-export.request";
 const router = Router();
 
@@ -42,7 +41,7 @@ router.delete(url.delete, async (req, res) => {
   return res.json(new ResponseBuilder<any>().withSuccess().build());
 });
 
-router.get(url.init, verifyToken, verifyUser, async (req, res) => {
+router.get(url.init, verifyToken, async (req, res) => {
   const billExportService = Container.get(BillExportService);
   const result = await billExportService.init();
   return res.json(new ResponseBuilder<any>(result).withSuccess().build());

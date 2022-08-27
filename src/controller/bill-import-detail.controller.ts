@@ -3,7 +3,6 @@ import { verifyToken } from "@middleware/verify-token";
 import Container from "typedi";
 import { ResponseBuilder } from "../ultis/response-builder";
 import { BillImportDetailService } from "@services/bill-import-detail.service";
-import { verifyUser } from "@middleware/verify-user";
 import { transformAndValidate } from "../ultis/transformAndValidate";
 import { UpdateBillImportDetailRequest } from "@models/bill_import_detail/update-bill-import-detail.request";
 import { CreateBillImportDetailRequest } from "@models/bill_import_detail/add-bill-import-detail.request";
@@ -16,7 +15,7 @@ const url = {
   add: "/",
 };
 
-router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
+router.delete(url.delete, verifyToken, async (req, res) => {
   const billImportDetailService = Container.get(BillImportDetailService);
   await billImportDetailService.delete(
     req.params?.book_id,
@@ -30,7 +29,7 @@ router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
   );
 });
 
-router.put(url.update, verifyToken, verifyUser, async (req, res) => {
+router.put(url.update, verifyToken, async (req, res) => {
   const request = await transformAndValidate<UpdateBillImportDetailRequest>(
     UpdateBillImportDetailRequest,
     req.body
@@ -45,7 +44,7 @@ router.put(url.update, verifyToken, verifyUser, async (req, res) => {
   );
 });
 
-router.post(url.add, verifyToken, verifyUser, async (req, res) => {
+router.post(url.add, verifyToken, async (req, res) => {
   const request = await transformAndValidate<CreateBillImportDetailRequest>(
     CreateBillImportDetailRequest,
     req.body

@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { verifyToken } from "@middleware/verify-token";
-import { verifyUser } from "@middleware/verify-user";
 import { transformAndValidate } from "../ultis/transformAndValidate";
 import { CreateBillImportRequest } from "@models/bill_import/create-bill-import.request";
 import Container from "typedi";
@@ -19,7 +18,7 @@ const url = {
   init: "/init",
 };
 
-router.get(url.get, verifyToken, verifyUser, async (req, res) => {
+router.get(url.get, verifyToken, async (req, res) => {
   const request = await transformAndValidate<ListBillImportRequest>(
     ListBillImportRequest,
     req.query
@@ -34,7 +33,7 @@ router.get(url.get, verifyToken, verifyUser, async (req, res) => {
   );
 });
 
-router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
+router.delete(url.delete, verifyToken, async (req, res) => {
   const billImportService = Container.get(BillImportService);
   await billImportService.delete(req.params.id);
   return res.json(
@@ -45,13 +44,13 @@ router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
   );
 });
 
-router.get(url.init, verifyToken, verifyUser, async (req, res) => {
+router.get(url.init, verifyToken, async (req, res) => {
   const billImportService = Container.get(BillImportService);
   const result = await billImportService.init();
   return res.json(new ResponseBuilder<any>(result).withSuccess().build());
 });
 
-router.post(url.add, verifyToken, verifyUser, async (req, res) => {
+router.post(url.add, verifyToken, async (req, res) => {
   const request = await transformAndValidate<CreateBillImportRequest>(
     CreateBillImportRequest,
     req.body
@@ -66,7 +65,7 @@ router.post(url.add, verifyToken, verifyUser, async (req, res) => {
   );
 });
 
-router.put(url.update, verifyToken, verifyUser, async (req, res) => {
+router.put(url.update, verifyToken, async (req, res) => {
   const request = await transformAndValidate<UpdateBillImportRequest>(
     UpdateBillImportRequest,
     req.body

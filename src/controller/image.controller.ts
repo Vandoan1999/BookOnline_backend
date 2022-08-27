@@ -3,7 +3,6 @@ import { ResponseBuilder } from "../ultis/response-builder";
 import { Container } from "typedi";
 import { ImageService } from "@services/image.service";
 import { verifyToken } from "@middleware/verify-token";
-import { verifyUser } from "@middleware/verify-user";
 import { upload } from "@common/multer";
 import { transformAndValidate } from "../ultis/transformAndValidate";
 import { CreateImageRequest } from "@models/images/create-image.request";

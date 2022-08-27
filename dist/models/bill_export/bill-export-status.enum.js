@@ -5,5 +5,6 @@ var BillExportStatus;
 (function (BillExportStatus) {
     BillExportStatus[BillExportStatus["Pending"] = 0] = "Pending";
     BillExportStatus[BillExportStatus["Confirmed"] = 1] = "Confirmed";
+    BillExportStatus[BillExportStatus["delivered"] = 2] = "delivered";
     BillExportStatus[BillExportStatus["Reject"] = 5] = "Reject";
 })(BillExportStatus = exports.BillExportStatus || (exports.BillExportStatus = {}));

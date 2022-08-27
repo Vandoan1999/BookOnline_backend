@@ -35,9 +35,7 @@ function verifyToken(req, res, next) {
             const token = req.headers.authorization.split(" ")[1];
             const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
             const user = yield user_repository_1.UserRepository.findOneByOrFail({ id: decoded["id"] });
-            if ((user === null || user === void 0 ? void 0 : user.is_pass_change) &&
-                (user === null || user === void 0 ? void 0 : user.is_pass_change) === true &&
-                user.role === role_enum_1.Role.USER)
+            if (user.role === role_enum_1.Role.USER)
                 throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.NOT_FOUND, "your pasword reseted, you must change password to access!");
             if (!user)
                 throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.NOT_FOUND, "user not exits");

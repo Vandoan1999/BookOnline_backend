@@ -17,12 +17,11 @@ const response_builder_1 = require("../ultis/response-builder");
 const typedi_1 = __importDefault(require("typedi"));
 const dashboard_service_1 = require("@services/dashboard.service");
 const verify_token_1 = require("@middleware/verify-token");
-const verify_user_1 = require("@middleware/verify-user");
 const router = (0, express_1.Router)();
 const url = {
     get: "/init",
 };
-router.get(url.get, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get(url.get, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const dashboardService = typedi_1.default.get(dashboard_service_1.DashboardService);
     const result = yield dashboardService.initData();
     return res.json(new response_builder_1.ResponseBuilder(result).withSuccess().build());

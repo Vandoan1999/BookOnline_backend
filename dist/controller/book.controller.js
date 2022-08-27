@@ -23,7 +23,6 @@ const list_book_request_1 = require("@models/book/list-book.request");
 const update_book_request_1 = require("@models/book/update-book.request");
 const apiError_1 = require("../ultis/apiError");
 const http_status_codes_1 = require("http-status-codes");
-const verify_user_1 = require("@middleware/verify-user");
 const router = (0, express_1.Router)();
 const url = {
     get: "/",
@@ -44,7 +43,7 @@ router.get(url.get, (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         .withSuccess()
         .build());
 }));
-router.post(url.add, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post(url.add, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(create_book_request_1.CreateBookRequest, req.body);
     const bookService = typedi_1.default.get(book_service_1.BookService);
     const result = yield bookService.create(request);
@@ -54,7 +53,7 @@ router.post(url.add, verify_token_1.verifyToken, verify_user_1.verifyUser, (req,
         .build());
 }));
 //update book
-router.put(url.update, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.put(url.update, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(update_book_request_1.UpdateBookRequest, req.body);
     const bookService = typedi_1.default.get(book_service_1.BookService);
     const result = yield bookService.update(request);
@@ -73,7 +72,7 @@ router.get(url.detail, (req, res) => __awaiter(void 0, void 0, void 0, function*
     return res.json(new response_builder_1.ResponseBuilder(book).withSuccess().build());
 }));
 //delete book
-router.delete(url.delete, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.delete(url.delete, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.params.ids) {
         throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.BAD_REQUEST, "ids param empty");
     }

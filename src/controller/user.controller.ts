@@ -10,7 +10,6 @@ import { UserService } from "@services/user.service";
 import { UserEntity } from "@entity/user.entity";
 import { UpdateUserRequest } from "@models/user/update-user.request";
 import { Role } from "@enums/role.enum";
-import { verifyUser } from "@middleware/verify-user";
 import { upload } from "@common/multer";
 const router = Router();
 
@@ -22,7 +21,7 @@ const url = {
   update: "",
 };
 
-router.get(url.get, verifyToken, verifyUser, async (req, res) => {
+router.get(url.get, verifyToken, async (req, res) => {
   const request = await transformAndValidate<ListUserRequest>(
     ListUserRequest,
     req.query

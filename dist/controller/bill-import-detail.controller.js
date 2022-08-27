@@ -17,7 +17,6 @@ const verify_token_1 = require("@middleware/verify-token");
 const typedi_1 = __importDefault(require("typedi"));
 const response_builder_1 = require("../ultis/response-builder");
 const bill_import_detail_service_1 = require("@services/bill-import-detail.service");
-const verify_user_1 = require("@middleware/verify-user");
 const transformAndValidate_1 = require("../ultis/transformAndValidate");
 const update_bill_import_detail_request_1 = require("@models/bill_import_detail/update-bill-import-detail.request");
 const add_bill_import_detail_request_1 = require("@models/bill_import_detail/add-bill-import-detail.request");
@@ -27,7 +26,7 @@ const url = {
     update: "/",
     add: "/",
 };
-router.delete(url.delete, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.delete(url.delete, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     const billImportDetailService = typedi_1.default.get(bill_import_detail_service_1.BillImportDetailService);
     yield billImportDetailService.delete((_a = req.params) === null || _a === void 0 ? void 0 : _a.book_id, (_b = req.params) === null || _b === void 0 ? void 0 : _b.bill_import_id);
@@ -36,7 +35,7 @@ router.delete(url.delete, verify_token_1.verifyToken, verify_user_1.verifyUser, 
         .withMessage("delete bill import detail success !")
         .build());
 }));
-router.put(url.update, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.put(url.update, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(update_bill_import_detail_request_1.UpdateBillImportDetailRequest, req.body);
     const billImportDetailService = typedi_1.default.get(bill_import_detail_service_1.BillImportDetailService);
     yield billImportDetailService.update(request);
@@ -45,7 +44,7 @@ router.put(url.update, verify_token_1.verifyToken, verify_user_1.verifyUser, (re
         .withMessage("update bill import detail success !")
         .build());
 }));
-router.post(url.add, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post(url.add, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(add_bill_import_detail_request_1.CreateBillImportDetailRequest, req.body);
     const billImportDetailService = typedi_1.default.get(bill_import_detail_service_1.BillImportDetailService);
     yield billImportDetailService.create(request);

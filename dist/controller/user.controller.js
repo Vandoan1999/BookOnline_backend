@@ -20,7 +20,6 @@ const verify_token_1 = require("@middleware/verify-token");
 const list_user_request_1 = require("@models/user/list-user.request");
 const user_service_1 = require("@services/user.service");
 const update_user_request_1 = require("@models/user/update-user.request");
-const verify_user_1 = require("@middleware/verify-user");
 const router = (0, express_1.Router)();
 const url = {
     get: "/",
@@ -29,7 +28,7 @@ const url = {
     delete: "/:id",
     update: "",
 };
-router.get(url.get, verify_token_1.verifyToken, verify_user_1.verifyUser, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get(url.get, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const request = yield (0, transformAndValidate_1.transformAndValidate)(list_user_request_1.ListUserRequest, req.query);
     const userService = typedi_1.default.get(user_service_1.UserService);
     const { users, total } = yield userService.getList(request);

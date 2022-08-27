@@ -10,7 +10,6 @@ import { CreateSupplierRequest } from "@models/supplier/create-supplier.request"
 import { UpdateSupplierRequest } from "@models/supplier/update-supplier.request";
 import { ApiError } from "../ultis/apiError";
 import { StatusCodes } from "http-status-codes";
-import { verifyUser } from "@middleware/verify-user";
 
 const router = Router();
 
@@ -23,7 +22,7 @@ const url = {
   update: "/",
 };
 
-router.get(url.get, verifyToken, verifyUser, async (req, res) => {
+router.get(url.get, verifyToken, async (req, res) => {
   const request = await transformAndValidate<ListSupplierRequest>(
     ListSupplierRequest,
     req.query
@@ -38,7 +37,7 @@ router.get(url.get, verifyToken, verifyUser, async (req, res) => {
   );
 });
 
-router.post(url.add, verifyToken, verifyUser, async (req, res) => {
+router.post(url.add, verifyToken, async (req, res) => {
   const request = await transformAndValidate<CreateSupplierRequest>(
     CreateSupplierRequest,
     req.body
@@ -53,7 +52,7 @@ router.post(url.add, verifyToken, verifyUser, async (req, res) => {
   );
 });
 
-router.put(url.update, verifyToken, verifyUser, async (req, res) => {
+router.put(url.update, verifyToken, async (req, res) => {
   const request = await transformAndValidate<UpdateSupplierRequest>(
     UpdateSupplierRequest,
     req.body
@@ -66,7 +65,7 @@ router.put(url.update, verifyToken, verifyUser, async (req, res) => {
 router.delete(
   url.delete_multiple,
   verifyToken,
-  verifyUser,
+
   async (req, res) => {
     const supplierService = Container.get(SupplierService);
     const data = await supplierService.deleteMuiltiple(req);
@@ -76,14 +75,14 @@ router.delete(
   }
 );
 
-router.delete(url.delete, verifyToken, verifyUser, async (req, res) => {
+router.delete(url.delete, verifyToken, async (req, res) => {
   if (!req.params.id) throw ApiError(StatusCodes.BAD_REQUEST);
   const supplierService = Container.get(SupplierService);
   const data = await supplierService.delete(req.params.id);
   return res.json(new ResponseBuilder<any>(data).withSuccess().build());
 });
 
-router.get(url.detail, verifyToken, verifyUser, async (req, res) => {
+router.get(url.detail, verifyToken, async (req, res) => {
   if (!req.params.id) throw ApiError(StatusCodes.BAD_REQUEST);
   const supplierService = Container.get(SupplierService);
   const data = await supplierService.detail(req.params.id);

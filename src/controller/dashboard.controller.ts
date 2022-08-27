@@ -6,14 +6,13 @@ import Container from "typedi";
 import { DashboardService } from "@services/dashboard.service";
 import { Role } from "@enums/role.enum";
 import { verifyToken } from "@middleware/verify-token";
-import { verifyUser } from "@middleware/verify-user";
 const router = Router();
 
 const url = {
   get: "/init",
 };
 
-router.get(url.get, verifyToken, verifyUser, async (req, res) => {
+router.get(url.get, verifyToken, async (req, res) => {
   const dashboardService = Container.get(DashboardService);
   const result = await dashboardService.initData();
   return res.json(new ResponseBuilder<any>(result).withSuccess().build());
