@@ -92,16 +92,31 @@ let BillExportService = class BillExportService {
                             status = "Sản phảm bị trả lại";
                             break;
                     }
+                    let totalPrice = 0;
                     cur.bill_export_detail.forEach((item, index) => {
+                        totalPrice += item.book.price_export * item.quantity;
                         const data = {
-                            index: index + 1,
+                            index: index + 1 + "",
                             status: status,
                             bookname: item.book.name,
+                            price: item.book.price_export + "",
                             discounted: item.book.discounted + "%",
-                            quantity: item.quantity,
-                            price: item.book.price_export * item.quantity,
+                            quantity: item.quantity + "",
+                            totalPrice: item.book.price_export * item.quantity + "",
                         };
                         prev[userInfo].push(data);
+                        if (index == cur.bill_export_detail.length - 1) {
+                            const total = {
+                                index: "",
+                                status: "",
+                                bookname: "",
+                                price: "",
+                                discounted: "",
+                                quantity: "Tổng tiền",
+                                totalPrice: totalPrice + "",
+                            };
+                            prev[userInfo].push(total);
+                        }
                     });
                     return prev;
                 }, {});

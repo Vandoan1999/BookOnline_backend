@@ -1,8 +1,9 @@
 export interface BillExportExcelModel {
-  index: number;
+  index: string;
   status: string;
   bookname: string;
+  price: string;
   discounted: string;
-  quantity: number;
-  price: number;
+  quantity: string;
+  totalPrice: string;
 }

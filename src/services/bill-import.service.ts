@@ -12,6 +12,20 @@ import { MoreThanOrEqual } from "typeorm";
 import { UpdateBillImportRequest } from "@models/bill_import/update-bill-import.request";
 import { SupplierRepository } from "@repos/supplier.repository";
 import { ImageService } from "./image.service";
+import { BillImportExcelModel } from "@models/bill_import/export-file.model";
+import { ReportModel } from "@models/reportModel";
+import {
+  CHILD_COMPANY,
+  CHILD_COMPANY_ADDRESS,
+  CREATER,
+  PARENT_COMPANY,
+  REPORT_TIME,
+  STOCKER_SIGNATURE,
+} from "../ultis/constant";
+import { REPORT_IMPORT_COLUMN } from "../base/export-column";
+import { generateTable } from "../base/report-excel.layout";
+import { GetObjectURl, uploadFile } from "@common/baseAWS";
+import { config } from "@config/app";
 require("dotenv").config();
 @Service()
 export class BillImportService {
@@ -54,6 +68,82 @@ export class BillImportService {
 
   async list(request: ListBillImportRequest) {
     const [billImport, total] = await BillImportRepository.getList(request);
+
+    if (request.export) {
+      let data: any = billImport.reduce((prev, cur) => {
+        const userInfo = [
+          cur.id.substring(0, 5),
+          cur.supplier.company,
+          cur.supplier.address,
+          cur.supplier.phone,
+        ].join("-");
+        if (!prev[userInfo]) {
+          prev[userInfo] = [];
+        }
+        let totalPrice = 0;
+        cur.bill_import_details.forEach((item, index) => {
+          totalPrice += item.book.price_import * item.quantity;
+          const data: BillImportExcelModel = {
+            index: index + 1 + "",
+            bookname: item.book.name,
+            price: item.book.price_import.toString(),
+            quantity: item.quantity.toString(),
+            totalPrice: item.book.price_import * item.quantity,
+          };
+          prev[userInfo].push(data);
+          if (index == cur.bill_import_details.length - 1) {
+            const total: BillImportExcelModel = {
+              index: "",
+              bookname: "",
+              price: "",
+              quantity: "Tổng tiền",
+              totalPrice: totalPrice,
+            };
+            prev[userInfo].push(total);
+          }
+        });
+        return prev;
+      }, {});
+
+      data = Object.keys(data).map((key) => {
+        return {
+          userInfo: key,
+          data: data[key],
+        };
+      });
+
+      let reportTime = "Từ ngày: ...  đến ngày: ...";
+      let pastData = new Date();
+      pastData.setMonth(pastData.getMonth() - 1);
+      pastData = pastData.toLocaleDateString() as any;
+      reportTime = reportTime.replace("...", pastData as any);
+      reportTime = reportTime.replace("...", new Date().toLocaleDateString());
+      const model: ReportModel<BillImportExcelModel> = {
+        parentCompany: PARENT_COMPANY,
+        childCompany: CHILD_COMPANY,
+        AddressChildCompany: CHILD_COMPANY_ADDRESS,
+        reportTitle: "BÁO CÁO HÓA ĐƠN NHẬP THEO THÁNG",
+        reportTime: reportTime,
+        reportDateSignature: REPORT_TIME,
+        stockerSignature: STOCKER_SIGNATURE,
+        creater: CREATER,
+        tableColumn: REPORT_IMPORT_COLUMN,
+        tableData: data as any,
+        footer: true,
+        header: true,
+        columnLevel: 1,
+      };
+      const buffer = await generateTable(model, "billImport");
+      await uploadFile(
+        buffer,
+        config.s3Bucket,
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        config.s3BucketForder + "billImport.xlsx"
+      );
+      const link = GetObjectURl("billImport.xlsx");
+      return { billImport: null, total: 0, link: link };
+    }
+
     for (let bill of billImport) {
       for (const bid of bill.bill_import_details) {
         if (bid.book.avartar) {
