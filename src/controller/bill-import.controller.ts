@@ -25,9 +25,12 @@ router.get(url.get, verifyToken, async (req, res) => {
   );
   const billImportService = Container.get(BillImportService);
   const { billImport, total, link } = await billImportService.list(request);
+  if (request.export) {
+    return res.json(new ResponseBuilder<any>({ link }).withSuccess().build());
+  }
   return res.json(
     new ResponseBuilder<any>(billImport)
-      .withMeta({ total, link })
+      .withMeta({ total })
       .withSuccess()
       .build()
   );

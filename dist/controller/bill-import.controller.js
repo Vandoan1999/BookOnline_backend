@@ -34,8 +34,11 @@ router.get(url.get, verify_token_1.verifyToken, (req, res) => __awaiter(void 0, 
     const request = yield (0, transformAndValidate_1.transformAndValidate)(list_bill_import_request_1.ListBillImportRequest, req.query);
     const billImportService = typedi_1.default.get(bill_import_service_1.BillImportService);
     const { billImport, total, link } = yield billImportService.list(request);
+    if (request.export) {
+        return res.json(new response_builder_1.ResponseBuilder({ link }).withSuccess().build());
+    }
     return res.json(new response_builder_1.ResponseBuilder(billImport)
-        .withMeta({ total, link })
+        .withMeta({ total })
         .withSuccess()
         .build());
 }));

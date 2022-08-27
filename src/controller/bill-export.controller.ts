@@ -27,9 +27,12 @@ router.get(url.get, verifyToken, async (req, res) => {
     request,
     req["user"]
   );
+  if (request.export) {
+    return res.json(new ResponseBuilder<any>({ link }).withSuccess().build());
+  }
   return res.json(
     new ResponseBuilder<any>(billExport)
-      .withMeta({ total, link })
+      .withMeta({ total })
       .withSuccess()
       .build()
   );
