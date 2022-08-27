@@ -35,10 +35,10 @@ export const EXCEL_COLUMN = [
 export const REPORT_DATE_SIGNATURE = "Bình Thuận,  ngày ... tháng ... năm ....";
 export const STOCKER_SIGNATURE = "Thủ kho";
 export const CREATER = "Người lập biểu";
-export const PARENT_COMPANY = "CỬA HÀNG SÁCH TÂM ĐOÀN";
-export const CHILD_COMPANY = "LỚP LTMT1 K11";
+export const PARENT_COMPANY = "TÊN CỬA HÀNG: CỬA HÀNG SÁCH TÂM ĐOÀN";
+export const CHILD_COMPANY = "LỚP: LTMT1 K11";
 export const CHILD_COMPANY_ADDRESS =
-  "92A LÊ THANH NGHỊ - HAI BÀ TRƯNG - HÀ HỘI";
+  "ĐỊA CHỈ: 92A LÊ THANH NGHỊ - HAI BÀ TRƯNG - HÀ HỘI";
 export const REPORT_TIME = "Từ ngày: ...  đến ngày: ...";
 
 export const FONT = {

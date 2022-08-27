@@ -36,9 +36,9 @@ exports.EXCEL_COLUMN = [
 exports.REPORT_DATE_SIGNATURE = "Bình Thuận,  ngày ... tháng ... năm ....";
 exports.STOCKER_SIGNATURE = "Thủ kho";
 exports.CREATER = "Người lập biểu";
-exports.PARENT_COMPANY = "CỬA HÀNG SÁCH TÂM ĐOÀN";
-exports.CHILD_COMPANY = "LỚP LTMT1 K11";
-exports.CHILD_COMPANY_ADDRESS = "92A LÊ THANH NGHỊ - HAI BÀ TRƯNG - HÀ HỘI";
+exports.PARENT_COMPANY = "TÊN CỬA HÀNG: CỬA HÀNG SÁCH TÂM ĐOÀN";
+exports.CHILD_COMPANY = "LỚP: LTMT1 K11";
+exports.CHILD_COMPANY_ADDRESS = "ĐỊA CHỈ: 92A LÊ THANH NGHỊ - HAI BÀ TRƯNG - HÀ HỘI";
 exports.REPORT_TIME = "Từ ngày: ...  đến ngày: ...";
 exports.FONT = {
     name: exports.FONT_NAME,
