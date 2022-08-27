@@ -31,4 +31,16 @@ __decorate([
     }),
     __metadata("design:type", Boolean)
 ], ListBillExportRequest.prototype, "all", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_transformer_1.Transform)((value) => {
+        if (value === "true")
+            return true;
+        if (value === "false")
+            return false;
+        return value;
+    }),
+    __metadata("design:type", Boolean)
+], ListBillExportRequest.prototype, "export", void 0);
 exports.ListBillExportRequest = ListBillExportRequest;

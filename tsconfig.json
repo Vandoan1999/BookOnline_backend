@@ -26,5 +26,5 @@
     },
     "useUnknownInCatchVariables": false
   },
-  "include": ["src/**/*.ts", "spec/**/*.ts"]
+  "include": ["src/**/*.ts", "spec/**/*.ts", "src/models/bill_export"]
 }

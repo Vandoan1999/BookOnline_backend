@@ -47,7 +47,7 @@ exports.BillExportRepository = db_1.AppDataSource.getRepository(bill_export_enti
         if (user.role === role_enum_1.Role.USER) {
             query.andWhere("bill_export.user_id = :user_id", { user_id: user.id });
         }
-        if (request.all) {
+        if (request.all || request.export) {
             return query.getManyAndCount();
         }
         return query.take(take).skip(skip).getManyAndCount();

@@ -20,8 +20,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BillExportService = void 0;
 const typedi_1 = require("typedi");
-const apiError_1 = require("../ultis/apiError");
-const http_status_codes_1 = require("http-status-codes");
 const typeorm_1 = require("typeorm");
 const bill_export_repository_1 = require("@repos/bill-export.repository");
 const bill_export_detail_repository_1 = require("@repos/bill-export-detail.repository");
@@ -29,6 +27,11 @@ const user_repository_1 = require("@repos/user.repository");
 const book_repository_1 = require("@repos/book.repository");
 const image_service_1 = require("./image.service");
 const bill_export_status_enum_1 = require("@models/bill_export/bill-export-status.enum");
+const constant_1 = require("../ultis/constant");
+const export_column_1 = require("../base/export-column");
+const report_excel_layout_1 = require("../base/report-excel.layout");
+const baseAWS_1 = require("@common/baseAWS");
+const app_1 = require("@config/app");
 require("dotenv").config();
 let BillExportService = class BillExportService {
     constructor(imageService) {
@@ -52,23 +55,88 @@ let BillExportService = class BillExportService {
             const bill_export = yield bill_export_repository_1.BillExportRepository.save(bill_export_instance);
             for (const book of books) {
                 const bookRequest = request.books.find((item) => item.id === book.id);
-                if (book.quantity < bookRequest.quantity) {
-                    throw (0, apiError_1.ApiError)(http_status_codes_1.StatusCodes.BAD_REQUEST, `Quanlity of book ${book.id} with quality ${book.quantity} not enough: book Inventory = ${book.quantity} | book request = ${bookRequest.quantity}`);
-                }
                 const bill_export_detail = bill_export_detail_repository_1.BillExportDetailRepository.create();
                 bill_export_detail.book_id = book.id;
                 bill_export_detail.quantity = bookRequest.quantity;
                 bill_export_detail.bill_export_id = bill_export.id;
-                // book.quantity -= bookRequest.quantity;
-                // book.sold += bookRequest.quantity;
-                // await BookRepository.save(book);
-                return bill_export_detail_repository_1.BillExportDetailRepository.insert(bill_export_detail);
+                book.quantity -= bookRequest.quantity;
+                book.sold += 1;
+                yield book_repository_1.BookRepository.save(book);
+                yield bill_export_detail_repository_1.BillExportDetailRepository.insert(bill_export_detail);
             }
         });
     }
     list(request, user) {
         return __awaiter(this, void 0, void 0, function* () {
             const [billExport, total] = yield bill_export_repository_1.BillExportRepository.getList(request, user);
+            if (request.export) {
+                let data = billExport.reduce((prev, cur) => {
+                    const userInfo = [
+                        cur.id.substring(0, 5),
+                        cur.user.username,
+                        cur.user.address,
+                        cur.user.phone,
+                    ].join("-");
+                    if (!prev[userInfo]) {
+                        prev[userInfo] = [];
+                    }
+                    let status = "";
+                    switch (cur.status) {
+                        case bill_export_status_enum_1.BillExportStatus.Pending:
+                            status = "Đang đặt hàng";
+                            break;
+                        case bill_export_status_enum_1.BillExportStatus.Confirmed:
+                            status = "Đã nhận";
+                            break;
+                        case bill_export_status_enum_1.BillExportStatus.Reject:
+                            status = "Sản phảm bị trả lại";
+                            break;
+                    }
+                    cur.bill_export_detail.forEach((item, index) => {
+                        const data = {
+                            index: index + 1,
+                            status: status,
+                            bookname: item.book.name,
+                            discounted: item.book.discounted + "%",
+                            quantity: item.quantity,
+                            price: item.book.price_export * item.quantity,
+                        };
+                        prev[userInfo].push(data);
+                    });
+                    return prev;
+                }, {});
+                data = Object.keys(data).map((key) => {
+                    return {
+                        userInfo: key,
+                        data: data[key],
+                    };
+                });
+                let reportTime = "Từ ngày: ...  đến ngày: ...";
+                let pastData = new Date();
+                pastData.setMonth(pastData.getMonth() - 1);
+                pastData = pastData.toLocaleDateString();
+                reportTime = reportTime.replace("...", pastData);
+                reportTime = reportTime.replace("...", new Date().toLocaleDateString());
+                const model = {
+                    parentCompany: constant_1.PARENT_COMPANY,
+                    childCompany: constant_1.CHILD_COMPANY,
+                    AddressChildCompany: constant_1.CHILD_COMPANY_ADDRESS,
+                    reportTitle: "BÁO CÁO HÓA ĐƠN XUẤT THEO THÁNG",
+                    reportTime: reportTime,
+                    reportDateSignature: constant_1.REPORT_TIME,
+                    stockerSignature: constant_1.STOCKER_SIGNATURE,
+                    creater: constant_1.CREATER,
+                    tableColumn: export_column_1.REPORT_EXPORT_COLUMN,
+                    tableData: data,
+                    footer: true,
+                    header: true,
+                    columnLevel: 1,
+                };
+                const buffer = yield (0, report_excel_layout_1.generateTable)(model, "billExport");
+                yield (0, baseAWS_1.uploadFile)(buffer, app_1.config.s3Bucket, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", app_1.config.s3BucketForder + "billExport.xlsx");
+                const link = (0, baseAWS_1.GetObjectURl)("billExport.xlsx");
+                return { billExport: null, total: 0, link: link };
+            }
             for (let bill of billExport) {
                 if (bill.user.avartar) {
                     bill.user.avartar = JSON.parse(bill.user.avartar);

@@ -1,7 +1,5 @@
 import { Service } from "typedi";
 import { BookEntity } from "@entity/book.entity";
-import { ApiError } from "../ultis/apiError";
-import { StatusCodes } from "http-status-codes";
 import { In, MoreThanOrEqual } from "typeorm";
 import { CreateBillExportRequest } from "@models/bill_export/create-bill-export.request";
 import { BillExportRepository } from "@repos/bill-export.repository";
@@ -13,6 +11,20 @@ import { BookRepository } from "@repos/book.repository";
 import { ImageService } from "./image.service";
 import { UpdateBillExportRequest } from "@models/bill_export/update-bill-export.request";
 import { BillExportStatus } from "@models/bill_export/bill-export-status.enum";
+import { BillExportExcelModel } from "@models/bill_export/export-file.model";
+import { ReportModel, TableData } from "@models/reportModel";
+import {
+  CHILD_COMPANY,
+  CHILD_COMPANY_ADDRESS,
+  CREATER,
+  PARENT_COMPANY,
+  REPORT_TIME,
+  STOCKER_SIGNATURE,
+} from "../ultis/constant";
+import { REPORT_EXPORT_COLUMN } from "../base/export-column";
+import { generateTable } from "../base/report-excel.layout";
+import { GetObjectURl, uploadFile } from "@common/baseAWS";
+import { config } from "@config/app";
 require("dotenv").config();
 @Service()
 export class BillExportService {
@@ -36,20 +48,14 @@ export class BillExportService {
     const bill_export = await BillExportRepository.save(bill_export_instance);
     for (const book of books) {
       const bookRequest = request.books.find((item) => item.id === book.id)!;
-      if (book.quantity < bookRequest.quantity) {
-        throw ApiError(
-          StatusCodes.BAD_REQUEST,
-          `Quanlity of book ${book.id} with quality ${book.quantity} not enough: book Inventory = ${book.quantity} | book request = ${bookRequest.quantity}`
-        );
-      }
       const bill_export_detail = BillExportDetailRepository.create();
       bill_export_detail.book_id = book.id;
       bill_export_detail.quantity = bookRequest.quantity;
       bill_export_detail.bill_export_id = bill_export.id;
-      // book.quantity -= bookRequest.quantity;
-      // book.sold += bookRequest.quantity;
-      // await BookRepository.save(book);
-      return BillExportDetailRepository.insert(bill_export_detail);
+      book.quantity -= bookRequest.quantity;
+      book.sold += 1;
+      await BookRepository.save(book);
+      await BillExportDetailRepository.insert(bill_export_detail);
     }
   }
 
@@ -58,6 +64,81 @@ export class BillExportService {
       request,
       user
     );
+    if (request.export) {
+      let data = billExport.reduce((prev, cur) => {
+        const userInfo = [
+          cur.id.substring(0, 5),
+          cur.user.username,
+          cur.user.address,
+          cur.user.phone,
+        ].join("-");
+        if (!prev[userInfo]) {
+          prev[userInfo] = [];
+        }
+        let status = "";
+        switch (cur.status) {
+          case BillExportStatus.Pending:
+            status = "Đang đặt hàng";
+            break;
+
+          case BillExportStatus.Confirmed:
+            status = "Đã nhận";
+            break;
+          case BillExportStatus.Reject:
+            status = "Sản phảm bị trả lại";
+            break;
+        }
+        cur.bill_export_detail.forEach((item, index) => {
+          const data: BillExportExcelModel = {
+            index: index + 1,
+            status: status,
+            bookname: item.book.name,
+            discounted: item.book.discounted + "%",
+            quantity: item.quantity,
+            price: item.book.price_export * item.quantity,
+          };
+          prev[userInfo].push(data);
+        });
+        return prev;
+      }, {});
+
+      data = Object.keys(data).map((key) => {
+        return {
+          userInfo: key,
+          data: data[key],
+        };
+      });
+      let reportTime = "Từ ngày: ...  đến ngày: ...";
+      let pastData = new Date();
+      pastData.setMonth(pastData.getMonth() - 1);
+      pastData = pastData.toLocaleDateString() as any;
+      reportTime = reportTime.replace("...", pastData as any);
+      reportTime = reportTime.replace("...", new Date().toLocaleDateString());
+      const model: ReportModel<BillExportExcelModel> = {
+        parentCompany: PARENT_COMPANY,
+        childCompany: CHILD_COMPANY,
+        AddressChildCompany: CHILD_COMPANY_ADDRESS,
+        reportTitle: "BÁO CÁO HÓA ĐƠN XUẤT THEO THÁNG",
+        reportTime: reportTime,
+        reportDateSignature: REPORT_TIME,
+        stockerSignature: STOCKER_SIGNATURE,
+        creater: CREATER,
+        tableColumn: REPORT_EXPORT_COLUMN,
+        tableData: data as any,
+        footer: true,
+        header: true,
+        columnLevel: 1,
+      };
+      const buffer = await generateTable(model, "billExport");
+      await uploadFile(
+        buffer,
+        config.s3Bucket,
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        config.s3BucketForder + "billExport.xlsx"
+      );
+      const link = GetObjectURl("billExport.xlsx");
+      return { billExport: null, total: 0, link: link };
+    }
     for (let bill of billExport) {
       if (bill.user.avartar) {
         bill.user.avartar = JSON.parse(bill.user.avartar);
