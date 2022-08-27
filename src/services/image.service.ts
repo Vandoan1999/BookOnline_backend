@@ -2,7 +2,7 @@ import { deleteObject, uploadFile } from "@common/baseAWS";
 import { config } from "@config/app";
 import { UpdateImageRequest } from "@models/images/update-image.request";
 import { ImageRepository } from "@repos/image.repository";
-
+import { v4 as uuidv4 } from "uuid";
 import { Service } from "typedi";
 import { In } from "typeorm";
 import { CreateImageRequest } from "@models/images/create-image.request";
@@ -18,9 +18,7 @@ export class ImageService {
       id: request.id,
     });
     const nameImageOld = imageToBeSaved.link.replace(config.s3Url, "");
-    const nameImageNew = this.generateNameImage(
-      `image-${new Date().toLocaleTimeString()}`
-    );
+    const nameImageNew = this.generateNameImage(`image-${uuidv4()}`);
     imageToBeSaved.link = config.s3Url + nameImageNew;
     await ImageRepository.save(imageToBeSaved);
     await deleteObject(config.s3Bucket, config.s3BucketForder + nameImageOld);
@@ -38,9 +36,7 @@ export class ImageService {
     const promiseAllUploadFileToS3: any[] = [];
     const imageToBeSave: ImageEntity[] = [];
     for (const image of request.images) {
-      const imageName = this.generateNameImage(
-        `image-${new Date().toLocaleTimeString()}`
-      );
+      const imageName = this.generateNameImage(`image-${uuidv4()}`);
       promiseAllUploadFileToS3.push(
         uploadFile(
           image.buffer,

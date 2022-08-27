@@ -25,6 +25,7 @@ exports.ImageService = void 0;
 const baseAWS_1 = require("@common/baseAWS");
 const app_1 = require("@config/app");
 const image_repository_1 = require("@repos/image.repository");
+const uuid_1 = require("uuid");
 const typedi_1 = require("typedi");
 const typeorm_1 = require("typeorm");
 const jet_logger_1 = __importDefault(require("jet-logger"));
@@ -36,7 +37,7 @@ let ImageService = class ImageService {
                 id: request.id,
             });
             const nameImageOld = imageToBeSaved.link.replace(app_1.config.s3Url, "");
-            const nameImageNew = this.generateNameImage(`image-${new Date().toLocaleTimeString()}`);
+            const nameImageNew = this.generateNameImage(`image-${(0, uuid_1.v4)()}`);
             imageToBeSaved.link = app_1.config.s3Url + nameImageNew;
             yield image_repository_1.ImageRepository.save(imageToBeSaved);
             yield (0, baseAWS_1.deleteObject)(app_1.config.s3Bucket, app_1.config.s3BucketForder + nameImageOld);
@@ -50,7 +51,7 @@ let ImageService = class ImageService {
             const promiseAllUploadFileToS3 = [];
             const imageToBeSave = [];
             for (const image of request.images) {
-                const imageName = this.generateNameImage(`image-${new Date().toLocaleTimeString()}`);
+                const imageName = this.generateNameImage(`image-${(0, uuid_1.v4)()}`);
                 promiseAllUploadFileToS3.push((0, baseAWS_1.uploadFile)(image.buffer, app_1.config.s3Bucket, image.mimetype, app_1.config.s3BucketForder + imageName));
                 imageToBeSave.push({ link: app_1.config.s3Url + imageName });
             }
