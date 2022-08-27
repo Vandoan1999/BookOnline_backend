@@ -231,7 +231,7 @@ const generateTable = (model, fileName) => __awaiter(void 0, void 0, void 0, fun
             };
         }
     }
-    yield workbook.xlsx.writeFile(path + `${fileName}.xlsx`);
+    // await workbook.xlsx.writeFile(path + `${fileName}.xlsx`);
     return workbook.xlsx.writeBuffer();
 });
 exports.generateTable = generateTable;

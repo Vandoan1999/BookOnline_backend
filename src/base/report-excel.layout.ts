@@ -225,7 +225,7 @@ export const generateTable = async (
     }
   }
 
-  await workbook.xlsx.writeFile(path + `${fileName}.xlsx`);
+  // await workbook.xlsx.writeFile(path + `${fileName}.xlsx`);
   return workbook.xlsx.writeBuffer();
 };
 
