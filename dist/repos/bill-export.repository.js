@@ -63,4 +63,17 @@ exports.BillExportRepository = db_1.AppDataSource.getRepository(bill_export_enti
         }
         return query.getOne();
     },
+    total_revenue() {
+        return this.createQueryBuilder("bill_exportx")
+            .innerJoin("bill_exportx.bill_export_detail", "bill_export_detail")
+            .innerJoin("bill_export_detail.book", "book")
+            .select([
+            "SUM(book.price_export * bill_export_detail.quantity) as sum_price_export",
+            "SUM((book.price_export - book.price_import) * bill_export_detail.quantity) as sum_profit",
+        ])
+            .where("bill_exportx.status = :status", {
+            status: bill_export_status_enum_1.BillExportStatus.delivered,
+        })
+            .getRawOne();
+    },
 });

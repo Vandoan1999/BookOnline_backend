@@ -204,26 +204,22 @@ export class BillExportService {
       Object.values(BillExportStatus).includes(request.status)
     ) {
       if (billExport.bill_export_detail.length > 0) {
-        if (billExport.status === BillExportStatus.Pending) {
-          if (request.status === BillExportStatus.delivered) {
-            const books = await BookRepository.find({
-              where: {
-                id: In([
-                  ...billExport.bill_export_detail.map((i) => i.book_id),
-                ]),
-              },
-            });
-            const booksToBeUpdated: any[] = [];
-            for (const { book_id, quantity } of billExport.bill_export_detail) {
-              const book = books.find((i) => i.id === book_id);
-              if (book) {
-                book.quantity -= quantity;
-                book.sold += quantity;
-                booksToBeUpdated.push(book);
-              }
+        if (request.status === BillExportStatus.delivered) {
+          const books = await BookRepository.find({
+            where: {
+              id: In([...billExport.bill_export_detail.map((i) => i.book_id)]),
+            },
+          });
+          const booksToBeUpdated: any[] = [];
+          for (const { book_id, quantity } of billExport.bill_export_detail) {
+            const book = books.find((i) => i.id === book_id);
+            if (book) {
+              book.quantity -= quantity;
+              book.sold += quantity;
+              booksToBeUpdated.push(book);
             }
-            await BookRepository.save(booksToBeUpdated);
           }
+          await BookRepository.save(booksToBeUpdated);
         }
       }
       billExport.status = request.status;

@@ -33,7 +33,7 @@ exports.AppDataSource = new typeorm_1.DataSource({
     username: "postgres",
     password: "12345678",
     database: "postgres",
-    synchronize: true,
+    synchronize: false,
     logging: false,
     entities: [...Object.values(entiry).map((item) => item)],
     subscribers: [],

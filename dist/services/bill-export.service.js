@@ -201,26 +201,22 @@ let BillExportService = class BillExportService {
             if (request.status &&
                 Object.values(bill_export_status_enum_1.BillExportStatus).includes(request.status)) {
                 if (billExport.bill_export_detail.length > 0) {
-                    if (billExport.status === bill_export_status_enum_1.BillExportStatus.Pending) {
-                        if (request.status === bill_export_status_enum_1.BillExportStatus.delivered) {
-                            const books = yield book_repository_1.BookRepository.find({
-                                where: {
-                                    id: (0, typeorm_1.In)([
-                                        ...billExport.bill_export_detail.map((i) => i.book_id),
-                                    ]),
-                                },
-                            });
-                            const booksToBeUpdated = [];
-                            for (const { book_id, quantity } of billExport.bill_export_detail) {
-                                const book = books.find((i) => i.id === book_id);
-                                if (book) {
-                                    book.quantity -= quantity;
-                                    book.sold += quantity;
-                                    booksToBeUpdated.push(book);
-                                }
+                    if (request.status === bill_export_status_enum_1.BillExportStatus.delivered) {
+                        const books = yield book_repository_1.BookRepository.find({
+                            where: {
+                                id: (0, typeorm_1.In)([...billExport.bill_export_detail.map((i) => i.book_id)]),
+                            },
+                        });
+                        const booksToBeUpdated = [];
+                        for (const { book_id, quantity } of billExport.bill_export_detail) {
+                            const book = books.find((i) => i.id === book_id);
+                            if (book) {
+                                book.quantity -= quantity;
+                                book.sold += quantity;
+                                booksToBeUpdated.push(book);
                             }
-                            yield book_repository_1.BookRepository.save(booksToBeUpdated);
                         }
+                        yield book_repository_1.BookRepository.save(booksToBeUpdated);
                     }
                 }
                 billExport.status = request.status;

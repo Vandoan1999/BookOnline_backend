@@ -18,6 +18,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DashboardService = void 0;
 const db_1 = require("@config/db");
 const bill_export_detail_repository_1 = require("@repos/bill-export-detail.repository");
+const bill_export_repository_1 = require("@repos/bill-export.repository");
 const bill_import_detail_repository_1 = require("@repos/bill-import-detail.repository");
 const user_repository_1 = require("@repos/user.repository");
 const typedi_1 = require("typedi");
@@ -25,7 +26,7 @@ let DashboardService = class DashboardService {
     initData() {
         return __awaiter(this, void 0, void 0, function* () {
             const promiseAll = [];
-            promiseAll.push(bill_export_detail_repository_1.BillExportDetailRepository.total_revenue());
+            promiseAll.push(bill_export_repository_1.BillExportRepository.total_revenue());
             promiseAll.push(bill_import_detail_repository_1.BillImportDetailRepository.total_spending());
             promiseAll.push(user_repository_1.UserRepository.totalCustomer());
             promiseAll.push(bill_export_detail_repository_1.BillExportDetailRepository.count());
@@ -48,9 +49,8 @@ let DashboardService = class DashboardService {
             //total profit: tổng lợi nhuận
             return {
                 total_revenue: total_revenue.sum_price_export,
-                total_spending: total_spending.sum_price_import,
-                total_profit: Number(total_revenue.sum_price_export) -
-                    Number(total_spending.sum_price_import),
+                total_spending: total_spending.sum_price_import || 0,
+                total_profit: total_revenue.sum_profit,
                 total_customer: Number(total_customer.total_user),
                 total_bill_export,
                 userBroupByMonth,

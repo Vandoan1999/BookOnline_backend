@@ -26,11 +26,6 @@ export async function verifyToken(
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET!);
     const user = await UserRepository.findOneByOrFail({ id: decoded["id"] });
-    if (user.role === Role.USER)
-      throw ApiError(
-        StatusCodes.NOT_FOUND,
-        "your pasword reseted, you must change password to access!"
-      );
     if (!user) throw ApiError(StatusCodes.NOT_FOUND, "user not exits");
     req["user"] = user;
   } catch (error) {
