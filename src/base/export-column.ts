@@ -15,19 +15,19 @@ export const REPORT_EXPORT_COLUMN: TableColumn[] = [
   },
   {
     name: "Giá Sách",
-    width: 70,
+    width: 10,
   },
   {
     name: "Giảm giá",
-    width: 20,
+    width: 10,
   },
   {
     name: "Số Lượng",
-    width: 15,
+    width: 10,
   },
   {
     name: "Thành tiền",
-    width: 15,
+    width: 10,
   },
 ];
 
