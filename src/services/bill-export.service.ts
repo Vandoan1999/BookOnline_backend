@@ -28,7 +28,6 @@ import { config } from "@config/app";
 require("dotenv").config();
 @Service()
 export class BillExportService {
-  constructor(private imageService: ImageService) {}
   async create(request: CreateBillExportRequest, userInfo: UserInfo) {
     request.user_id = userInfo.id;
     const user = await UserRepository.findOneByOrFail({
@@ -52,9 +51,9 @@ export class BillExportService {
       bill_export_detail.book_id = book.id;
       bill_export_detail.quantity = bookRequest.quantity;
       bill_export_detail.bill_export_id = bill_export.id;
-      book.quantity -= bookRequest.quantity;
-      book.sold += 1;
-      await BookRepository.save(book);
+      // book.quantity -= bookRequest.quantity;
+      // book.sold += 1;
+      // await BookRepository.save(book);
       await BillExportDetailRepository.insert(bill_export_detail);
     }
   }

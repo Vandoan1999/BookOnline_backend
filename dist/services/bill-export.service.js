@@ -5,9 +5,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -25,7 +22,6 @@ const bill_export_repository_1 = require("@repos/bill-export.repository");
 const bill_export_detail_repository_1 = require("@repos/bill-export-detail.repository");
 const user_repository_1 = require("@repos/user.repository");
 const book_repository_1 = require("@repos/book.repository");
-const image_service_1 = require("./image.service");
 const bill_export_status_enum_1 = require("@models/bill_export/bill-export-status.enum");
 const constant_1 = require("../ultis/constant");
 const export_column_1 = require("../base/export-column");
@@ -34,9 +30,6 @@ const baseAWS_1 = require("@common/baseAWS");
 const app_1 = require("@config/app");
 require("dotenv").config();
 let BillExportService = class BillExportService {
-    constructor(imageService) {
-        this.imageService = imageService;
-    }
     create(request, userInfo) {
         return __awaiter(this, void 0, void 0, function* () {
             request.user_id = userInfo.id;
@@ -59,9 +52,9 @@ let BillExportService = class BillExportService {
                 bill_export_detail.book_id = book.id;
                 bill_export_detail.quantity = bookRequest.quantity;
                 bill_export_detail.bill_export_id = bill_export.id;
-                book.quantity -= bookRequest.quantity;
-                book.sold += 1;
-                yield book_repository_1.BookRepository.save(book);
+                // book.quantity -= bookRequest.quantity;
+                // book.sold += 1;
+                // await BookRepository.save(book);
                 yield bill_export_detail_repository_1.BillExportDetailRepository.insert(bill_export_detail);
             }
         });
@@ -226,7 +219,6 @@ let BillExportService = class BillExportService {
     }
 };
 BillExportService = __decorate([
-    (0, typedi_1.Service)(),
-    __metadata("design:paramtypes", [image_service_1.ImageService])
+    (0, typedi_1.Service)()
 ], BillExportService);
 exports.BillExportService = BillExportService;
