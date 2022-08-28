@@ -17,5 +17,5 @@ class ListSupplierRequest extends Pagination_1.Pagination {
 __decorate([
     (0, class_validator_1.Allow)(),
     __metadata("design:type", String)
-], ListSupplierRequest.prototype, "search", void 0);
+], ListSupplierRequest.prototype, "fillter", void 0);
 exports.ListSupplierRequest = ListSupplierRequest;

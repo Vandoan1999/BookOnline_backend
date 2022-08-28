@@ -11,8 +11,19 @@ export const SupplierRepository = AppDataSource.getRepository(
     const take = request.limit || config.page.default_limit;
     const page = request.page || 1;
     const skip = (page - 1) * take;
-
     const query = this.createQueryBuilder("supplier");
+    if (request.fillter) {
+      const fillter = JSON.parse(request.fillter);
+      fillter.forEach((item) => {
+        switch (item.column) {
+          case "company":
+            query.andWhere("LOWER(supplier.company) LIKE LOWER(:company)", {
+              company: `%${item.text}%`,
+            });
+            break;
+        }
+      });
+    }
     return query.take(take).skip(skip).getManyAndCount();
   },
 });

@@ -3,5 +3,5 @@ import { Allow, IsEnum, IsOptional } from "class-validator";
 import { OrderBy } from "./orderBy.enum";
 export class ListSupplierRequest extends Pagination {
   @Allow()
-  search: string;
+  fillter: string;
 }
