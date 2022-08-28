@@ -42,7 +42,7 @@ let DashboardService = class DashboardService {
             const totalRevenueBroupByMonth = yield db_1.AppDataSource.query(`
       SELECT
       date_trunc('month', bed.created_at ) AS "date",
-      SUM(b.price_export * bed.quantity) AS total_revenue
+      SUM((b.price_export - b.price_import)  * bed.quantity) AS total_revenue
       FROM  bill_export be 
       join bill_export_detail bed on be.id  = bed.bill_export_id 
       join books b on bed.book_id = b.id 
