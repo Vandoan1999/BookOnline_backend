@@ -36,8 +36,11 @@ export class DashboardService {
       SELECT
       date_trunc('month', bed.created_at ) AS "date",
       SUM(b.price_export * bed.quantity) AS total_revenue
-      FROM  bill_export_detail bed join books b on bed.book_id = b.id 
-      GROUP BY date_trunc('month', bed.created_at ) `);
+      FROM  bill_export be 
+      join bill_export_detail bed on be.id  = bed.bill_export_id 
+      join books b on bed.book_id = b.id 
+      where be.status = '2'
+      GROUP BY date_trunc('month', bed.created_at) `);
 
     //revenue: doanh thu
     //total spending: tổng chi tiêu

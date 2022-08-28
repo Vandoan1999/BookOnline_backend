@@ -8,7 +8,10 @@ export const BillImportDetailRepository = AppDataSource.getRepository(
   total_spending() {
     return this.createQueryBuilder("bill_import_detail")
       .innerJoin("bill_import_detail.book", "book")
-      .select("SUM(book.price_import)", "sum_price_import")
+      .select(
+        "SUM(book.price_import * bill_import_detail.quantity)",
+        "sum_price_import"
+      )
       .getRawOne();
   },
 });
