@@ -34,8 +34,8 @@ router.post(url.login, (req, res) => __awaiter(void 0, void 0, void 0, function*
 }));
 router.post(url.forgot_password, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const authService = typedi_1.Container.get(auth_service_1.AuthService);
-    yield authService.forgotPassword(req.body.email ? req.body.email : "");
-    res.json(new response_builder_1.ResponseBuilder()
+    const user = yield authService.forgotPassword(req.body.email ? req.body.email : "");
+    res.json(new response_builder_1.ResponseBuilder(user)
         .withMessage("Password was successfully reseted!")
         .withSuccess()
         .build());

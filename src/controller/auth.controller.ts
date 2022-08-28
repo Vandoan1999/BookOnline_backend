@@ -31,9 +31,11 @@ router.post(url.login, async (req, res) => {
 
 router.post(url.forgot_password, async (req, res) => {
   const authService = Container.get(AuthService);
-  await authService.forgotPassword(req.body.email ? req.body.email : "");
+  const user = await authService.forgotPassword(
+    req.body.email ? req.body.email : ""
+  );
   res.json(
-    new ResponseBuilder()
+    new ResponseBuilder(user)
       .withMessage("Password was successfully reseted!")
       .withSuccess()
       .build()
