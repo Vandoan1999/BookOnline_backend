@@ -52,6 +52,20 @@ exports.BillExportRepository = db_1.AppDataSource.getRepository(bill_export_enti
         }
         return query.take(take).skip(skip).getManyAndCount();
     },
+    getBill(ids) {
+        const query = this.createQueryBuilder("bill_export")
+            .leftJoinAndSelect("bill_export.bill_export_detail", "bill_export_detail")
+            .leftJoinAndSelect("bill_export.user", "user")
+            .leftJoinAndSelect("bill_export_detail.book", "books")
+            .select([
+            "user.id",
+            "count(bill_export.id)",
+            "sum(bill_export_detail.quantity * books.price_export)",
+        ])
+            .where("user.id IN (:...ids)", { ids: [...ids] })
+            .groupBy("user.id");
+        return query.getRawMany();
+    },
     fileOne(id, user) {
         const query = this.createQueryBuilder("bill_export")
             .leftJoinAndSelect("bill_export.bill_export_detail", "bill_export_detail")

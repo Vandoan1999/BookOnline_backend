@@ -65,7 +65,7 @@ let BillExportService = class BillExportService {
             if (request.export) {
                 let data = billExport.reduce((prev, cur) => {
                     const userInfo = [
-                        cur.id.substring(0, 5),
+                        cur.user.id.substring(0, 5),
                         cur.user.username,
                         cur.user.address,
                         cur.user.phone,

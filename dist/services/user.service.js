@@ -20,13 +20,20 @@ const role_enum_1 = require("@enums/role.enum");
 const user_repository_1 = require("@repos/user.repository");
 const typedi_1 = require("typedi");
 const image_repository_1 = require("@repos/image.repository");
+const bill_export_repository_1 = require("@repos/bill-export.repository");
 let UserService = class UserService {
     getList(request) {
         return __awaiter(this, void 0, void 0, function* () {
             const [users, total] = yield user_repository_1.UserRepository.getList(request);
+            let bill = yield bill_export_repository_1.BillExportRepository.getBill(users.map((user) => user.id));
             users.forEach((user) => {
                 if (user.avartar) {
                     user.avartar = JSON.parse(user.avartar);
+                }
+                const billOfuser = bill.find((item) => item.user_id == user.id);
+                if (billOfuser) {
+                    user["totalBill"] = Number(billOfuser.count);
+                    user["totalPrice"] = billOfuser.sum;
                 }
             });
             return { users, total };

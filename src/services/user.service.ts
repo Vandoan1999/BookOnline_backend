@@ -5,13 +5,21 @@ import { UserInfo } from "@models/user/UserInfo";
 import { UserRepository } from "@repos/user.repository";
 import { Service } from "typedi";
 import { ImageRepository } from "@repos/image.repository";
+import { BillExportRepository } from "@repos/bill-export.repository";
 @Service()
 export class UserService {
   async getList(request: ListUserRequest) {
     const [users, total] = await UserRepository.getList(request);
+    let bill = await BillExportRepository.getBill(users.map((user) => user.id));
+
     users.forEach((user) => {
       if (user.avartar) {
         user.avartar = JSON.parse(user.avartar);
+      }
+      const billOfuser = bill.find((item) => item.user_id == user.id);
+      if (billOfuser) {
+        user["totalBill"] = Number(billOfuser.count);
+        user["totalPrice"] = billOfuser.sum;
       }
     });
     return { users, total };

@@ -57,6 +57,21 @@ export const BillExportRepository = AppDataSource.getRepository(
     return query.take(take).skip(skip).getManyAndCount();
   },
 
+  getBill(ids: string[]) {
+    const query = this.createQueryBuilder("bill_export")
+      .leftJoinAndSelect("bill_export.bill_export_detail", "bill_export_detail")
+      .leftJoinAndSelect("bill_export.user", "user")
+      .leftJoinAndSelect("bill_export_detail.book", "books")
+      .select([
+        "user.id",
+        "count(bill_export.id)",
+        "sum(bill_export_detail.quantity * books.price_export)",
+      ])
+      .where("user.id IN (:...ids)", { ids: [...ids] })
+      .groupBy("user.id");
+    return query.getRawMany();
+  },
+
   fileOne(id: string, user: UserInfo) {
     const query = this.createQueryBuilder("bill_export")
       .leftJoinAndSelect("bill_export.bill_export_detail", "bill_export_detail")
